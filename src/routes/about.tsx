@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Award, CheckCircle2, Target, Users } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/use-cms";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -9,27 +10,27 @@ export const Route = createFileRoute("/about")({
       { title: "About SS Packers & Movers Kakinada" },
       { name: "description", content: "Learn about SS Packers & Movers — Kakinada's trusted relocation company serving households and businesses across India." },
       { property: "og:title", content: "About SS Packers & Movers Kakinada" },
-      { property: "og:description", content: "Trusted relocation company from Kakinada — 15+ years, 10,000+ moves." },
+      { property: "og:description", content: "Trusted relocation company from Kakinada." },
     ],
   }),
   component: AboutPage,
 });
 
 function AboutPage() {
+  const { data: s } = useSettings();
+  const about = s?.about;
+
   return (
     <SiteLayout>
       <PageHero eyebrow="About Us" title="Moving families and businesses with care since day one" subtitle="SS Packers & Movers is a Kakinada-based relocation company built on trust, reliability and customer-first service." />
       <section className="container mx-auto px-4 py-16 grid lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-5">
-          <h2 className="text-3xl md:text-4xl font-extrabold">Your trusted relocation partner in Kakinada</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            For over 15 years, SS Packers & Movers has been helping families and businesses relocate safely across Andhra Pradesh and all over India. From a small local move to large-scale corporate shifting, our team of trained professionals handles every project with the same care and dedication.
-          </p>
-          <p className="text-muted-foreground leading-relaxed">
-            We believe moving should be exciting, not stressful. That's why we invest in quality packing materials, modern vehicles, and continuous staff training — so your belongings arrive exactly as they left.
+          <h2 className="text-3xl md:text-4xl font-extrabold">{about?.heading ?? "Your trusted relocation partner in Kakinada"}</h2>
+          <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+            {about?.body ?? "For over 10 years, SS Packers & Movers has been helping families and businesses relocate safely across Andhra Pradesh and all over India."}
           </p>
           <ul className="space-y-2 pt-2">
-            {["Licensed & insured operations", "Real-time shipment tracking", "Transparent pricing, no hidden fees", "Dedicated customer support 24/7"].map((t) => (
+            {["Licensed & insured operations", "Trained professional crew", "Transparent pricing, no hidden fees", "Dedicated customer support 24/7"].map((t) => (
               <li key={t} className="flex items-center gap-2 text-sm"><CheckCircle2 className="h-5 w-5 text-primary" /> {t}</li>
             ))}
           </ul>
@@ -37,9 +38,9 @@ function AboutPage() {
         </div>
         <div className="grid grid-cols-2 gap-4">
           {[
-            { icon: Users, value: "10K+", label: "Customers" },
-            { icon: Award, value: "15+", label: "Years" },
-            { icon: Target, value: "500+", label: "Cities" },
+            { icon: Users, value: about?.happy_customers ?? "5000+", label: "Customers" },
+            { icon: Award, value: about?.years_experience ?? "10+", label: "Years" },
+            { icon: Target, value: about?.cities_covered ?? "100+", label: "Cities" },
             { icon: CheckCircle2, value: "99%", label: "On-Time" },
           ].map(({ icon: Icon, value, label }) => (
             <div key={label} className="rounded-2xl border border-border bg-card p-6">
