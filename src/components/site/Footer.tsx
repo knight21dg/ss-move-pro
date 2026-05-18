@@ -1,8 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react";
 import logo from "@/assets/logo.png";
+import { useSettings } from "@/hooks/use-cms";
 
 export function Footer() {
+  const { data: s } = useSettings();
+  const contact = s?.contact;
+  const social = s?.social;
+
   return (
     <footer className="bg-gradient-dark text-white mt-24">
       <div className="container mx-auto px-4 py-16 grid gap-10 md:grid-cols-4">
@@ -41,13 +46,17 @@ export function Footer() {
         <div>
           <h4 className="font-semibold mb-4 text-white">Contact</h4>
           <ul className="space-y-3 text-sm text-white/70">
-            <li className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 text-primary shrink-0" /> Kakinada, Andhra Pradesh, India</li>
-            <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 text-primary shrink-0" /> +91 98765 43210</li>
-            <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 text-primary shrink-0" /> info@sspackersmovers.in</li>
+            <li className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact?.address ?? "Kakinada, Andhra Pradesh, India"}</span></li>
+            <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact?.phone ?? "+91 9876543210"}</span></li>
+            <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact?.email ?? "info@sspackersmovers.in"}</span></li>
           </ul>
           <div className="flex gap-3 mt-5">
-            {[Facebook, Instagram, Youtube].map((Icon, i) => (
-              <a key={i} href="#" className="h-9 w-9 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors">
+            {[
+              { Icon: Facebook, href: social?.facebook },
+              { Icon: Instagram, href: social?.instagram },
+              { Icon: Youtube, href: social?.youtube },
+            ].map(({ Icon, href }, i) => (
+              <a key={i} href={href || "#"} target="_blank" rel="noreferrer" className="h-9 w-9 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors">
                 <Icon className="h-4 w-4" />
               </a>
             ))}

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Award, CheckCircle2, Clock, MessageCircle, Phone, ShieldCheck, Star, Truck, Users } from "lucide-react";
+import { ArrowRight, Award, Clock, MessageCircle, Phone, ShieldCheck, Star, Truck } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-truck.jpg";
@@ -7,22 +7,14 @@ import g1 from "@/assets/gallery-1.jpg";
 import g2 from "@/assets/gallery-2.jpg";
 import g3 from "@/assets/gallery-3.jpg";
 import g4 from "@/assets/gallery-4.jpg";
-import { services } from "@/data/services";
+import { useServices, useSettings, useTestimonials, useGallery } from "@/hooks/use-cms";
+import { getIcon } from "@/lib/icons";
 
-export const Route = createFileRoute("/")({
-  component: HomePage,
-});
-
-const stats = [
-  { value: "10K+", label: "Happy Customers" },
-  { value: "15+", label: "Years Experience" },
-  { value: "500+", label: "Cities Served" },
-  { value: "24/7", label: "Support" },
-];
+export const Route = createFileRoute("/")({ component: HomePage });
 
 const whyUs = [
   { icon: ShieldCheck, title: "Safe & Insured", desc: "Every shipment is handled with care and fully insured for peace of mind." },
-  { icon: Clock, title: "On-Time Delivery", desc: "We respect deadlines. Tracked, scheduled, and delivered on time, every time." },
+  { icon: Clock, title: "On-Time Delivery", desc: "We respect deadlines. Scheduled and delivered on time, every time." },
   { icon: Award, title: "Trained Professionals", desc: "Skilled packers and movers trained in modern handling techniques." },
   { icon: Truck, title: "Pan-India Network", desc: "Dedicated fleet covering Kakinada and all major Indian cities." },
 ];
@@ -31,13 +23,7 @@ const process = [
   { step: "01", title: "Get a Free Quote", desc: "Share your move details and receive a transparent estimate within hours." },
   { step: "02", title: "Survey & Plan", desc: "Our team plans packing, manpower and the right vehicle for your move." },
   { step: "03", title: "Pack & Load", desc: "Professional packing with quality materials. Safe loading by trained crew." },
-  { step: "04", title: "Transport & Deliver", desc: "Real-time tracking. Careful unloading and unpacking at your new place." },
-];
-
-const testimonials = [
-  { name: "Ramesh K.", role: "Kakinada", text: "Outstanding service! My household items reached Hyderabad without a single scratch. Highly recommend SS Packers." },
-  { name: "Priya S.", role: "Visakhapatnam", text: "Professional team, fair pricing and on-time delivery. They made our office shift smooth and stress-free." },
-  { name: "Anil M.", role: "Chennai", text: "Got my car transported from Kakinada to Chennai safely. Excellent communication throughout. Will use again." },
+  { step: "04", title: "Transport & Deliver", desc: "Careful unloading and unpacking at your new place." },
 ];
 
 const faqs = [
@@ -47,7 +33,31 @@ const faqs = [
   { q: "How long does household shifting take?", a: "Local moves are usually completed in 1 day. Intercity moves take 2–7 days depending on distance." },
 ];
 
+const fallbackGallery = [g1, g2, g3, g4];
+
 function HomePage() {
+  const { data: settings } = useSettings();
+  const { data: services = [] } = useServices();
+  const { data: testimonials = [] } = useTestimonials();
+  const { data: gallery = [] } = useGallery();
+
+  const hero = settings?.hero;
+  const about = settings?.about;
+  const contact = settings?.contact;
+  const phoneHref = `tel:${(contact?.phone ?? "+919876543210").replace(/\s/g, "")}`;
+  const wa = (contact?.whatsapp ?? "+919876543210").replace(/\D/g, "");
+
+  const stats = [
+    { value: about?.happy_customers ?? "5000+", label: "Happy Customers" },
+    { value: about?.years_experience ?? "10+", label: "Years Experience" },
+    { value: about?.cities_covered ?? "100+", label: "Cities Served" },
+    { value: "24/7", label: "Support" },
+  ];
+
+  const galleryItems = gallery.length > 0
+    ? gallery.slice(0, 4).map((g) => g.image_url)
+    : fallbackGallery;
+
   return (
     <SiteLayout>
       {/* HERO */}
@@ -62,20 +72,20 @@ function HomePage() {
             Kakinada's #1 Trusted Movers
           </div>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white text-balance leading-[1.05]">
-            Reliable Packers & Movers in <span className="text-primary">Kakinada</span>
+            {hero?.title ?? "Reliable Packers & Movers in"} <span className="text-primary">Kakinada</span>
           </h1>
           <p className="mt-6 text-lg md:text-xl text-white/90 max-w-2xl">
-            Professional household shifting, office relocation, vehicle transportation, loading & unloading services across India.
+            {hero?.subtitle ?? "Professional household shifting, office relocation, vehicle transportation, loading & unloading services across India."}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg" variant="hero" className="h-12 px-7 text-base">
-              <Link to="/enquiry">Get Free Quote <ArrowRight /></Link>
+              <Link to="/enquiry">{hero?.cta ?? "Get Free Quote"} <ArrowRight /></Link>
             </Button>
             <Button asChild size="lg" variant="brand" className="h-12 px-7 text-base">
-              <a href="tel:+919876543210"><Phone /> Call Now</a>
+              <a href={phoneHref}><Phone /> Call Now</a>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-7 text-base bg-white/10 text-white border-white/30 hover:bg-white/20 hover:text-white">
-              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"><MessageCircle /> WhatsApp</a>
+              <a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer"><MessageCircle /> WhatsApp</a>
             </Button>
           </div>
         </div>
@@ -110,23 +120,30 @@ function HomePage() {
       </section>
 
       {/* SERVICES */}
-      <section className="bg-muted/50 py-20 md:py-28">
-        <div className="container mx-auto px-4">
-          <SectionHeader eyebrow="Our Services" title="End-to-end relocation services" />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-            {services.slice(0, 8).map((s) => (
-              <div key={s.title} className="rounded-2xl bg-card border border-border p-6 hover:border-primary transition-colors">
-                <div className="text-3xl mb-3">{s.icon}</div>
-                <h3 className="font-bold mb-2">{s.title}</h3>
-                <p className="text-sm text-muted-foreground">{s.short}</p>
-              </div>
-            ))}
+      {services.length > 0 && (
+        <section className="bg-muted/50 py-20 md:py-28">
+          <div className="container mx-auto px-4">
+            <SectionHeader eyebrow="Our Services" title="End-to-end relocation services" />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+              {services.slice(0, 8).map((s) => {
+                const Icon = getIcon(s.icon);
+                return (
+                  <div key={s.id} className="rounded-2xl bg-card border border-border p-6 hover:border-primary hover:shadow-brand transition-all">
+                    <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="font-bold mb-2">{s.title}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{s.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="text-center mt-10">
+              <Button asChild variant="brand" size="lg"><Link to="/services">View All Services <ArrowRight /></Link></Button>
+            </div>
           </div>
-          <div className="text-center mt-10">
-            <Button asChild variant="brand" size="lg"><Link to="/services">View All Services <ArrowRight /></Link></Button>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* PROCESS */}
       <section className="container mx-auto px-4 py-20 md:py-28">
@@ -146,9 +163,9 @@ function HomePage() {
       <section className="container mx-auto px-4 pb-20 md:pb-28">
         <SectionHeader eyebrow="Gallery" title="Inside our daily operations" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-12">
-          {[g1, g2, g3, g4].map((src, i) => (
+          {galleryItems.map((src, i) => (
             <div key={i} className="aspect-square overflow-hidden rounded-2xl">
-              <img src={src} alt={`Gallery ${i + 1}`} loading="lazy" width={1024} height={1024} className="h-full w-full object-cover hover:scale-110 transition-transform duration-500" />
+              <img src={src} alt={`Gallery ${i + 1}`} loading="lazy" className="h-full w-full object-cover hover:scale-110 transition-transform duration-500" />
             </div>
           ))}
         </div>
@@ -158,30 +175,34 @@ function HomePage() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="bg-muted/50 py-20 md:py-28">
-        <div className="container mx-auto px-4">
-          <SectionHeader eyebrow="Testimonials" title="What our customers say" />
-          <div className="grid md:grid-cols-3 gap-6 mt-12">
-            {testimonials.map((t) => (
-              <div key={t.name} className="rounded-2xl bg-card border border-border p-7">
-                <div className="flex gap-1 text-primary mb-4">
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
-                </div>
-                <p className="text-foreground/85 leading-relaxed mb-5">"{t.text}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-gradient-brand text-white flex items-center justify-center font-bold">
-                    {t.name[0]}
+      {testimonials.length > 0 && (
+        <section className="bg-muted/50 py-20 md:py-28">
+          <div className="container mx-auto px-4">
+            <SectionHeader eyebrow="Testimonials" title="What our customers say" />
+            <div className="grid md:grid-cols-3 gap-6 mt-12">
+              {testimonials.slice(0, 3).map((t) => (
+                <div key={t.id} className="rounded-2xl bg-card border border-border p-7">
+                  <div className="flex gap-1 text-primary mb-4">
+                    {Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
                   </div>
-                  <div>
-                    <div className="font-semibold text-sm">{t.name}</div>
-                    <div className="text-xs text-muted-foreground">{t.role}</div>
+                  <p className="text-foreground/85 leading-relaxed mb-5">"{t.message}"</p>
+                  <div className="flex items-center gap-3">
+                    {t.avatar_url ? (
+                      <img src={t.avatar_url} alt={t.name} className="h-10 w-10 rounded-full object-cover" />
+                    ) : (
+                      <div className="h-10 w-10 rounded-full bg-gradient-brand text-white flex items-center justify-center font-bold">{t.name[0]}</div>
+                    )}
+                    <div>
+                      <div className="font-semibold text-sm">{t.name}</div>
+                      <div className="text-xs text-muted-foreground">{t.location}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* FAQ */}
       <section className="container mx-auto px-4 py-20 md:py-28 max-w-4xl">
@@ -209,7 +230,7 @@ function HomePage() {
             <p className="mt-4 text-white/90 max-w-xl mx-auto">Get a free, no-obligation quote within minutes. Our experts are ready to help.</p>
             <div className="mt-8 flex flex-wrap gap-3 justify-center">
               <Button asChild size="lg" variant="hero" className="h-12 px-8 text-base"><Link to="/enquiry">Get Free Quote</Link></Button>
-              <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base bg-transparent text-white border-white hover:bg-white hover:text-primary"><a href="tel:+919876543210"><Phone /> Call Now</a></Button>
+              <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base bg-transparent text-white border-white hover:bg-white hover:text-primary"><a href={phoneHref}><Phone /> Call Now</a></Button>
             </div>
           </div>
         </div>
