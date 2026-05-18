@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as EnquiryRouteImport } from './routes/enquiry'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -31,6 +32,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/enquiry': typeof EnquiryRoute
   '/gallery': typeof GalleryRoute
+  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/enquiry': typeof EnquiryRoute
   '/gallery': typeof GalleryRoute
+  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/enquiry': typeof EnquiryRoute
   '/gallery': typeof GalleryRoute
+  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/enquiry'
     | '/gallery'
+    | '/login'
     | '/services'
     | '/sitemap.xml'
     | '/videos'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/enquiry'
     | '/gallery'
+    | '/login'
     | '/services'
     | '/sitemap.xml'
     | '/videos'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/enquiry'
     | '/gallery'
+    | '/login'
     | '/services'
     | '/sitemap.xml'
     | '/videos'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   EnquiryRoute: typeof EnquiryRoute
   GalleryRoute: typeof GalleryRoute
+  LoginRoute: typeof LoginRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VideosRoute: typeof VideosRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   EnquiryRoute: EnquiryRoute,
   GalleryRoute: GalleryRoute,
+  LoginRoute: LoginRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VideosRoute: VideosRoute,
@@ -208,3 +229,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
