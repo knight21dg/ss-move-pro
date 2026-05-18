@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 
-const items = [
+const items: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/services", label: "Services", icon: Package },
   { to: "/admin/gallery", label: "Gallery", icon: ImageIcon },
@@ -14,7 +14,7 @@ const items = [
   { to: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
   { to: "/admin/enquiries", label: "Enquiries", icon: Inbox },
   { to: "/admin/settings", label: "Site Settings", icon: Settings },
-] as const;
+];
 
 export function AdminLayout({ children, title }: { children: React.ReactNode; title: string }) {
   const { user, isAdmin, loading } = useAuth();
