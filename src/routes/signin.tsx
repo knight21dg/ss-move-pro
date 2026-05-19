@@ -66,11 +66,18 @@ function getAuthErrorMessage(error: { message?: string } | null | undefined, act
   return message || "Something went wrong. Please try again.";
 }
 
-function hasRecoveryParams() {
-  if (typeof window === "undefined") return false;
-  const search = window.location.search.toLowerCase();
-  const hash = window.location.hash.toLowerCase();
-  return search.includes("type=recovery") || hash.includes("type=recovery");
+function getAuthLinkErrorMessage(errorCode?: string | null, errorDescription?: string | null) {
+  const code = (errorCode ?? "").toLowerCase();
+  if (code === "otp_expired") {
+    return "This link has expired. Request a new one.";
+  }
+  if (code === "access_denied") {
+    return "We could not verify this link. Request a new one.";
+  }
+  if (errorDescription) {
+    return errorDescription;
+  }
+  return "We could not verify this link. Request a new one.";
 }
 
 function LoginPage() {
@@ -87,8 +94,37 @@ function LoginPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setRecoveryMode(hasRecoveryParams());
+    if (typeof window === "undefined") return;
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const searchParams = new URLSearchParams(window.location.search);
+    const type = hashParams.get("type") ?? searchParams.get("type");
+    const error = hashParams.get("error") ?? searchParams.get("error");
+    const errorCode = hashParams.get("error_code") ?? searchParams.get("error_code");
+    const errorDescription = hashParams.get("error_description") ?? searchParams.get("error_description");
+    setRecoveryMode(type === "recovery");
+    if (error || errorCode) {
+      toast.error(getAuthLinkErrorMessage(errorCode ?? error, errorDescription));
+      if (window.location.hash) {
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    if (recoveryMode) return;
+    let isMounted = true;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!isMounted) return;
+      if (session) navigate({ to: "/admin" });
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) navigate({ to: "/admin" });
+    });
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate, recoveryMode]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
