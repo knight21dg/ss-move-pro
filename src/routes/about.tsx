@@ -24,7 +24,7 @@ function AboutPage() {
   return (
     <SiteLayout>
       <PageHero
-        eyebrow={about?.heading ? "About Us" : undefined}
+        eyebrow="About Us"
         title={about?.heading || ""}
         subtitle={about?.body || ""}
         backgroundImage={heroImage}

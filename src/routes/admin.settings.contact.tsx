@@ -13,24 +13,92 @@ export const Route = createFileRoute("/admin/settings/contact")({ component: Con
 function ContactSettings() {
   const { form, setForm, isLoading, save } = useSettingsForm();
 
-  if (isLoading) return <AdminLayout title="Contact Settings"><p className="text-muted-foreground">Loading...</p></AdminLayout>;
+  if (isLoading)
+    return (
+      <AdminLayout title="Contact Settings">
+        <p className="text-muted-foreground">Loading...</p>
+      </AdminLayout>
+    );
 
   return (
     <AdminLayout title="Contact Settings">
       <div className="space-y-6 max-w-3xl">
         <Card>
-          <CardHeader><CardTitle>Contact Info</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Contact Info</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
-              <div><Label>Phone</Label><Input value={form.contact.phone} onChange={(e) => setForm({ ...form, contact: { ...form.contact, phone: e.target.value } })} /></div>
-              <div><Label>WhatsApp</Label><Input value={form.contact.whatsapp} onChange={(e) => setForm({ ...form, contact: { ...form.contact, whatsapp: e.target.value } })} /></div>
+              <div>
+                <Label>Phone</Label>
+                <div className="flex mt-1.5">
+                  <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-sm text-muted-foreground">
+                    +91
+                  </span>
+                  <Input
+                    value={form.contact.phone.replace(/^\+91/, "")}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        contact: { ...form.contact, phone: "+91" + e.target.value },
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>WhatsApp</Label>
+                <div className="flex mt-1.5">
+                  <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-sm text-muted-foreground">
+                    +91
+                  </span>
+                  <Input
+                    value={form.contact.whatsapp.replace(/^\+91/, "")}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        contact: { ...form.contact, whatsapp: "+91" + e.target.value },
+                      })
+                    }
+                  />
+                </div>
+              </div>
             </div>
-            <div><Label>Email</Label><Input value={form.contact.email} onChange={(e) => setForm({ ...form, contact: { ...form.contact, email: e.target.value } })} /></div>
-            <div><Label>Address</Label><Textarea rows={2} value={form.contact.address} onChange={(e) => setForm({ ...form, contact: { ...form.contact, address: e.target.value } })} /></div>
+            <div>
+              <Label>Email</Label>
+              <Input
+                value={form.contact.email}
+                onChange={(e) =>
+                  setForm({ ...form, contact: { ...form.contact, email: e.target.value } })
+                }
+              />
+            </div>
+            <div>
+              <Label>Address</Label>
+              <Textarea
+                rows={2}
+                value={form.contact.address}
+                onChange={(e) =>
+                  setForm({ ...form, contact: { ...form.contact, address: e.target.value } })
+                }
+              />
+            </div>
             <div>
               <Label>WhatsApp Enquiry Message Template</Label>
-              <p className="text-xs text-muted-foreground mt-1 mb-2">Use {'{name}'}, {'{phone}'}, {'{from_city}'}, {'{to_city}'}, {'{service}'}, {'{moving_date}'}, {'{message}'} as placeholders.</p>
-              <Textarea rows={3} value={form.contact.whatsapp_enquiry_message} onChange={(e) => setForm({ ...form, contact: { ...form.contact, whatsapp_enquiry_message: e.target.value } })} />
+              <p className="text-xs text-muted-foreground mt-1 mb-2">
+                Use {"{name}"}, {"{phone}"}, {"{from_city}"}, {"{to_city}"}, {"{service}"},{" "}
+                {"{moving_date}"}, {"{message}"} as placeholders.
+              </p>
+              <Textarea
+                rows={3}
+                value={form.contact.whatsapp_enquiry_message}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    contact: { ...form.contact, whatsapp_enquiry_message: e.target.value },
+                  })
+                }
+              />
             </div>
           </CardContent>
         </Card>

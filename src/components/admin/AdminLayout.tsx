@@ -1,7 +1,22 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useRealtime } from "@/hooks/use-realtime";
-import { LayoutDashboard, Package, Image as ImageIcon, Video, MessageSquare, Inbox, Settings, LogOut, ExternalLink, LayoutList, Info, Phone, Share2, Search } from "lucide-react";
+import {
+  LayoutDashboard,
+  Package,
+  Image as ImageIcon,
+  Video,
+  MessageSquare,
+  Inbox,
+  Settings,
+  LogOut,
+  ExternalLink,
+  LayoutList,
+  Info,
+  Phone,
+  Share2,
+  Search,
+} from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -24,7 +39,7 @@ const items: { to: string; label: string; icon: typeof LayoutDashboard; exact?: 
 ];
 
 export function AdminLayout({ children, title }: { children: React.ReactNode; title: string }) {
-  useRealtime();   // live CDC subscriptions for all CMS tables
+  useRealtime(); // live CDC subscriptions for all CMS tables
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -33,15 +48,31 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
     if (!loading && !user) navigate({ to: "/signin" });
   }, [loading, user, navigate]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
+  if (loading || isAdmin === null)
+    return (
+      <div className="min-h-screen flex items-center justify-center text-muted-foreground">
+        Loading...
+      </div>
+    );
   if (!user) return null;
   if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="max-w-md text-center space-y-4">
           <h1 className="text-2xl font-bold">Admin access required</h1>
-          <p className="text-sm text-muted-foreground">Your account ({user.email}) does not have admin privileges. Ask an existing admin to grant access, or check the README to seed the first admin.</p>
-          <Button variant="outline" onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/signin" }); }}>Sign out</Button>
+          <p className="text-sm text-muted-foreground">
+            Your account ({user.email}) does not have admin privileges. Ask an existing admin to
+            grant access, or check the README to seed the first admin.
+          </p>
+          <Button
+            variant="outline"
+            onClick={async () => {
+              await supabase.auth.signOut();
+              navigate({ to: "/signin" });
+            }}
+          >
+            Sign out
+          </Button>
         </div>
       </div>
     );
@@ -58,7 +89,11 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
         <div className="p-5 border-b border-border">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="" className="h-9 w-auto" />
-            <div className="font-bold text-sm leading-tight">SS Packers<br /><span className="text-xs text-muted-foreground font-normal">Admin Panel</span></div>
+            <div className="font-bold text-sm leading-tight">
+              SS Packers
+              <br />
+              <span className="text-xs text-muted-foreground font-normal">Admin Panel</span>
+            </div>
           </Link>
         </div>
         <nav className="flex-1 p-3 space-y-1">
@@ -66,7 +101,11 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
             const active = it.exact ? pathname === it.to : pathname.startsWith(it.to);
             const Icon = it.icon;
             return (
-              <Link key={it.to} to={it.to as any} className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${active ? "bg-primary text-primary-foreground" : "text-foreground/70 hover:bg-muted hover:text-foreground"}`}>
+              <Link
+                key={it.to}
+                to={it.to as any}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${active ? "bg-primary text-primary-foreground" : "text-foreground/70 hover:bg-muted hover:text-foreground"}`}
+              >
                 <Icon className="h-4 w-4" /> {it.label}
               </Link>
             );
@@ -74,7 +113,9 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
         </nav>
         <div className="p-3 border-t border-border space-y-2">
           <Button asChild variant="outline" size="sm" className="w-full justify-start">
-            <Link to="/"><ExternalLink className="h-4 w-4 mr-2" /> View Site</Link>
+            <Link to="/">
+              <ExternalLink className="h-4 w-4 mr-2" /> View Site
+            </Link>
           </Button>
           <Button variant="ghost" size="sm" className="w-full justify-start" onClick={signOut}>
             <LogOut className="h-4 w-4 mr-2" /> Sign Out

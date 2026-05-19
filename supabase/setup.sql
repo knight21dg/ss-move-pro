@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "profiles_self_read"  ON public.profiles;
+DROP POLICY IF EXISTS "profiles_self_write" ON public.profiles;
 CREATE POLICY "profiles_self_read"  ON public.profiles FOR SELECT USING (user_id=auth.uid()::text OR public.has_role(auth.uid()::text,'admin'));
 CREATE POLICY "profiles_self_write" ON public.profiles FOR UPDATE USING (user_id=auth.uid()::text or public.has_role(auth.uid()::text,'admin')) WITH CHECK (user_id=auth.uid()::text or public.has_role(auth.uid()::text,'admin'));
 DROP TRIGGER IF EXISTS trg_profiles_updated ON public.profiles;
@@ -607,8 +609,7 @@ UPDATE public.seo_default_settings s
 SET site_title       = COALESCE((sv.value->>'default_title')::text,       s.site_title),
     site_description = COALESCE((sv.value->>'default_description')::text, s.site_description),
     site_keywords    = COALESCE((sv.value->>'keywords')::text,            s.site_keywords)
-FROM public.site_settings sv WHERE sv.key = 'meta' AND sv.value ? 'default_title'
-ON CONFLICT (id) DO NOTHING;
+FROM public.site_settings sv WHERE sv.key = 'meta' AND sv.value ? 'default_title';
 
 -- Per-page SEO (stored under 'seo' key)
 -- Drop the 'seo' page key first to avoid conflict, then re-insert

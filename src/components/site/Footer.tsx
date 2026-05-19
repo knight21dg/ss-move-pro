@@ -7,6 +7,7 @@ export function Footer() {
   const { data: s } = useSettings();
   const contact = s?.contact;
   const social = s?.social;
+  const footer = s?.footer;
 
   return (
     <footer className="bg-gradient-dark text-white mt-24">
@@ -16,7 +17,7 @@ export function Footer() {
             <img src={logo} alt="SS Packers & Movers" className="h-12 w-auto" />
           </div>
           <p className="text-sm text-white/70 leading-relaxed">
-            {contact?.address || ""}
+            {footer?.description || contact?.address || ""}
           </p>
         </div>
         <div>

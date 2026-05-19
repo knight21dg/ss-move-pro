@@ -18,7 +18,7 @@ function SeoSettings() {
   const updateSeo = (
     scope: "default" | keyof SiteSettings["seo"]["pages"],
     field: keyof SiteSettings["seo"]["default"],
-    value: string
+    value: string,
   ) => {
     setForm((prev) => {
       if (scope === "default") {
@@ -43,39 +43,102 @@ function SeoSettings() {
     });
   };
 
-  if (isLoading) return <AdminLayout title="SEO Settings"><p className="text-muted-foreground">Loading...</p></AdminLayout>;
+  if (isLoading)
+    return (
+      <AdminLayout title="SEO Settings">
+        <p className="text-muted-foreground">Loading...</p>
+      </AdminLayout>
+    );
 
   return (
     <AdminLayout title="SEO Settings">
       <div className="space-y-6 max-w-3xl">
         <Card>
-          <CardHeader><CardTitle>Default SEO</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Default SEO</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-4">
-            <div><Label>Title</Label><Input value={form.seo.default.title} onChange={(e) => updateSeo("default", "title", e.target.value)} /></div>
-            <div><Label>Description</Label><Textarea rows={2} value={form.seo.default.description} onChange={(e) => updateSeo("default", "description", e.target.value)} /></div>
-            <div><Label>Keywords</Label><Textarea rows={2} value={form.seo.default.keywords} onChange={(e) => updateSeo("default", "keywords", e.target.value)} /></div>
-            <div><Label>OG Image</Label><ImageUpload value={form.seo.default.og_image} onChange={(url) => updateSeo("default", "og_image", url)} /></div>
+            <div>
+              <Label>Title</Label>
+              <Input
+                value={form.seo.default.title}
+                onChange={(e) => updateSeo("default", "title", e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                rows={2}
+                value={form.seo.default.description}
+                onChange={(e) => updateSeo("default", "description", e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Keywords</Label>
+              <Textarea
+                rows={2}
+                value={form.seo.default.keywords}
+                onChange={(e) => updateSeo("default", "keywords", e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>OG Image</Label>
+              <ImageUpload
+                value={form.seo.default.og_image}
+                onChange={(url) => updateSeo("default", "og_image", url)}
+              />
+            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><CardTitle>Per-Page SEO</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>Per-Page SEO</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-4">
-            {([
-              ["home", "Home"],
-              ["about", "About"],
-              ["services", "Services"],
-              ["gallery", "Gallery"],
-              ["videos", "Videos"],
-              ["enquiry", "Enquiry"],
-              ["contact", "Contact"],
-            ] as const).map(([key, label]) => (
+            {(
+              [
+                ["home", "Home"],
+                ["about", "About"],
+                ["services", "Services"],
+                ["gallery", "Gallery"],
+                ["videos", "Videos"],
+                ["enquiry", "Enquiry"],
+                ["contact", "Contact"],
+              ] as const
+            ).map(([key, label]) => (
               <div key={key} className="rounded-xl border border-border p-4 space-y-3">
                 <div className="text-sm font-semibold">{label}</div>
-                <div><Label>Title</Label><Input value={form.seo.pages[key].title} onChange={(e) => updateSeo(key, "title", e.target.value)} /></div>
-                <div><Label>Description</Label><Textarea rows={2} value={form.seo.pages[key].description} onChange={(e) => updateSeo(key, "description", e.target.value)} /></div>
-                <div><Label>Keywords</Label><Textarea rows={2} value={form.seo.pages[key].keywords} onChange={(e) => updateSeo(key, "keywords", e.target.value)} /></div>
-                <div><Label>OG Image</Label><ImageUpload value={form.seo.pages[key].og_image} onChange={(url) => updateSeo(key, "og_image", url)} /></div>
+                <div>
+                  <Label>Title</Label>
+                  <Input
+                    value={form.seo.pages[key].title}
+                    onChange={(e) => updateSeo(key, "title", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Description</Label>
+                  <Textarea
+                    rows={2}
+                    value={form.seo.pages[key].description}
+                    onChange={(e) => updateSeo(key, "description", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Keywords</Label>
+                  <Textarea
+                    rows={2}
+                    value={form.seo.pages[key].keywords}
+                    onChange={(e) => updateSeo(key, "keywords", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>OG Image</Label>
+                  <ImageUpload
+                    value={form.seo.pages[key].og_image}
+                    onChange={(url) => updateSeo(key, "og_image", url)}
+                  />
+                </div>
               </div>
             ))}
           </CardContent>

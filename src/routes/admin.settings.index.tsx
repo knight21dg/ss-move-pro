@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Image, LayoutList, Info, Phone, Share2, Search } from "lucide-react";
+import { Image, LayoutList, Info, Phone, Share2, Search, Megaphone, FileText, BarChart3 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 
 export const Route = createFileRoute("/admin/settings/")({ component: SettingsHub });
@@ -40,6 +40,24 @@ const cards = [
     label: "SEO",
     description: "Default SEO and per-page metadata.",
     icon: Search,
+  },
+  {
+    to: "/admin/settings/cta",
+    label: "CTA Banner",
+    description: "Call-to-action banner text and button.",
+    icon: Megaphone,
+  },
+  {
+    to: "/admin/settings/footer",
+    label: "Footer",
+    description: "Footer description and quick links.",
+    icon: FileText,
+  },
+  {
+    to: "/admin/settings/analytics",
+    label: "Analytics",
+    description: "Google Analytics measurement ID.",
+    icon: BarChart3,
   },
 ];
 

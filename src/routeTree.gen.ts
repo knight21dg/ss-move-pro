@@ -30,7 +30,10 @@ import { Route as AdminSettingsSocialRouteImport } from './routes/admin.settings
 import { Route as AdminSettingsSeoRouteImport } from './routes/admin.settings.seo'
 import { Route as AdminSettingsHomeRouteImport } from './routes/admin.settings.home'
 import { Route as AdminSettingsHeroRouteImport } from './routes/admin.settings.hero'
+import { Route as AdminSettingsFooterRouteImport } from './routes/admin.settings.footer'
+import { Route as AdminSettingsCtaRouteImport } from './routes/admin.settings.cta'
 import { Route as AdminSettingsContactRouteImport } from './routes/admin.settings.contact'
+import { Route as AdminSettingsAnalyticsRouteImport } from './routes/admin.settings.analytics'
 import { Route as AdminSettingsAboutRouteImport } from './routes/admin.settings.about'
 
 const VideosRoute = VideosRouteImport.update({
@@ -138,9 +141,24 @@ const AdminSettingsHeroRoute = AdminSettingsHeroRouteImport.update({
   path: '/hero',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
+const AdminSettingsFooterRoute = AdminSettingsFooterRouteImport.update({
+  id: '/footer',
+  path: '/footer',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminSettingsCtaRoute = AdminSettingsCtaRouteImport.update({
+  id: '/cta',
+  path: '/cta',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
 const AdminSettingsContactRoute = AdminSettingsContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminSettingsAnalyticsRoute = AdminSettingsAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
 const AdminSettingsAboutRoute = AdminSettingsAboutRouteImport.update({
@@ -167,7 +185,10 @@ export interface FileRoutesByFullPath {
   '/admin/videos': typeof AdminVideosRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/settings/about': typeof AdminSettingsAboutRoute
+  '/admin/settings/analytics': typeof AdminSettingsAnalyticsRoute
   '/admin/settings/contact': typeof AdminSettingsContactRoute
+  '/admin/settings/cta': typeof AdminSettingsCtaRoute
+  '/admin/settings/footer': typeof AdminSettingsFooterRoute
   '/admin/settings/hero': typeof AdminSettingsHeroRoute
   '/admin/settings/home': typeof AdminSettingsHomeRoute
   '/admin/settings/seo': typeof AdminSettingsSeoRoute
@@ -191,7 +212,10 @@ export interface FileRoutesByTo {
   '/admin/videos': typeof AdminVideosRoute
   '/admin': typeof AdminIndexRoute
   '/admin/settings/about': typeof AdminSettingsAboutRoute
+  '/admin/settings/analytics': typeof AdminSettingsAnalyticsRoute
   '/admin/settings/contact': typeof AdminSettingsContactRoute
+  '/admin/settings/cta': typeof AdminSettingsCtaRoute
+  '/admin/settings/footer': typeof AdminSettingsFooterRoute
   '/admin/settings/hero': typeof AdminSettingsHeroRoute
   '/admin/settings/home': typeof AdminSettingsHomeRoute
   '/admin/settings/seo': typeof AdminSettingsSeoRoute
@@ -217,7 +241,10 @@ export interface FileRoutesById {
   '/admin/videos': typeof AdminVideosRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/settings/about': typeof AdminSettingsAboutRoute
+  '/admin/settings/analytics': typeof AdminSettingsAnalyticsRoute
   '/admin/settings/contact': typeof AdminSettingsContactRoute
+  '/admin/settings/cta': typeof AdminSettingsCtaRoute
+  '/admin/settings/footer': typeof AdminSettingsFooterRoute
   '/admin/settings/hero': typeof AdminSettingsHeroRoute
   '/admin/settings/home': typeof AdminSettingsHomeRoute
   '/admin/settings/seo': typeof AdminSettingsSeoRoute
@@ -244,7 +271,10 @@ export interface FileRouteTypes {
     | '/admin/videos'
     | '/admin/'
     | '/admin/settings/about'
+    | '/admin/settings/analytics'
     | '/admin/settings/contact'
+    | '/admin/settings/cta'
+    | '/admin/settings/footer'
     | '/admin/settings/hero'
     | '/admin/settings/home'
     | '/admin/settings/seo'
@@ -268,7 +298,10 @@ export interface FileRouteTypes {
     | '/admin/videos'
     | '/admin'
     | '/admin/settings/about'
+    | '/admin/settings/analytics'
     | '/admin/settings/contact'
+    | '/admin/settings/cta'
+    | '/admin/settings/footer'
     | '/admin/settings/hero'
     | '/admin/settings/home'
     | '/admin/settings/seo'
@@ -293,7 +326,10 @@ export interface FileRouteTypes {
     | '/admin/videos'
     | '/admin/'
     | '/admin/settings/about'
+    | '/admin/settings/analytics'
     | '/admin/settings/contact'
+    | '/admin/settings/cta'
+    | '/admin/settings/footer'
     | '/admin/settings/hero'
     | '/admin/settings/home'
     | '/admin/settings/seo'
@@ -469,11 +505,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsHeroRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
+    '/admin/settings/footer': {
+      id: '/admin/settings/footer'
+      path: '/footer'
+      fullPath: '/admin/settings/footer'
+      preLoaderRoute: typeof AdminSettingsFooterRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/admin/settings/cta': {
+      id: '/admin/settings/cta'
+      path: '/cta'
+      fullPath: '/admin/settings/cta'
+      preLoaderRoute: typeof AdminSettingsCtaRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
     '/admin/settings/contact': {
       id: '/admin/settings/contact'
       path: '/contact'
       fullPath: '/admin/settings/contact'
       preLoaderRoute: typeof AdminSettingsContactRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/admin/settings/analytics': {
+      id: '/admin/settings/analytics'
+      path: '/analytics'
+      fullPath: '/admin/settings/analytics'
+      preLoaderRoute: typeof AdminSettingsAnalyticsRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
     '/admin/settings/about': {
@@ -488,7 +545,10 @@ declare module '@tanstack/react-router' {
 
 interface AdminSettingsRouteChildren {
   AdminSettingsAboutRoute: typeof AdminSettingsAboutRoute
+  AdminSettingsAnalyticsRoute: typeof AdminSettingsAnalyticsRoute
   AdminSettingsContactRoute: typeof AdminSettingsContactRoute
+  AdminSettingsCtaRoute: typeof AdminSettingsCtaRoute
+  AdminSettingsFooterRoute: typeof AdminSettingsFooterRoute
   AdminSettingsHeroRoute: typeof AdminSettingsHeroRoute
   AdminSettingsHomeRoute: typeof AdminSettingsHomeRoute
   AdminSettingsSeoRoute: typeof AdminSettingsSeoRoute
@@ -498,7 +558,10 @@ interface AdminSettingsRouteChildren {
 
 const AdminSettingsRouteChildren: AdminSettingsRouteChildren = {
   AdminSettingsAboutRoute: AdminSettingsAboutRoute,
+  AdminSettingsAnalyticsRoute: AdminSettingsAnalyticsRoute,
   AdminSettingsContactRoute: AdminSettingsContactRoute,
+  AdminSettingsCtaRoute: AdminSettingsCtaRoute,
+  AdminSettingsFooterRoute: AdminSettingsFooterRoute,
   AdminSettingsHeroRoute: AdminSettingsHeroRoute,
   AdminSettingsHomeRoute: AdminSettingsHomeRoute,
   AdminSettingsSeoRoute: AdminSettingsSeoRoute,
