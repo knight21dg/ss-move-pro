@@ -20,8 +20,8 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const { isAdmin } = useAuth();
   const { data: s } = useSettings();
-  const phone = s?.contact.phone ?? "+91 98765 43210";
-  const phoneHref = `tel:${phone.replace(/\s/g, "")}`;
+  const phone = s?.contact?.phone;
+  const phoneHref = phone ? `tel:${phone.replace(/\s/g, "")}` : "";
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-md">
@@ -48,9 +48,11 @@ export function Header() {
               <Link to="/admin"><LayoutDashboard className="h-4 w-4 mr-1" /> Admin</Link>
             </Button>
           )}
-          <a href={phoneHref} className="flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary">
-            <Phone className="h-4 w-4" /> {phone}
-          </a>
+          {phone && (
+            <a href={phoneHref} className="flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary">
+              <Phone className="h-4 w-4" /> {phone}
+            </a>
+          )}
           <Button asChild variant="brand" size="lg">
             <Link to="/enquiry">Get Free Quote</Link>
           </Button>

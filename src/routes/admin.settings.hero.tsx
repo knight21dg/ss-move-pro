@@ -9,6 +9,8 @@ import { useSettingsForm } from "@/hooks/use-settings-form";
 
 export const Route = createFileRoute("/admin/settings/hero")({ component: HeroSettings });
 
+const HERO_IMAGE_KEYS = ["home", "about", "services", "gallery", "videos", "enquiry", "contact"] as const;
+
 function HeroSettings() {
   const { form, setForm, isLoading, save } = useSettingsForm();
 
@@ -20,24 +22,25 @@ function HeroSettings() {
         <Card>
           <CardHeader><CardTitle>Home Hero Text</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <div><Label>Title</Label><Input value={form.hero.title} onChange={(e) => setForm({ ...form, hero: { ...form.hero, title: e.target.value } })} /></div>
-            <div><Label>Subtitle</Label><Input value={form.hero.subtitle} onChange={(e) => setForm({ ...form, hero: { ...form.hero, subtitle: e.target.value } })} /></div>
-            <div><Label>CTA Button Text</Label><Input value={form.hero.cta} onChange={(e) => setForm({ ...form, hero: { ...form.hero, cta: e.target.value } })} /></div>
+            <div><Label>Title</Label><Input value={form.hero.title as string | undefined} onChange={(e) => setForm({ ...form, hero: { ...form.hero, title: e.target.value } })} /></div>
+            <div><Label>Subtitle</Label><Input value={form.hero.subtitle as string | undefined} onChange={(e) => setForm({ ...form, hero: { ...form.hero, subtitle: e.target.value } })} /></div>
+            <div><Label>CTA Button Text</Label><Input value={form.hero.cta as string | undefined} onChange={(e) => setForm({ ...form, hero: { ...form.hero, cta: e.target.value } })} /></div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader><CardTitle>Hero Background Images</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <div><Label>Home Page</Label><Input value={form.hero_images.home} onChange={(e) => setForm({ ...form, hero_images: { ...form.hero_images, home: e.target.value } })} placeholder="https://..." /></div>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div><Label>About Page</Label><Input value={form.hero_images.about} onChange={(e) => setForm({ ...form, hero_images: { ...form.hero_images, about: e.target.value } })} placeholder="https://..." /></div>
-              <div><Label>Services Page</Label><Input value={form.hero_images.services} onChange={(e) => setForm({ ...form, hero_images: { ...form.hero_images, services: e.target.value } })} placeholder="https://..." /></div>
-              <div><Label>Gallery Page</Label><Input value={form.hero_images.gallery} onChange={(e) => setForm({ ...form, hero_images: { ...form.hero_images, gallery: e.target.value } })} placeholder="https://..." /></div>
-              <div><Label>Videos Page</Label><Input value={form.hero_images.videos} onChange={(e) => setForm({ ...form, hero_images: { ...form.hero_images, videos: e.target.value } })} placeholder="https://..." /></div>
-              <div><Label>Enquiry Page</Label><Input value={form.hero_images.enquiry} onChange={(e) => setForm({ ...form, hero_images: { ...form.hero_images, enquiry: e.target.value } })} placeholder="https://..." /></div>
-              <div><Label>Contact Page</Label><Input value={form.hero_images.contact} onChange={(e) => setForm({ ...form, hero_images: { ...form.hero_images, contact: e.target.value } })} placeholder="https://..." /></div>
-            </div>
+            {HERO_IMAGE_KEYS.map((key) => (
+              <div key={key}>
+                <Label>{key.charAt(0).toUpperCase() + key.slice(1)} Page</Label>
+                <Input
+                  value={form.hero_images[key] as string | undefined}
+                  onChange={(e) => setForm({ ...form, hero_images: { ...form.hero_images, [key]: e.target.value } })}
+                  placeholder="https://..."
+                />
+              </div>
+            ))}
           </CardContent>
         </Card>
 

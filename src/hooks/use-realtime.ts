@@ -31,10 +31,9 @@ export function useRealtime() {
           "postgres_changes",
           { event: "*", schema: "public", table },
           () => {
-            qc.invalidateQueries({ queryKey: [table] });
-            // enquiries also has admin-stats
+            qc.invalidateQueries({ queryKey: [table], exact: false });
             if (table === "enquiries") {
-              qc.invalidateQueries({ queryKey: ["admin-stats"] });
+              qc.invalidateQueries({ queryKey: ["admin-stats"], exact: false });
             }
           }
         )

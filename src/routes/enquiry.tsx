@@ -37,9 +37,9 @@ function EnquiryPage() {
   const [submitting, setSubmitting] = useState(false);
   const { data: services = [] } = useServices();
   const { data: settings } = useSettings();
-  const wa = (settings?.contact.whatsapp ?? "+919876543210").replace(/\D/g, "");
-  const phone = settings?.contact.phone ?? "+91 98765 43210";
-  const waTpl = settings?.contact.whatsapp_enquiry_message ?? "Hi, I’m interested in your services. Can I get a quote?";
+  const wa = settings?.contact?.whatsapp ? settings.contact.whatsapp.replace(/\D/g, "") : "";
+  const phone = settings?.contact?.phone;
+  const waTpl = settings?.contact?.whatsapp_enquiry_message ?? "";
   const heroImage = settings?.hero_images?.enquiry;
 
   function fillWa(msg: string, vars: Record<string, string>) {
@@ -73,7 +73,11 @@ function EnquiryPage() {
       toast.error(error.message);
       return;
     }
-    // auto-open WhatsApp to business with pre-filled enquiry
+    if (!wa) {
+      toast.success("Enquiry sent!");
+      form.reset();
+      return;
+    }
     const vars = {
       name: parsed.data.name,
       phone: parsed.data.phone,
@@ -94,6 +98,7 @@ function EnquiryPage() {
     const text = encodeURIComponent(
       `Hi SS Packers & Movers,\n\nName: ${d.name || ""}\nPhone: ${d.phone || ""}\nFrom: ${d.from_city || ""}\nTo: ${d.to_city || ""}\nService: ${d.service || ""}\nDate: ${d.moving_date || ""}\n\n${d.message || ""}`
     );
+    if (!wa) return;
     window.open(`https://wa.me/${wa}?text=${text}`, "_blank");
   }
 
@@ -135,22 +140,17 @@ function EnquiryPage() {
             </div>
           </form>
         </div>
-        <aside className="lg:col-span-2 space-y-5">
-          <div className="rounded-2xl bg-gradient-dark text-white p-7">
-            <h3 className="font-bold text-xl mb-3">Why request a quote?</h3>
-            <ul className="space-y-3 text-sm text-white/85">
-              {[
-                "Transparent estimate — no hidden charges",
-                "Custom plan based on your move size",
-                "Free survey for large relocations",
-                "Quick response within working hours",
-              ].map((t) => <li key={t} className="flex gap-2"><span className="text-primary">●</span> {t}</li>)}
-            </ul>
-          </div>
-          <div className="rounded-2xl bg-gradient-brand text-white p-7 shadow-brand">
-            <h3 className="font-bold text-xl">Need help right now?</h3>
-            <p className="text-sm text-white/90 mt-2">Talk to our team directly.</p>
-            <a href={`tel:${phone.replace(/\s/g, "")}`} className="block mt-4 text-2xl font-extrabold">{phone}</a>
+        <aside className="lg:col-span-2">
+          <div className="rounded-2xl bg-card border border-border text-card-foreground p-7">
+            <h3 className="font-bold text-xl mb-3">Enquiry</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              Submit the form and we'll get back with a transparent estimate.
+            </p>
+            {phone && (
+              <p className="text-sm text-muted-foreground">
+                Or call us directly at <a href={`tel:${phone.replace(/\s/g, "")}`} className="font-semibold text-primary hover:underline">{phone}</a>
+              </p>
+            )}
           </div>
         </aside>
       </section>

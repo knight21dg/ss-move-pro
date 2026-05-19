@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { PageHero } from "./about";
 import { Button } from "@/components/ui/button";
@@ -18,18 +18,17 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   const { data: s } = useSettings();
   const c = s?.contact;
-  const phone = c?.phone ?? "+91 98765 43210";
+  const phone = c?.phone;
   const heroImage = s?.hero_images?.contact;
-  const phoneHref = `tel:${phone.replace(/\s/g, "")}`;
-  const wa = (c?.whatsapp ?? "+919876543210").replace(/\D/g, "");
-  const email = c?.email ?? "info@sspackersmovers.in";
-  const address = c?.address ?? "Kakinada, Andhra Pradesh, India";
+  const phoneHref = phone ? `tel:${phone.replace(/\s/g, "")}` : "#";
+  const wa = c?.whatsapp ? c.whatsapp.replace(/\D/g, "") : "";
+  const email = c?.email;
+  const address = c?.address;
 
   const items: { icon: typeof Phone; title: string; value: string; href?: string }[] = [
-    { icon: MapPin, title: "Office", value: address },
-    { icon: Phone, title: "Phone", value: phone, href: phoneHref },
-    { icon: Mail, title: "Email", value: email, href: `mailto:${email}` },
-    { icon: Clock, title: "Hours", value: "Mon – Sun, 8:00 AM – 9:00 PM" },
+    ...(address ? [{ icon: MapPin, title: "Office", value: address }] : []),
+    ...(phone ? [{ icon: Phone, title: "Phone", value: phone, href: phoneHref }] : []),
+    ...(email ? [{ icon: Mail, title: "Email", value: email, href: `mailto:${email}` }] : []),
   ];
 
   return (
@@ -41,16 +40,23 @@ function ContactPage() {
         backgroundImage={heroImage}
       />
       <section className="container mx-auto px-4 py-16 grid md:grid-cols-2 gap-6">
-        {items.map(({ icon: Icon, title, value, href }) => (
-          <div key={title} className="rounded-2xl border border-border bg-card p-7 flex gap-4">
-            <div className="h-12 w-12 rounded-xl bg-gradient-brand text-white flex items-center justify-center shrink-0"><Icon className="h-5 w-5" /></div>
-            <div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground font-bold">{title}</div>
-              {href ? <a href={href} className="font-semibold text-lg hover:text-primary break-all">{value}</a> : <div className="font-semibold text-lg">{value}</div>}
-            </div>
+        {items.length > 0 && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map(({ icon: Icon, title, value, href }) => (
+              <div key={title} className="rounded-2xl border border-border bg-card p-7 flex gap-4">
+                <div className="h-12 w-12 rounded-xl bg-gradient-brand text-white flex items-center justify-center shrink-0">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-bold">{title}</div>
+                  {href ? <a href={href} className="font-semibold text-lg hover:text-primary break-all">{value}</a> : <div className="font-semibold text-lg">{value}</div>}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </section>
+      {address && (
       <section className="container mx-auto px-4 pb-16">
         <div className="rounded-2xl overflow-hidden border border-border aspect-[16/7]">
           <iframe
@@ -60,11 +66,16 @@ function ContactPage() {
             loading="lazy"
           />
         </div>
-        <div className="text-center mt-10 flex flex-wrap justify-center gap-3">
-          <Button asChild variant="brand" size="lg"><a href={phoneHref}><Phone /> Call Now</a></Button>
-          <Button asChild variant="outline" size="lg"><a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer"><MessageCircle /> WhatsApp</a></Button>
+      </section>
+      )}
+      {(phone || wa) && (
+      <section className="container mx-auto px-4 pb-16 text-center">
+        <div className="flex flex-wrap justify-center gap-3">
+          {phone && <Button asChild variant="brand" size="lg"><a href={phoneHref}><Phone /> Call Now</a></Button>}
+          {wa && <Button asChild variant="outline" size="lg"><a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer"><MessageCircle /> WhatsApp</a></Button>}
         </div>
       </section>
+      )}
     </SiteLayout>
   );
 }

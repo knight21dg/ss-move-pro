@@ -21,12 +21,14 @@ function AboutSettings() {
         <Card>
           <CardHeader><CardTitle>About Section</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <div><Label>Heading</Label><Input value={form.about.heading} onChange={(e) => setForm({ ...form, about: { ...form.about, heading: e.target.value } })} /></div>
-            <div><Label>Body</Label><Textarea rows={5} value={form.about.body} onChange={(e) => setForm({ ...form, about: { ...form.about, body: e.target.value } })} /></div>
+            <div><Label>Heading</Label><Textarea rows={3} value={form.about.heading} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...prev.about, heading: e.target.value } }))} /></div>
+            <div><Label>Body</Label><Textarea rows={5} value={form.about.body} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...prev.about, body: e.target.value } }))} /></div>
             <div className="grid sm:grid-cols-3 gap-4">
-              <div><Label>Years Experience</Label><Input value={form.about.years_experience} onChange={(e) => setForm({ ...form, about: { ...form.about, years_experience: e.target.value } })} /></div>
-              <div><Label>Happy Customers</Label><Input value={form.about.happy_customers} onChange={(e) => setForm({ ...form, about: { ...form.about, happy_customers: e.target.value } })} /></div>
-              <div><Label>Cities Covered</Label><Input value={form.about.cities_covered} onChange={(e) => setForm({ ...form, about: { ...form.about, cities_covered: e.target.value } })} /></div>
+              {(["years_experience", "happy_customers", "cities_covered"] as const).map((k) => (
+                <div key={k}><Label>{k.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</Label>
+                  <Input value={form.about[k]} onChange={(e) => setForm((prev) => ({ ...prev, about: { ...prev.about, [k]: e.target.value } }))} />
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
