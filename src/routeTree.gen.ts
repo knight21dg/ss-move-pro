@@ -25,6 +25,7 @@ import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
 import { Route as AdminEnquiriesRouteImport } from './routes/admin.enquiries'
+import { Route as AdminSettingsIndexRouteImport } from './routes/admin.settings.index'
 import { Route as AdminSettingsSocialRouteImport } from './routes/admin.settings.social'
 import { Route as AdminSettingsSeoRouteImport } from './routes/admin.settings.seo'
 import { Route as AdminSettingsHomeRouteImport } from './routes/admin.settings.home'
@@ -112,6 +113,11 @@ const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
   path: '/admin/enquiries',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSettingsIndexRoute = AdminSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
 const AdminSettingsSocialRoute = AdminSettingsSocialRouteImport.update({
   id: '/social',
   path: '/social',
@@ -166,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings/home': typeof AdminSettingsHomeRoute
   '/admin/settings/seo': typeof AdminSettingsSeoRoute
   '/admin/settings/social': typeof AdminSettingsSocialRoute
+  '/admin/settings/': typeof AdminSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -180,7 +187,6 @@ export interface FileRoutesByTo {
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/services': typeof AdminServicesRoute
-  '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/videos': typeof AdminVideosRoute
   '/admin': typeof AdminIndexRoute
@@ -190,6 +196,7 @@ export interface FileRoutesByTo {
   '/admin/settings/home': typeof AdminSettingsHomeRoute
   '/admin/settings/seo': typeof AdminSettingsSeoRoute
   '/admin/settings/social': typeof AdminSettingsSocialRoute
+  '/admin/settings': typeof AdminSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -215,6 +222,7 @@ export interface FileRoutesById {
   '/admin/settings/home': typeof AdminSettingsHomeRoute
   '/admin/settings/seo': typeof AdminSettingsSeoRoute
   '/admin/settings/social': typeof AdminSettingsSocialRoute
+  '/admin/settings/': typeof AdminSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -241,6 +249,7 @@ export interface FileRouteTypes {
     | '/admin/settings/home'
     | '/admin/settings/seo'
     | '/admin/settings/social'
+    | '/admin/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -255,7 +264,6 @@ export interface FileRouteTypes {
     | '/admin/enquiries'
     | '/admin/gallery'
     | '/admin/services'
-    | '/admin/settings'
     | '/admin/testimonials'
     | '/admin/videos'
     | '/admin'
@@ -265,6 +273,7 @@ export interface FileRouteTypes {
     | '/admin/settings/home'
     | '/admin/settings/seo'
     | '/admin/settings/social'
+    | '/admin/settings'
   id:
     | '__root__'
     | '/'
@@ -289,6 +298,7 @@ export interface FileRouteTypes {
     | '/admin/settings/home'
     | '/admin/settings/seo'
     | '/admin/settings/social'
+    | '/admin/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -424,6 +434,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEnquiriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/settings/': {
+      id: '/admin/settings/'
+      path: '/'
+      fullPath: '/admin/settings/'
+      preLoaderRoute: typeof AdminSettingsIndexRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
     '/admin/settings/social': {
       id: '/admin/settings/social'
       path: '/social'
@@ -476,6 +493,7 @@ interface AdminSettingsRouteChildren {
   AdminSettingsHomeRoute: typeof AdminSettingsHomeRoute
   AdminSettingsSeoRoute: typeof AdminSettingsSeoRoute
   AdminSettingsSocialRoute: typeof AdminSettingsSocialRoute
+  AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
 }
 
 const AdminSettingsRouteChildren: AdminSettingsRouteChildren = {
@@ -485,6 +503,7 @@ const AdminSettingsRouteChildren: AdminSettingsRouteChildren = {
   AdminSettingsHomeRoute: AdminSettingsHomeRoute,
   AdminSettingsSeoRoute: AdminSettingsSeoRoute,
   AdminSettingsSocialRoute: AdminSettingsSocialRoute,
+  AdminSettingsIndexRoute: AdminSettingsIndexRoute,
 }
 
 const AdminSettingsRouteWithChildren = AdminSettingsRoute._addFileChildren(
