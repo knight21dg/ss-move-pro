@@ -24,11 +24,6 @@ async function upsertSingleton(table: string, values: Record<string, unknown>) {
   if (error) throw error;
 }
 
-async function updateSingletonContent(table: string, content: Record<string, unknown>) {
-  const { error } = await from(table).update({ content }).eq("id", 1);
-  if (error) throw error;
-}
-
 async function upsertSeoPages(pages: SiteSettings["seo"]["pages"]) {
   const rows = Object.entries(pages).map(([page_key, val]) => ({
     page_key,
@@ -37,10 +32,37 @@ async function upsertSeoPages(pages: SiteSettings["seo"]["pages"]) {
     keywords: val.keywords,
     og_image: val.og_image,
   }));
-  // Upsert each page on conflict of page_key
   for (const row of rows) {
     const { error } = await from("seo_page_settings").upsert(row, { onConflict: "page_key" });
     if (error) throw error;
+  }
+}
+
+async function saveHomeSection<TItem>(config: {
+  settingsTable: string;
+  itemsTable: string;
+  parentId: number;
+  eyebrow: string;
+  title: string;
+  getItemData: (item: TItem, index: number) => { insert: Record<string, unknown> };
+}) {
+  // Upsert the parent settings row
+  const { error: settingsError } = await from(config.settingsTable).upsert({
+    id: config.parentId,
+    eyebrow: config.eyebrow,
+    title: config.title,
+  }, { onConflict: "id" });
+  if (settingsError) throw settingsError;
+
+  // Delete existing items
+  const { error: deleteError } = await from(config.itemsTable).delete().eq(`${config.settingsTable.replace("_settings", "")}_id`, config.parentId);
+  if (deleteError) throw deleteError;
+
+  // Insert new items
+  const itemsToInsert = config.items.map((item: TItem, index: number) => config.getItemData(item, index));
+  if (itemsToInsert.length > 0) {
+    const { error: insertError } = await from(config.itemsTable).insert(itemsToInsert);
+    if (insertError) throw insertError;
   }
 }
 
@@ -50,7 +72,6 @@ export function useSettingsForm() {
   const [form, _setFormRaw] = useState<SiteSettings>(EMPTY_SETTINGS);
   const isLoaded = useRef(false);
 
-  // Only set form state on initial load, not on refetches
   useEffect(() => {
     if (data && !isLoaded.current) {
       _setFormRaw(data);
@@ -87,9 +108,48 @@ export function useSettingsForm() {
         contact: form.hero_images.contact,
       });
 
-      await updateSingletonContent("home_why_us_settings", form.home_why_us as unknown as Record<string, unknown>);
-      await updateSingletonContent("home_process_settings", form.home_process as unknown as Record<string, unknown>);
-      await updateSingletonContent("home_faqs_settings", form.home_faqs as unknown as Record<string, unknown>);
+      await saveHomeSection({
+        settingsTable: "home_why_us_settings",
+        itemsTable: "home_why_us_items",
+        parentId: 1,
+        eyebrow: form.home_why_us.eyebrow,
+        title: form.home_why_us.title,
+        getItemData: (item) => ({
+          home_why_us_id: 1,
+          title: item.title,
+          desc: item.desc,
+          sort_order: item.sort_order,
+        }),
+      });
+
+      await saveHomeSection({
+        settingsTable: "home_process_settings",
+        itemsTable: "home_process_items",
+        parentId: 1,
+        eyebrow: form.home_process.eyebrow,
+        title: form.home_process.title,
+        getItemData: (item) => ({
+          home_process_id: 1,
+          step: item.step,
+          title: item.title,
+          desc: item.desc,
+          sort_order: item.sort_order,
+        }),
+      });
+
+      await saveHomeSection({
+        settingsTable: "home_faqs_settings",
+        itemsTable: "home_faqs_items",
+        parentId: 1,
+        eyebrow: form.home_faqs.eyebrow,
+        title: form.home_faqs.title,
+        getItemData: (item) => ({
+          home_faqs_id: 1,
+          question: item.question,
+          answer: item.answer,
+          sort_order: item.sort_order,
+        }),
+      });
 
       await upsertSingleton("about_settings", {
         id: 1,

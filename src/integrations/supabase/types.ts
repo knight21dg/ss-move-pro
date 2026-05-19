@@ -397,66 +397,219 @@ export type Database = {
       }
       home_faqs_settings: {
         Row: {
-          content: Json
+          content: Json | null
           created_at: string
+          eyebrow: string | null
           id: number
+          title: string | null
           updated_at: string
         }
         Insert: {
-          content?: Json
+          content?: Json | null
           created_at?: string
+          eyebrow?: string | null
           id?: number
+          title?: string | null
           updated_at?: string
         }
         Update: {
-          content?: Json
+          content?: Json | null
           created_at?: string
+          eyebrow?: string | null
           id?: number
+          title?: string | null
           updated_at?: string
         }
-        Relationships: []
-      }
-      home_process_settings: {
-        Row: {
-          content: Json
-          created_at: string
-          id: number
-          updated_at: string
-        }
-        Insert: {
-          content?: Json
-          created_at?: string
-          id?: number
-          updated_at?: string
-        }
-        Update: {
-          content?: Json
-          created_at?: string
-          id?: number
-          updated_at?: string
-        }
-        Relationships: []
+        Relationships: [
+          {
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "home_faqs_items"
+            referencedColumns: ["home_faqs_id"]
+          }
+        ]
       }
       home_why_us_settings: {
         Row: {
-          content: Json
+          content: Json | null
           created_at: string
+          eyebrow: string | null
           id: number
+          title: string | null
           updated_at: string
         }
         Insert: {
-          content?: Json
+          content?: Json | null
           created_at?: string
+          eyebrow?: string | null
           id?: number
+          title?: string | null
           updated_at?: string
         }
         Update: {
-          content?: Json
+          content?: Json | null
           created_at?: string
+          eyebrow?: string | null
           id?: number
+          title?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "home_why_us_items"
+            referencedColumns: ["home_why_us_id"]
+          }
+        ]
+      }
+      home_process_settings: {
+        Row: {
+          content: Json | null
+          created_at: string
+          eyebrow: string | null
+          id: number
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          content?: Json | null
+          created_at?: string
+          eyebrow?: string | null
+          id?: number
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: Json | null
+          created_at?: string
+          eyebrow?: string | null
+          id?: number
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "home_process_items"
+            referencedColumns: ["home_process_id"]
+          }
+        ]
+      }
+      home_faqs_items: {
+        Row: {
+          answer: string
+          created_at: string
+          home_faqs_id: number
+          id: string
+          question: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          answer?: string
+          created_at?: string
+          home_faqs_id: number
+          id?: string
+          question?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          home_faqs_id?: number
+          id?: string
+          question?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            columns: ["home_faqs_id"]
+            isOneToOne: false
+            referencedRelation: "home_faqs_settings"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      home_process_items: {
+        Row: {
+          created_at: string
+          desc: string
+          home_process_id: number
+          id: string
+          sort_order: number
+          step: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          desc?: string
+          home_process_id: number
+          id?: string
+          sort_order?: number
+          step?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          desc?: string
+          home_process_id?: number
+          id?: string
+          sort_order?: number
+          step?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            columns: ["home_process_id"]
+            isOneToOne: false
+            referencedRelation: "home_process_settings"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      home_why_us_items: {
+        Row: {
+          created_at: string
+          desc: string
+          home_why_us_id: number
+          id: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          desc?: string
+          home_why_us_id: number
+          id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          desc?: string
+          home_why_us_id?: number
+          id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            columns: ["home_why_us_id"]
+            isOneToOne: false
+            referencedRelation: "home_why_us_settings"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       seo_default_settings: {
         Row: {
@@ -643,6 +796,120 @@ export type Database = {
           video_url?: string
         }
         Relationships: []
+      }
+      home_why_us_items: {
+        Row: {
+          created_at: string
+          desc: string
+          home_why_us_id: number
+          id: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          desc?: string
+          home_why_us_id: number
+          id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          desc?: string
+          home_why_us_id?: number
+          id?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            columns: ["home_why_us_id"]
+            isOneToOne: false
+            referencedRelation: "home_why_us_settings"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      home_process_items: {
+        Row: {
+          created_at: string
+          desc: string
+          home_process_id: number
+          id: string
+          sort_order: number
+          step: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          desc?: string
+          home_process_id: number
+          id?: string
+          sort_order?: number
+          step?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          desc?: string
+          home_process_id?: number
+          id?: string
+          sort_order?: number
+          step?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            columns: ["home_process_id"]
+            isOneToOne: false
+            referencedRelation: "home_process_settings"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      home_faqs_items: {
+        Row: {
+          answer: string
+          created_at: string
+          home_faqs_id: number
+          id: string
+          question: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          answer?: string
+          created_at?: string
+          home_faqs_id: number
+          id?: string
+          question?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          home_faqs_id?: number
+          id?: string
+          question?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            columns: ["home_faqs_id"]
+            isOneToOne: false
+            referencedRelation: "home_faqs_settings"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {

@@ -29,7 +29,7 @@ function HomeSettings() {
       ...prev,
       home_why_us: {
         ...prev.home_why_us,
-        items: [...prev.home_why_us.items, { title: "", desc: "" }],
+        items: [...prev.home_why_us.items, { id: `new-${Date.now()}`, title: "", desc: "", sort_order: prev.home_why_us.items.length }],
       },
     }));
   };
@@ -59,7 +59,7 @@ function HomeSettings() {
       ...prev,
       home_process: {
         ...prev.home_process,
-        items: [...prev.home_process.items, { step: "", title: "", desc: "" }],
+        items: [...prev.home_process.items, { id: `new-${Date.now()}`, step: "", title: "", desc: "", sort_order: prev.home_process.items.length }],
       },
     }));
   };
@@ -89,7 +89,7 @@ function HomeSettings() {
       ...prev,
       home_faqs: {
         ...prev.home_faqs,
-        items: [...prev.home_faqs.items, { question: "", answer: "" }],
+        items: [...prev.home_faqs.items, { id: `new-${Date.now()}`, question: "", answer: "", sort_order: prev.home_faqs.items.length }],
       },
     }));
   };
@@ -116,7 +116,7 @@ function HomeSettings() {
             <div><Label>Title</Label><Input value={form.home_why_us.title} onChange={(e) => setForm({ ...form, home_why_us: { ...form.home_why_us, title: e.target.value } })} /></div>
             <div className="space-y-3">
               {form.home_why_us.items.map((item, index) => (
-                <div key={`${item.title}-${index}`} className="rounded-xl border border-border p-4 space-y-3">
+                <div key={item.id ?? `${item.title}-${index}`} className="rounded-xl border border-border p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <Label>Item {index + 1}</Label>
                     <Button variant="ghost" size="sm" onClick={() => removeWhyUsItem(index)} disabled={form.home_why_us.items.length <= 1}>
@@ -139,7 +139,7 @@ function HomeSettings() {
             <div><Label>Title</Label><Input value={form.home_process.title} onChange={(e) => setForm({ ...form, home_process: { ...form.home_process, title: e.target.value } })} /></div>
             <div className="space-y-3">
               {form.home_process.items.map((item, index) => (
-                <div key={`${item.step}-${index}`} className="rounded-xl border border-border p-4 space-y-3">
+                <div key={item.id ?? `${item.step}-${index}`} className="rounded-xl border border-border p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <Label>Step {index + 1}</Label>
                     <Button variant="ghost" size="sm" onClick={() => removeProcessItem(index)} disabled={form.home_process.items.length <= 1}>
@@ -165,7 +165,7 @@ function HomeSettings() {
             <div><Label>Title</Label><Input value={form.home_faqs.title} onChange={(e) => setForm({ ...form, home_faqs: { ...form.home_faqs, title: e.target.value } })} /></div>
             <div className="space-y-3">
               {form.home_faqs.items.map((item, index) => (
-                <div key={`${item.question}-${index}`} className="rounded-xl border border-border p-4 space-y-3">
+                <div key={item.id ?? `${item.question}-${index}`} className="rounded-xl border border-border p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <Label>Question {index + 1}</Label>
                     <Button variant="ghost" size="sm" onClick={() => removeFaqItem(index)} disabled={form.home_faqs.items.length <= 1}>

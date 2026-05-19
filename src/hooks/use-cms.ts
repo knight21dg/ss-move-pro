@@ -92,17 +92,23 @@ export interface AboutSettings {
 }
 
 export interface WhyUsItem {
+  id: string;
   title: string;
   desc: string;
+  sort_order: number;
 }
 export interface ProcessItem {
+  id: string;
   step: string;
   title: string;
   desc: string;
+  sort_order: number;
 }
 export interface FaqItem {
+  id: string;
   question: string;
   answer: string;
+  sort_order: number;
 }
 
 export interface HomeWhyUs {
@@ -193,6 +199,30 @@ async function fetchSingleton<T>(table: string): Promise<T | null> {
   return (data as T) ?? null;
 }
 
+async function fetchHomeSection<TItem>(config: {
+  settingsTable: string;
+  itemsTable: string;
+  parentIdField: string;
+  parseItem: (raw: unknown) => TItem;
+}): Promise<{ eyebrow: string; title: string; items: TItem[] }> {
+  const [settingsRes, itemsRes] = await Promise.all([
+    from(config.settingsTable).select("*").eq("id", 1).single(),
+    from(config.itemsTable).select("*").eq(`${config.parentIdField}`, 1).order("sort_order"),
+  ]);
+
+  if (settingsRes.error) throw settingsRes.error;
+  if (itemsRes.error) throw itemsRes.error;
+
+  const s = settingsRes.data as { eyebrow: string | null; title: string | null; id: number } | null;
+  const items = (itemsRes.data ?? []).map(config.parseItem);
+
+  return {
+    eyebrow: s?.eyebrow ?? "",
+    title: s?.title ?? "",
+    items,
+  };
+}
+
 export function useHero() {
   return useQuery({
     queryKey: ["hero_settings"],
@@ -213,21 +243,36 @@ export function useHeroImages() {
 export function useHomeWhyUs() {
   return useQuery({
     queryKey: ["home_why_us_settings"],
-    queryFn: () => fetchSingleton<{ content: Json }>("home_why_us_settings"),
+    queryFn: () => fetchHomeSection<WhyUsItem>({
+      settingsTable: "home_why_us_settings",
+      itemsTable: "home_why_us_items",
+      parentIdField: "home_why_us_id",
+      parseItem: (raw) => raw as WhyUsItem,
+    }),
   });
 }
 
 export function useHomeProcess() {
   return useQuery({
     queryKey: ["home_process_settings"],
-    queryFn: () => fetchSingleton<{ content: Json }>("home_process_settings"),
+    queryFn: () => fetchHomeSection<ProcessItem>({
+      settingsTable: "home_process_settings",
+      itemsTable: "home_process_items",
+      parentIdField: "home_process_id",
+      parseItem: (raw) => raw as ProcessItem,
+    }),
   });
 }
 
 export function useHomeFaqs() {
   return useQuery({
     queryKey: ["home_faqs_settings"],
-    queryFn: () => fetchSingleton<{ content: Json }>("home_faqs_settings"),
+    queryFn: () => fetchHomeSection<FaqItem>({
+      settingsTable: "home_faqs_settings",
+      itemsTable: "home_faqs_items",
+      parentIdField: "home_faqs_id",
+      parseItem: (raw) => raw as FaqItem,
+    }),
   });
 }
 
@@ -317,18 +362,6 @@ function pickSeoField(r?: {
   };
 }
 
-function parseHomeSection(
-  r: { data: { content: Json } | null } | undefined,
-  parseItem: (i: unknown) => unknown,
-): { eyebrow: string; title: string; items: unknown[] } {
-  const c = (r?.data?.content ?? null) as Record<string, unknown> | null;
-  return {
-    eyebrow: typeof c?.eyebrow === "string" ? c!.eyebrow : "",
-    title: typeof c?.title === "string" ? c!.title : "",
-    items: Array.isArray(c?.items) ? (c!.items as unknown[]).map(parseItem) : [],
-  };
-}
-
 export function useSettings() {
   const results = useQueries({
     queries: [
@@ -345,15 +378,30 @@ export function useSettings() {
       },
       {
         queryKey: ["home_why_us_settings"],
-        queryFn: () => fetchSingleton<{ content: Json }>("home_why_us_settings"),
+        queryFn: () => fetchHomeSection<WhyUsItem>({
+          settingsTable: "home_why_us_settings",
+          itemsTable: "home_why_us_items",
+          parentIdField: "home_why_us_id",
+          parseItem: (raw) => raw as WhyUsItem,
+        }),
       },
       {
         queryKey: ["home_process_settings"],
-        queryFn: () => fetchSingleton<{ content: Json }>("home_process_settings"),
+        queryFn: () => fetchHomeSection<ProcessItem>({
+          settingsTable: "home_process_settings",
+          itemsTable: "home_process_items",
+          parentIdField: "home_process_id",
+          parseItem: (raw) => raw as ProcessItem,
+        }),
       },
       {
         queryKey: ["home_faqs_settings"],
-        queryFn: () => fetchSingleton<{ content: Json }>("home_faqs_settings"),
+        queryFn: () => fetchHomeSection<FaqItem>({
+          settingsTable: "home_faqs_settings",
+          itemsTable: "home_faqs_items",
+          parentIdField: "home_faqs_id",
+          parseItem: (raw) => raw as FaqItem,
+        }),
       },
       {
         queryKey: ["about_settings"],
@@ -428,36 +476,6 @@ export function useSettings() {
     seoPages,
   ] = results;
 
-  const parseWhyUsItem = (i: unknown): WhyUsItem => ({
-    title: String((i as Record<string, unknown>).title ?? ""),
-    desc: String((i as Record<string, unknown>).desc ?? ""),
-  });
-  const parseProcessItem = (i: unknown): ProcessItem => ({
-    step: String((i as Record<string, unknown>).step ?? ""),
-    title: String((i as Record<string, unknown>).title ?? ""),
-    desc: String((i as Record<string, unknown>).desc ?? ""),
-  });
-  const parseFaqItem = (i: unknown): FaqItem => ({
-    question: String((i as Record<string, unknown>).question ?? ""),
-    answer: String((i as Record<string, unknown>).answer ?? ""),
-  });
-
-  const whyUs = parseHomeSection(whyUsRaw.data as any, parseWhyUsItem) as {
-    eyebrow: string;
-    title: string;
-    items: WhyUsItem[];
-  };
-  const process = parseHomeSection(processRaw.data as any, parseProcessItem) as {
-    eyebrow: string;
-    title: string;
-    items: ProcessItem[];
-  };
-  const faqs = parseHomeSection(faqsRaw.data as any, parseFaqItem) as {
-    eyebrow: string;
-    title: string;
-    items: FaqItem[];
-  };
-
   const pagesData = seoPages.data ?? [];
   const pages: Record<string, SeoFields> = {
     home: EMPTY_SETTINGS.seo.default,
@@ -480,9 +498,9 @@ export function useSettings() {
   const out: SiteSettings = {
     hero: hero.data ?? EMPTY_SETTINGS.hero,
     hero_images: heroImages.data ?? EMPTY_SETTINGS.hero_images,
-    home_why_us: { ...(whyUs as HomeWhyUs) },
-    home_process: { ...(process as HomeProcess) },
-    home_faqs: { ...(faqs as HomeFaqs) },
+    home_why_us: whyUsRaw.data ?? EMPTY_SETTINGS.home_why_us,
+    home_process: processRaw.data ?? EMPTY_SETTINGS.home_process,
+    home_faqs: faqsRaw.data ?? EMPTY_SETTINGS.home_faqs,
     about: about.data ?? EMPTY_SETTINGS.about,
     contact: contact.data ?? EMPTY_SETTINGS.contact,
     social: social.data ?? EMPTY_SETTINGS.social,
