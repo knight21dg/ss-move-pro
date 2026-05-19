@@ -20,11 +20,9 @@ dist-ssr
 # Scripts with secrets (local only)
 scripts/
 
-# Wrangler / Cloudflare / Lovable
+# Wrangler
 .wrangler/
 .dev.vars
-.lovable/**
-!.lovable/project.json
 
 # Editor directories and files
 .vscode/*

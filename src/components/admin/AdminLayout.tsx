@@ -1,5 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { useRealtime } from "@/hooks/use-realtime";
 import { LayoutDashboard, Package, Image as ImageIcon, Video, MessageSquare, Inbox, Settings, LogOut, ExternalLink } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +18,7 @@ const items: { to: string; label: string; icon: typeof LayoutDashboard; exact?: 
 ];
 
 export function AdminLayout({ children, title }: { children: React.ReactNode; title: string }) {
+  useRealtime();   // live CDC subscriptions for all CMS tables
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });

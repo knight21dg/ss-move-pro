@@ -8,6 +8,7 @@ import g2 from "@/assets/gallery-2.jpg";
 import g3 from "@/assets/gallery-3.jpg";
 import g4 from "@/assets/gallery-4.jpg";
 import { useServices, useSettings, useTestimonials, useGallery } from "@/hooks/use-cms";
+import { useRealtime } from "@/hooks/use-realtime";
 import { getIcon } from "@/lib/icons";
 
 export const Route = createFileRoute("/")({ component: HomePage });
@@ -36,6 +37,7 @@ const faqs = [
 const fallbackGallery = [g1, g2, g3, g4];
 
 function HomePage() {
+  useRealtime();   // live updates for settings, services, gallery, testimonials
   const { data: settings } = useSettings();
   const { data: services = [] } = useServices();
   const { data: testimonials = [] } = useTestimonials();
