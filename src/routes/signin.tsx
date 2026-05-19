@@ -15,6 +15,9 @@ export const Route = createFileRoute("/signin")({
 
 type AuthAction = "signin" | "signup" | "reset" | "update";
 
+const AUTH_REDIRECT_URL =
+  import.meta.env.VITE_AUTH_REDIRECT_URL || "https://ss-move-pro-eight.vercel.app/signin";
+
 function getAuthErrorMessage(error: { message?: string } | null | undefined, action: AuthAction) {
   const message = error?.message ?? "";
   const normalized = message.toLowerCase();
@@ -77,11 +80,11 @@ function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [sendingMagicLink, setSendingMagicLink] = useState(false);
   const [recoveryMode, setRecoveryMode] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
 
   useEffect(() => {
     setRecoveryMode(hasRecoveryParams());
@@ -117,7 +120,7 @@ function LoginPage() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${origin}/admin` },
+        options: { emailRedirectTo: AUTH_REDIRECT_URL },
       });
       if (error) {
         toast.error(getAuthErrorMessage(error, "signup"));
@@ -143,7 +146,7 @@ function LoginPage() {
     setResetting(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${origin}/signin`,
+        redirectTo: AUTH_REDIRECT_URL,
       });
       if (error) {
         toast.error(getAuthErrorMessage(error, "reset"));
@@ -152,6 +155,27 @@ function LoginPage() {
       toast.success("Reset link sent. Check your email for next steps.");
     } finally {
       setResetting(false);
+    }
+  }
+
+  async function sendMagicLink() {
+    if (!email.trim()) {
+      toast.error("Enter your email to receive a magic link.");
+      return;
+    }
+    setSendingMagicLink(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: AUTH_REDIRECT_URL },
+      });
+      if (error) {
+        toast.error(getAuthErrorMessage(error, "signin"));
+        return;
+      }
+      toast.success("Magic link sent. Check your email to sign in.");
+    } finally {
+      setSendingMagicLink(false);
     }
   }
 
@@ -274,7 +298,7 @@ function LoginPage() {
                 </button>
               </div>
               {mode === "signin" && (
-                <div className="flex items-center justify-between text-sm">
+                <div className="flex flex-col items-start gap-2 text-sm">
                   <Button
                     type="button"
                     variant="link"
@@ -284,6 +308,16 @@ function LoginPage() {
                     disabled={resetting}
                   >
                     {resetting ? "Sending reset link..." : "Forgot password? Send reset link"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="px-0"
+                    onClick={sendMagicLink}
+                    disabled={sendingMagicLink}
+                  >
+                    {sendingMagicLink ? "Sending magic link..." : "Send a magic link instead"}
                   </Button>
                 </div>
               )}
