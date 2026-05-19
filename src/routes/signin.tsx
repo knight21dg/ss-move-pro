@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,51 +13,182 @@ export const Route = createFileRoute("/signin")({
   component: LoginPage,
 });
 
+type AuthAction = "signin" | "signup" | "reset" | "update";
+
+function getAuthErrorMessage(error: { message?: string } | null | undefined, action: AuthAction) {
+  const message = error?.message ?? "";
+  const normalized = message.toLowerCase();
+  if (normalized.includes("invalid login credentials")) {
+    return "That email and password do not match. Try again or reset your password.";
+  }
+  if (normalized.includes("email not confirmed")) {
+    return "Please confirm your email before signing in.";
+  }
+  if (normalized.includes("user already registered") || normalized.includes("already registered")) {
+    return "An account with this email already exists. Sign in instead.";
+  }
+  if (normalized.includes("password should be at least") || normalized.includes("password too short")) {
+    return "Password must be at least 6 characters.";
+  }
+  if (normalized.includes("invalid email")) {
+    return "Enter a valid email address.";
+  }
+  if (normalized.includes("signup is disabled")) {
+    return "Account creation is disabled. Contact an administrator.";
+  }
+  if (normalized.includes("rate limit") || normalized.includes("too many requests")) {
+    return "Too many attempts. Please wait a few minutes and try again.";
+  }
+  if (normalized.includes("auth session missing") || normalized.includes("session not found")) {
+    return "Your reset link has expired. Request a new one.";
+  }
+  if (normalized.includes("token") && normalized.includes("expired")) {
+    return "Your reset link has expired. Request a new one.";
+  }
+  if (normalized.includes("network")) {
+    return "Network error. Check your connection and try again.";
+  }
+  if (action === "reset") {
+    return "We could not send a reset link. Please try again.";
+  }
+  if (action === "update") {
+    return "We could not update your password. Please try again.";
+  }
+  if (action === "signup") {
+    return "We could not create the account. Please try again.";
+  }
+  if (action === "signin") {
+    return "We could not sign you in. Please try again.";
+  }
+  return message || "Something went wrong. Please try again.";
+}
+
+function hasRecoveryParams() {
+  if (typeof window === "undefined") return false;
+  const search = window.location.search.toLowerCase();
+  const hash = window.location.hash.toLowerCase();
+  return search.includes("type=recovery") || hash.includes("type=recovery");
+}
+
 function LoginPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [recoveryMode, setRecoveryMode] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+
+  useEffect(() => {
+    setRecoveryMode(hasRecoveryParams());
+  }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!email.trim()) {
+      toast.error("Enter your email to continue.");
+      return;
+    }
+    if (!password.trim()) {
+      toast.error("Enter your password to continue.");
+      return;
+    }
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return;
+    }
     setLoading(true);
-    if (mode === "signin") {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        console.error("Signin Error:", error);
-        toast.error(error.message);
-      } else {
-        console.log("Signin Success:", data);
-        toast.success("Signed in");
+    try {
+      if (mode === "signin") {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error || !data.session) {
+          toast.error(getAuthErrorMessage(error, "signin"));
+          return;
+        }
+        toast.success("Welcome back. Redirecting to the admin panel.");
         navigate({ to: "/admin" });
+        return;
       }
-    } else {
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/admin` },
+        options: { emailRedirectTo: `${origin}/admin` },
       });
       if (error) {
-        console.error("Signup Error:", error);
-        toast.error(error.message);
-      } else if (data?.user && !data.session) {
-        // Email confirmation is required — auto sign in
-        const { error: signinError } = await supabase.auth.signInWithPassword({ email, password });
-        if (signinError) {
-          toast.success("Admin account created. You can now sign in.");
-        } else {
-          toast.success("Signed in");
-          navigate({ to: "/admin" });
-        }
-      } else {
-        toast.success("Signed in");
-        navigate({ to: "/admin" });
+        toast.error(getAuthErrorMessage(error, "signup"));
+        return;
       }
+      if (data?.user && !data.session) {
+        toast.success("Account created. Check your email to confirm before signing in.");
+        setMode("signin");
+        return;
+      }
+      toast.success("Account created. Redirecting to the admin panel.");
+      navigate({ to: "/admin" });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  }
+
+  async function sendResetLink() {
+    if (!email.trim()) {
+      toast.error("Enter your email to receive a reset link.");
+      return;
+    }
+    setResetting(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${origin}/signin`,
+      });
+      if (error) {
+        toast.error(getAuthErrorMessage(error, "reset"));
+        return;
+      }
+      toast.success("Reset link sent. Check your email for next steps.");
+    } finally {
+      setResetting(false);
+    }
+  }
+
+  async function onUpdatePassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newPassword.trim()) {
+      toast.error("Enter a new password to continue.");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        toast.error(getAuthErrorMessage(error, "update"));
+        return;
+      }
+      toast.success("Password updated. Please sign in.");
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) {
+        toast.error("Password updated, but we could not sign you out. Please sign in again.");
+      }
+      setRecoveryMode(false);
+      setNewPassword("");
+      setConfirmPassword("");
+      setPassword("");
+      navigate({ to: "/signin" });
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -67,51 +198,110 @@ function LoginPage() {
           <img src={logo} alt="SS Packers" className="h-14 w-auto" />
         </Link>
         <h1 className="text-2xl font-bold text-center mb-1">
-          {mode === "signin" ? "Admin Sign In" : "Create Admin Account"}
+          {recoveryMode ? "Reset Password" : mode === "signin" ? "Admin Sign In" : "Create Admin Account"}
         </h1>
-        <p className="text-sm text-muted-foreground text-center mb-6">Manage your site content</p>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1.5"
-            />
-          </div>
-          <div className="relative">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1.5"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 top-6 flex items-center px-4 text-muted-foreground"
-            >
-              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
-          </div>
-          <Button type="submit" variant="brand" className="w-full" disabled={loading}>
-            {loading ? "Please wait..." : mode === "signin" ? "Sign In" : "Sign Up"}
-          </Button>
+        <p className="text-sm text-muted-foreground text-center mb-6">
+          {recoveryMode ? "Set a new password for your admin account." : "Manage your site content"}
+        </p>
+        <form onSubmit={recoveryMode ? onUpdatePassword : onSubmit} className="space-y-4">
+          {recoveryMode ? (
+            <>
+              <div className="relative">
+                <Label htmlFor="new-password">New Password</Label>
+                <Input
+                  id="new-password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="mt-1.5"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 top-6 flex items-center px-4 text-muted-foreground"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+              <div>
+                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Input
+                  id="confirm-password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="mt-1.5"
+                />
+              </div>
+              <Button type="submit" variant="brand" className="w-full" disabled={loading}>
+                {loading ? "Updating..." : "Update Password"}
+              </Button>
+            </>
+          ) : (
+            <>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="mt-1.5"
+                />
+              </div>
+              <div className="relative">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-1.5"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 top-6 flex items-center px-4 text-muted-foreground"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+              {mode === "signin" && (
+                <div className="flex items-center justify-between text-sm">
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="px-0"
+                    onClick={sendResetLink}
+                    disabled={resetting}
+                  >
+                    {resetting ? "Sending reset link..." : "Forgot password? Send reset link"}
+                  </Button>
+                </div>
+              )}
+              <Button type="submit" variant="brand" className="w-full" disabled={loading}>
+                {loading ? "Please wait..." : mode === "signin" ? "Sign In" : "Sign Up"}
+              </Button>
+            </>
+          )}
         </form>
-        <button
-          type="button"
-          onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-          className="mt-4 text-sm text-primary hover:underline w-full text-center"
-        >
-          {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
-        </button>
+        {!recoveryMode && (
+          <button
+            type="button"
+            onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+            className="mt-4 text-sm text-primary hover:underline w-full text-center"
+          >
+            {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
+          </button>
+        )}
         <div className="mt-6 text-xs text-muted-foreground text-center">
           <Link to="/" className="hover:text-foreground">
             ← Back to website

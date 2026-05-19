@@ -24,7 +24,7 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
-    if (!loading && !user) navigate({ to: "/login" });
+    if (!loading && !user) navigate({ to: "/signin" });
   }, [loading, user, navigate]);
 
   if (loading) return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading...</div>;
@@ -35,7 +35,7 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
         <div className="max-w-md text-center space-y-4">
           <h1 className="text-2xl font-bold">Admin access required</h1>
           <p className="text-sm text-muted-foreground">Your account ({user.email}) does not have admin privileges. Ask an existing admin to grant access, or check the README to seed the first admin.</p>
-          <Button variant="outline" onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/login" }); }}>Sign out</Button>
+          <Button variant="outline" onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/signin" }); }}>Sign out</Button>
         </div>
       </div>
     );
@@ -43,7 +43,7 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
 
   async function signOut() {
     await supabase.auth.signOut();
-    navigate({ to: "/login" });
+    navigate({ to: "/signin" });
   }
 
   return (
