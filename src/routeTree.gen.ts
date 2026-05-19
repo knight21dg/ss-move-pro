@@ -25,6 +25,12 @@ import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
 import { Route as AdminEnquiriesRouteImport } from './routes/admin.enquiries'
+import { Route as AdminSettingsSocialRouteImport } from './routes/admin.settings.social'
+import { Route as AdminSettingsSeoRouteImport } from './routes/admin.settings.seo'
+import { Route as AdminSettingsHomeRouteImport } from './routes/admin.settings.home'
+import { Route as AdminSettingsHeroRouteImport } from './routes/admin.settings.hero'
+import { Route as AdminSettingsContactRouteImport } from './routes/admin.settings.contact'
+import { Route as AdminSettingsAboutRouteImport } from './routes/admin.settings.about'
 
 const VideosRoute = VideosRouteImport.update({
   id: '/videos',
@@ -106,6 +112,36 @@ const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
   path: '/admin/enquiries',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSettingsSocialRoute = AdminSettingsSocialRouteImport.update({
+  id: '/social',
+  path: '/social',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminSettingsSeoRoute = AdminSettingsSeoRouteImport.update({
+  id: '/seo',
+  path: '/seo',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminSettingsHomeRoute = AdminSettingsHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminSettingsHeroRoute = AdminSettingsHeroRouteImport.update({
+  id: '/hero',
+  path: '/hero',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminSettingsContactRoute = AdminSettingsContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminSettingsAboutRoute = AdminSettingsAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -120,10 +156,16 @@ export interface FileRoutesByFullPath {
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/services': typeof AdminServicesRoute
-  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/videos': typeof AdminVideosRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/settings/about': typeof AdminSettingsAboutRoute
+  '/admin/settings/contact': typeof AdminSettingsContactRoute
+  '/admin/settings/hero': typeof AdminSettingsHeroRoute
+  '/admin/settings/home': typeof AdminSettingsHomeRoute
+  '/admin/settings/seo': typeof AdminSettingsSeoRoute
+  '/admin/settings/social': typeof AdminSettingsSocialRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -138,10 +180,16 @@ export interface FileRoutesByTo {
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/services': typeof AdminServicesRoute
-  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/videos': typeof AdminVideosRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/settings/about': typeof AdminSettingsAboutRoute
+  '/admin/settings/contact': typeof AdminSettingsContactRoute
+  '/admin/settings/hero': typeof AdminSettingsHeroRoute
+  '/admin/settings/home': typeof AdminSettingsHomeRoute
+  '/admin/settings/seo': typeof AdminSettingsSeoRoute
+  '/admin/settings/social': typeof AdminSettingsSocialRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -157,10 +205,16 @@ export interface FileRoutesById {
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/services': typeof AdminServicesRoute
-  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/videos': typeof AdminVideosRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/settings/about': typeof AdminSettingsAboutRoute
+  '/admin/settings/contact': typeof AdminSettingsContactRoute
+  '/admin/settings/hero': typeof AdminSettingsHeroRoute
+  '/admin/settings/home': typeof AdminSettingsHomeRoute
+  '/admin/settings/seo': typeof AdminSettingsSeoRoute
+  '/admin/settings/social': typeof AdminSettingsSocialRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,6 +235,12 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/admin/videos'
     | '/admin/'
+    | '/admin/settings/about'
+    | '/admin/settings/contact'
+    | '/admin/settings/hero'
+    | '/admin/settings/home'
+    | '/admin/settings/seo'
+    | '/admin/settings/social'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -199,6 +259,12 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/admin/videos'
     | '/admin'
+    | '/admin/settings/about'
+    | '/admin/settings/contact'
+    | '/admin/settings/hero'
+    | '/admin/settings/home'
+    | '/admin/settings/seo'
+    | '/admin/settings/social'
   id:
     | '__root__'
     | '/'
@@ -217,6 +283,12 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/admin/videos'
     | '/admin/'
+    | '/admin/settings/about'
+    | '/admin/settings/contact'
+    | '/admin/settings/hero'
+    | '/admin/settings/home'
+    | '/admin/settings/seo'
+    | '/admin/settings/social'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -232,7 +304,7 @@ export interface RootRouteChildren {
   AdminEnquiriesRoute: typeof AdminEnquiriesRoute
   AdminGalleryRoute: typeof AdminGalleryRoute
   AdminServicesRoute: typeof AdminServicesRoute
-  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
   AdminTestimonialsRoute: typeof AdminTestimonialsRoute
   AdminVideosRoute: typeof AdminVideosRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -352,8 +424,72 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEnquiriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/settings/social': {
+      id: '/admin/settings/social'
+      path: '/social'
+      fullPath: '/admin/settings/social'
+      preLoaderRoute: typeof AdminSettingsSocialRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/admin/settings/seo': {
+      id: '/admin/settings/seo'
+      path: '/seo'
+      fullPath: '/admin/settings/seo'
+      preLoaderRoute: typeof AdminSettingsSeoRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/admin/settings/home': {
+      id: '/admin/settings/home'
+      path: '/home'
+      fullPath: '/admin/settings/home'
+      preLoaderRoute: typeof AdminSettingsHomeRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/admin/settings/hero': {
+      id: '/admin/settings/hero'
+      path: '/hero'
+      fullPath: '/admin/settings/hero'
+      preLoaderRoute: typeof AdminSettingsHeroRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/admin/settings/contact': {
+      id: '/admin/settings/contact'
+      path: '/contact'
+      fullPath: '/admin/settings/contact'
+      preLoaderRoute: typeof AdminSettingsContactRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/admin/settings/about': {
+      id: '/admin/settings/about'
+      path: '/about'
+      fullPath: '/admin/settings/about'
+      preLoaderRoute: typeof AdminSettingsAboutRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
   }
 }
+
+interface AdminSettingsRouteChildren {
+  AdminSettingsAboutRoute: typeof AdminSettingsAboutRoute
+  AdminSettingsContactRoute: typeof AdminSettingsContactRoute
+  AdminSettingsHeroRoute: typeof AdminSettingsHeroRoute
+  AdminSettingsHomeRoute: typeof AdminSettingsHomeRoute
+  AdminSettingsSeoRoute: typeof AdminSettingsSeoRoute
+  AdminSettingsSocialRoute: typeof AdminSettingsSocialRoute
+}
+
+const AdminSettingsRouteChildren: AdminSettingsRouteChildren = {
+  AdminSettingsAboutRoute: AdminSettingsAboutRoute,
+  AdminSettingsContactRoute: AdminSettingsContactRoute,
+  AdminSettingsHeroRoute: AdminSettingsHeroRoute,
+  AdminSettingsHomeRoute: AdminSettingsHomeRoute,
+  AdminSettingsSeoRoute: AdminSettingsSeoRoute,
+  AdminSettingsSocialRoute: AdminSettingsSocialRoute,
+}
+
+const AdminSettingsRouteWithChildren = AdminSettingsRoute._addFileChildren(
+  AdminSettingsRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -368,7 +504,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminEnquiriesRoute: AdminEnquiriesRoute,
   AdminGalleryRoute: AdminGalleryRoute,
   AdminServicesRoute: AdminServicesRoute,
-  AdminSettingsRoute: AdminSettingsRoute,
+  AdminSettingsRoute: AdminSettingsRouteWithChildren,
   AdminTestimonialsRoute: AdminTestimonialsRoute,
   AdminVideosRoute: AdminVideosRoute,
   AdminIndexRoute: AdminIndexRoute,

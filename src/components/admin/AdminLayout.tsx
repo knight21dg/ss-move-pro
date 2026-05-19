@@ -1,7 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useRealtime } from "@/hooks/use-realtime";
-import { LayoutDashboard, Package, Image as ImageIcon, Video, MessageSquare, Inbox, Settings, LogOut, ExternalLink } from "lucide-react";
+import { LayoutDashboard, Package, Image as ImageIcon, Video, MessageSquare, Inbox, Settings, LogOut, ExternalLink, LayoutList, Info, Phone, Share2, Search } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,13 @@ const items: { to: string; label: string; icon: typeof LayoutDashboard; exact?: 
   { to: "/admin/videos", label: "Videos", icon: Video },
   { to: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
   { to: "/admin/enquiries", label: "Enquiries", icon: Inbox },
-  { to: "/admin/settings", label: "Site Settings", icon: Settings },
+  { to: "/admin/settings", label: "Settings Overview", icon: Settings },
+  { to: "/admin/settings/hero", label: "Hero", icon: ImageIcon },
+  { to: "/admin/settings/home", label: "Home Sections", icon: LayoutList },
+  { to: "/admin/settings/about", label: "About", icon: Info },
+  { to: "/admin/settings/contact", label: "Contact", icon: Phone },
+  { to: "/admin/settings/social", label: "Social Links", icon: Share2 },
+  { to: "/admin/settings/seo", label: "SEO", icon: Search },
 ];
 
 export function AdminLayout({ children, title }: { children: React.ReactNode; title: string }) {

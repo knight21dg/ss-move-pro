@@ -1,0 +1,91 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Save } from "lucide-react";
+import { AdminLayout } from "@/components/admin/AdminLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSettingsForm } from "@/hooks/use-settings-form";
+import type { SiteSettings } from "@/hooks/use-cms";
+
+export const Route = createFileRoute("/admin/settings/seo")({ component: SeoSettings });
+
+function SeoSettings() {
+  const { form, setForm, isLoading, save } = useSettingsForm();
+
+  const updateSeo = (
+    scope: "default" | keyof SiteSettings["seo"]["pages"],
+    field: keyof SiteSettings["seo"]["default"],
+    value: string
+  ) => {
+    setForm((prev) => {
+      if (scope === "default") {
+        return {
+          ...prev,
+          seo: {
+            ...prev.seo,
+            default: { ...prev.seo.default, [field]: value },
+          },
+        };
+      }
+      return {
+        ...prev,
+        seo: {
+          ...prev.seo,
+          pages: {
+            ...prev.seo.pages,
+            [scope]: { ...prev.seo.pages[scope], [field]: value },
+          },
+        },
+      };
+    });
+  };
+
+  if (isLoading) return <AdminLayout title="SEO Settings"><p className="text-muted-foreground">Loading...</p></AdminLayout>;
+
+  return (
+    <AdminLayout title="SEO Settings">
+      <div className="space-y-6 max-w-3xl">
+        <Card>
+          <CardHeader><CardTitle>Default SEO</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <div><Label>Title</Label><Input value={form.seo.default.title} onChange={(e) => updateSeo("default", "title", e.target.value)} /></div>
+            <div><Label>Description</Label><Textarea rows={2} value={form.seo.default.description} onChange={(e) => updateSeo("default", "description", e.target.value)} /></div>
+            <div><Label>Keywords</Label><Textarea rows={2} value={form.seo.default.keywords} onChange={(e) => updateSeo("default", "keywords", e.target.value)} /></div>
+            <div><Label>OG Image URL</Label><Input value={form.seo.default.og_image} onChange={(e) => updateSeo("default", "og_image", e.target.value)} placeholder="https://..." /></div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Per-Page SEO</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            {([
+              ["home", "Home"],
+              ["about", "About"],
+              ["services", "Services"],
+              ["gallery", "Gallery"],
+              ["videos", "Videos"],
+              ["enquiry", "Enquiry"],
+              ["contact", "Contact"],
+            ] as const).map(([key, label]) => (
+              <div key={key} className="rounded-xl border border-border p-4 space-y-3">
+                <div className="text-sm font-semibold">{label}</div>
+                <div><Label>Title</Label><Input value={form.seo.pages[key].title} onChange={(e) => updateSeo(key, "title", e.target.value)} /></div>
+                <div><Label>Description</Label><Textarea rows={2} value={form.seo.pages[key].description} onChange={(e) => updateSeo(key, "description", e.target.value)} /></div>
+                <div><Label>Keywords</Label><Textarea rows={2} value={form.seo.pages[key].keywords} onChange={(e) => updateSeo(key, "keywords", e.target.value)} /></div>
+                <div><Label>OG Image URL</Label><Input value={form.seo.pages[key].og_image} onChange={(e) => updateSeo(key, "og_image", e.target.value)} placeholder="https://..." /></div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <div className="sticky bottom-4 bg-background border border-border rounded-xl p-3 flex justify-end shadow-lg">
+          <Button variant="brand" size="lg" onClick={() => save.mutate()} disabled={save.isPending}>
+            <Save className="h-4 w-4 mr-2" /> {save.isPending ? "Saving..." : "Save Changes"}
+          </Button>
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}

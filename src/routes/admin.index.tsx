@@ -30,7 +30,7 @@ function AdminDashboard() {
     { to: "/admin/videos", label: "Videos", icon: Video, count: stats?.videos },
     { to: "/admin/testimonials", label: "Testimonials", icon: MessageSquare, count: stats?.testimonials },
     { to: "/admin/enquiries", label: "Enquiries", icon: Inbox, count: stats?.enquiries, badge: stats?.newEnquiries },
-    { to: "/admin/settings", label: "Site Settings", icon: SettingsIcon, count: null },
+    { to: "/admin/settings", label: "Settings Overview", icon: SettingsIcon, count: null },
   ];
 
   return (
