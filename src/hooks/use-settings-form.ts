@@ -115,9 +115,9 @@ export function useSettingsForm() {
         eyebrow: form.home_why_us.eyebrow,
         title: form.home_why_us.title,
         getItemData: (item) => ({
-          home_why_us_id: 1,
+          home_why_us_settings_id: 1,
           title: item.title,
-          desc: item.desc,
+          description: item.description,
           sort_order: item.sort_order,
         }),
       });
@@ -129,10 +129,10 @@ export function useSettingsForm() {
         eyebrow: form.home_process.eyebrow,
         title: form.home_process.title,
         getItemData: (item) => ({
-          home_process_id: 1,
+          home_process_settings_id: 1,
           step: item.step,
           title: item.title,
-          desc: item.desc,
+          description: item.description,
           sort_order: item.sort_order,
         }),
       });
@@ -144,7 +144,7 @@ export function useSettingsForm() {
         eyebrow: form.home_faqs.eyebrow,
         title: form.home_faqs.title,
         getItemData: (item) => ({
-          home_faqs_id: 1,
+          home_faqs_settings_id: 1,
           question: item.question,
           answer: item.answer,
           sort_order: item.sort_order,

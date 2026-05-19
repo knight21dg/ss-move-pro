@@ -29,7 +29,7 @@ function HomeSettings() {
       ...prev,
       home_why_us: {
         ...prev.home_why_us,
-        items: [...prev.home_why_us.items, { id: `new-${Date.now()}`, title: "", desc: "", sort_order: prev.home_why_us.items.length }],
+        items: [...prev.home_why_us.items, { id: `new-${Date.now()}`, title: "", description: "", sort_order: prev.home_why_us.items.length }],
       },
     }));
   };
@@ -59,7 +59,7 @@ function HomeSettings() {
       ...prev,
       home_process: {
         ...prev.home_process,
-        items: [...prev.home_process.items, { id: `new-${Date.now()}`, step: "", title: "", desc: "", sort_order: prev.home_process.items.length }],
+        items: [...prev.home_process.items, { id: `new-${Date.now()}`, step: "", title: "", description: "", sort_order: prev.home_process.items.length }],
       },
     }));
   };
@@ -124,7 +124,7 @@ function HomeSettings() {
                     </Button>
                   </div>
                   <div><Label>Title</Label><Input value={item.title} onChange={(e) => updateWhyUsItem(index, { title: e.target.value })} /></div>
-                  <div><Label>Description</Label><Textarea rows={2} value={item.desc} onChange={(e) => updateWhyUsItem(index, { desc: e.target.value })} /></div>
+                  <div><Label>Description</Label><Textarea rows={2} value={item.description} onChange={(e) => updateWhyUsItem(index, { description: e.target.value })} /></div>
                 </div>
               ))}
               <Button variant="outline" size="sm" onClick={addWhyUsItem}><Plus className="h-4 w-4 mr-2" /> Add Item</Button>
@@ -150,7 +150,7 @@ function HomeSettings() {
                     <div><Label>Number</Label><Input value={item.step} onChange={(e) => updateProcessItem(index, { step: e.target.value })} /></div>
                     <div className="sm:col-span-2"><Label>Title</Label><Input value={item.title} onChange={(e) => updateProcessItem(index, { title: e.target.value })} /></div>
                   </div>
-                  <div><Label>Description</Label><Textarea rows={2} value={item.desc} onChange={(e) => updateProcessItem(index, { desc: e.target.value })} /></div>
+                  <div><Label>Description</Label><Textarea rows={2} value={item.description} onChange={(e) => updateProcessItem(index, { description: e.target.value })} /></div>
                 </div>
               ))}
               <Button variant="outline" size="sm" onClick={addProcessItem}><Plus className="h-4 w-4 mr-2" /> Add Step</Button>

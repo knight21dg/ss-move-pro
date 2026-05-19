@@ -94,14 +94,14 @@ export interface AboutSettings {
 export interface WhyUsItem {
   id: string;
   title: string;
-  desc: string;
+  description: string;
   sort_order: number;
 }
 export interface ProcessItem {
   id: string;
   step: string;
   title: string;
-  desc: string;
+  description: string;
   sort_order: number;
 }
 export interface FaqItem {
@@ -246,7 +246,7 @@ export function useHomeWhyUs() {
     queryFn: () => fetchHomeSection<WhyUsItem>({
       settingsTable: "home_why_us_settings",
       itemsTable: "home_why_us_items",
-      parentIdField: "home_why_us_id",
+      parentIdField: "home_why_us_settings_id",
       parseItem: (raw) => raw as WhyUsItem,
     }),
   });
@@ -258,7 +258,7 @@ export function useHomeProcess() {
     queryFn: () => fetchHomeSection<ProcessItem>({
       settingsTable: "home_process_settings",
       itemsTable: "home_process_items",
-      parentIdField: "home_process_id",
+      parentIdField: "home_process_settings_id",
       parseItem: (raw) => raw as ProcessItem,
     }),
   });
@@ -270,7 +270,7 @@ export function useHomeFaqs() {
     queryFn: () => fetchHomeSection<FaqItem>({
       settingsTable: "home_faqs_settings",
       itemsTable: "home_faqs_items",
-      parentIdField: "home_faqs_id",
+      parentIdField: "home_faqs_settings_id",
       parseItem: (raw) => raw as FaqItem,
     }),
   });
@@ -381,7 +381,7 @@ export function useSettings() {
         queryFn: () => fetchHomeSection<WhyUsItem>({
           settingsTable: "home_why_us_settings",
           itemsTable: "home_why_us_items",
-          parentIdField: "home_why_us_id",
+          parentIdField: "home_why_us_settings_id",
           parseItem: (raw) => raw as WhyUsItem,
         }),
       },
@@ -390,7 +390,7 @@ export function useSettings() {
         queryFn: () => fetchHomeSection<ProcessItem>({
           settingsTable: "home_process_settings",
           itemsTable: "home_process_items",
-          parentIdField: "home_process_id",
+          parentIdField: "home_process_settings_id",
           parseItem: (raw) => raw as ProcessItem,
         }),
       },
@@ -399,7 +399,7 @@ export function useSettings() {
         queryFn: () => fetchHomeSection<FaqItem>({
           settingsTable: "home_faqs_settings",
           itemsTable: "home_faqs_items",
-          parentIdField: "home_faqs_id",
+          parentIdField: "home_faqs_settings_id",
           parseItem: (raw) => raw as FaqItem,
         }),
       },

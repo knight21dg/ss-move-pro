@@ -425,7 +425,7 @@ export type Database = {
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "home_faqs_items"
-            referencedColumns: ["home_faqs_id"]
+            referencedColumns: ["home_faqs_settings_id"]
           }
         ]
       }
@@ -459,7 +459,7 @@ export type Database = {
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "home_why_us_items"
-            referencedColumns: ["home_why_us_id"]
+            referencedColumns: ["home_why_us_settings_id"]
           }
         ]
       }
@@ -493,7 +493,7 @@ export type Database = {
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "home_process_items"
-            referencedColumns: ["home_process_id"]
+            referencedColumns: ["home_process_settings_id"]
           }
         ]
       }
@@ -501,7 +501,7 @@ export type Database = {
         Row: {
           answer: string
           created_at: string
-          home_faqs_id: number
+          home_faqs_settings_id: number
           id: string
           question: string
           sort_order: number
@@ -510,7 +510,7 @@ export type Database = {
         Insert: {
           answer?: string
           created_at?: string
-          home_faqs_id: number
+          home_faqs_settings_id: number
           id?: string
           question?: string
           sort_order?: number
@@ -519,7 +519,7 @@ export type Database = {
         Update: {
           answer?: string
           created_at?: string
-          home_faqs_id?: number
+          home_faqs_settings_id?: number
           id?: string
           question?: string
           sort_order?: number
@@ -527,7 +527,7 @@ export type Database = {
         }
         Relationships: [
           {
-            columns: ["home_faqs_id"]
+            columns: ["home_faqs_settings_id"]
             isOneToOne: false
             referencedRelation: "home_faqs_settings"
             referencedColumns: ["id"]
@@ -537,8 +537,8 @@ export type Database = {
       home_process_items: {
         Row: {
           created_at: string
-          desc: string
-          home_process_id: number
+          description: string
+          home_process_settings_id: number
           id: string
           sort_order: number
           step: string
@@ -547,8 +547,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          desc?: string
-          home_process_id: number
+          description?: string
+          home_process_settings_id: number
           id?: string
           sort_order?: number
           step?: string
@@ -557,8 +557,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          desc?: string
-          home_process_id?: number
+          description?: string
+          home_process_settings_id?: number
           id?: string
           sort_order?: number
           step?: string
@@ -567,7 +567,7 @@ export type Database = {
         }
         Relationships: [
           {
-            columns: ["home_process_id"]
+            columns: ["home_process_settings_id"]
             isOneToOne: false
             referencedRelation: "home_process_settings"
             referencedColumns: ["id"]
@@ -577,8 +577,8 @@ export type Database = {
       home_why_us_items: {
         Row: {
           created_at: string
-          desc: string
-          home_why_us_id: number
+          description: string
+          home_why_us_settings_id: number
           id: string
           sort_order: number
           title: string
@@ -586,8 +586,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          desc?: string
-          home_why_us_id: number
+          description?: string
+          home_why_us_settings_id: number
           id?: string
           sort_order?: number
           title?: string
@@ -595,8 +595,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          desc?: string
-          home_why_us_id?: number
+          description?: string
+          home_why_us_settings_id?: number
           id?: string
           sort_order?: number
           title?: string
@@ -604,7 +604,7 @@ export type Database = {
         }
         Relationships: [
           {
-            columns: ["home_why_us_id"]
+            columns: ["home_why_us_settings_id"]
             isOneToOne: false
             referencedRelation: "home_why_us_settings"
             referencedColumns: ["id"]
@@ -800,8 +800,8 @@ export type Database = {
       home_why_us_items: {
         Row: {
           created_at: string
-          desc: string
-          home_why_us_id: number
+          description: string
+          home_why_us_settings_id: number
           id: string
           sort_order: number
           title: string
@@ -809,8 +809,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          desc?: string
-          home_why_us_id: number
+          description?: string
+          home_why_us_settings_id: number
           id?: string
           sort_order?: number
           title?: string
@@ -818,8 +818,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          desc?: string
-          home_why_us_id?: number
+          description?: string
+          home_why_us_settings_id?: number
           id?: string
           sort_order?: number
           title?: string
@@ -827,7 +827,7 @@ export type Database = {
         }
         Relationships: [
           {
-            columns: ["home_why_us_id"]
+            columns: ["home_why_us_settings_id"]
             isOneToOne: false
             referencedRelation: "home_why_us_settings"
             referencedColumns: ["id"]
@@ -837,8 +837,8 @@ export type Database = {
       home_process_items: {
         Row: {
           created_at: string
-          desc: string
-          home_process_id: number
+          description: string
+          home_process_settings_id: number
           id: string
           sort_order: number
           step: string
@@ -847,8 +847,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          desc?: string
-          home_process_id: number
+          description?: string
+          home_process_settings_id: number
           id?: string
           sort_order?: number
           step?: string
@@ -857,8 +857,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          desc?: string
-          home_process_id?: number
+          description?: string
+          home_process_settings_id?: number
           id?: string
           sort_order?: number
           step?: string
@@ -867,7 +867,7 @@ export type Database = {
         }
         Relationships: [
           {
-            columns: ["home_process_id"]
+            columns: ["home_process_settings_id"]
             isOneToOne: false
             referencedRelation: "home_process_settings"
             referencedColumns: ["id"]
@@ -878,7 +878,7 @@ export type Database = {
         Row: {
           answer: string
           created_at: string
-          home_faqs_id: number
+          home_faqs_settings_id: number
           id: string
           question: string
           sort_order: number
@@ -887,7 +887,7 @@ export type Database = {
         Insert: {
           answer?: string
           created_at?: string
-          home_faqs_id: number
+          home_faqs_settings_id: number
           id?: string
           question?: string
           sort_order?: number
@@ -896,7 +896,7 @@ export type Database = {
         Update: {
           answer?: string
           created_at?: string
-          home_faqs_id?: number
+          home_faqs_settings_id?: number
           id?: string
           question?: string
           sort_order?: number
@@ -904,7 +904,7 @@ export type Database = {
         }
         Relationships: [
           {
-            columns: ["home_faqs_id"]
+            columns: ["home_faqs_settings_id"]
             isOneToOne: false
             referencedRelation: "home_faqs_settings"
             referencedColumns: ["id"]
