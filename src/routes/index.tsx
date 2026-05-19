@@ -7,32 +7,13 @@ import g1 from "@/assets/gallery-1.jpg";
 import g2 from "@/assets/gallery-2.jpg";
 import g3 from "@/assets/gallery-3.jpg";
 import g4 from "@/assets/gallery-4.jpg";
-import { useServices, useSettings, useTestimonials, useGallery } from "@/hooks/use-cms";
+import { DEFAULT_SETTINGS, useGallery, useServices, useSettings, useTestimonials } from "@/hooks/use-cms";
 import { useRealtime } from "@/hooks/use-realtime";
 import { getIcon } from "@/lib/icons";
 
 export const Route = createFileRoute("/")({ component: HomePage });
 
-const whyUs = [
-  { icon: ShieldCheck, title: "Safe & Insured", desc: "Every shipment is handled with care and fully insured for peace of mind." },
-  { icon: Clock, title: "On-Time Delivery", desc: "We respect deadlines. Scheduled and delivered on time, every time." },
-  { icon: Award, title: "Trained Professionals", desc: "Skilled packers and movers trained in modern handling techniques." },
-  { icon: Truck, title: "Pan-India Network", desc: "Dedicated fleet covering Kakinada and all major Indian cities." },
-];
-
-const process = [
-  { step: "01", title: "Get a Free Quote", desc: "Share your move details and receive a transparent estimate within hours." },
-  { step: "02", title: "Survey & Plan", desc: "Our team plans packing, manpower and the right vehicle for your move." },
-  { step: "03", title: "Pack & Load", desc: "Professional packing with quality materials. Safe loading by trained crew." },
-  { step: "04", title: "Transport & Deliver", desc: "Careful unloading and unpacking at your new place." },
-];
-
-const faqs = [
-  { q: "Do you provide service across India?", a: "Yes — we offer relocation, vehicle transport and warehousing across all major Indian cities from our Kakinada hub." },
-  { q: "How are charges calculated?", a: "Charges depend on distance, volume of goods, type of service, packing material and floor access. Get a free transparent quote with no hidden fees." },
-  { q: "Is my shipment insured?", a: "Yes, we offer transit insurance options to fully cover your goods during shifting." },
-  { q: "How long does household shifting take?", a: "Local moves are usually completed in 1 day. Intercity moves take 2–7 days depending on distance." },
-];
+const whyUsIcons = [ShieldCheck, Clock, Award, Truck];
 
 const fallbackGallery = [g1, g2, g3, g4];
 
@@ -43,9 +24,14 @@ function HomePage() {
   const { data: testimonials = [] } = useTestimonials();
   const { data: gallery = [] } = useGallery();
 
-  const hero = settings?.hero;
-  const about = settings?.about;
-  const contact = settings?.contact;
+  const s = settings ?? DEFAULT_SETTINGS;
+  const hero = s.hero;
+  const about = s.about;
+  const contact = s.contact;
+  const heroImages = s.hero_images;
+  const whyUsSection = s.home_why_us;
+  const processSection = s.home_process;
+  const faqSection = s.home_faqs;
   const phoneHref = `tel:${(contact?.phone ?? "+919876543210").replace(/\s/g, "")}`;
   const wa = (contact?.whatsapp ?? "+919876543210").replace(/\D/g, "");
 
@@ -60,12 +46,14 @@ function HomePage() {
     ? gallery.slice(0, 4).map((g) => g.image_url)
     : fallbackGallery;
 
+  const heroBackground = heroImages?.home || heroImg;
+
   return (
     <SiteLayout>
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt="SS Packers and Movers truck" className="h-full w-full object-cover" width={1920} height={1080} />
+          <img src={heroBackground} alt={hero?.title ?? "SS Packers and Movers truck"} className="h-full w-full object-cover" width={1920} height={1080} />
           <div className="absolute inset-0 bg-gradient-hero" />
         </div>
         <div className="relative container mx-auto px-4 py-28 md:py-40 max-w-5xl">
@@ -107,9 +95,11 @@ function HomePage() {
 
       {/* WHY US */}
       <section className="container mx-auto px-4 py-20 md:py-28">
-        <SectionHeader eyebrow="Why Choose Us" title="Moving made simple, safe and stress-free" />
+        <SectionHeader eyebrow={whyUsSection.eyebrow} title={whyUsSection.title} />
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-          {whyUs.map(({ icon: Icon, title, desc }) => (
+          {whyUsSection.items.map(({ title, desc }, index) => {
+            const Icon = whyUsIcons[index] ?? ShieldCheck;
+            return (
             <div key={title} className="group rounded-2xl border border-border bg-card p-7 hover:shadow-brand hover:-translate-y-1 transition-all">
               <div className="h-12 w-12 rounded-xl bg-gradient-brand text-white flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
                 <Icon className="h-6 w-6" />
@@ -117,7 +107,7 @@ function HomePage() {
               <h3 className="font-bold text-lg mb-2">{title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
             </div>
-          ))}
+          )})}
         </div>
       </section>
 
@@ -149,9 +139,9 @@ function HomePage() {
 
       {/* PROCESS */}
       <section className="container mx-auto px-4 py-20 md:py-28">
-        <SectionHeader eyebrow="Our Process" title="A simple 4-step move" />
+        <SectionHeader eyebrow={processSection.eyebrow} title={processSection.title} />
         <div className="grid md:grid-cols-4 gap-6 mt-12">
-          {process.map((p) => (
+          {processSection.items.map((p) => (
             <div key={p.step} className="relative rounded-2xl bg-card border border-border p-7">
               <div className="text-5xl font-extrabold text-primary/20 absolute top-4 right-5">{p.step}</div>
               <h3 className="font-bold text-lg mb-2">{p.title}</h3>
@@ -208,15 +198,15 @@ function HomePage() {
 
       {/* FAQ */}
       <section className="container mx-auto px-4 py-20 md:py-28 max-w-4xl">
-        <SectionHeader eyebrow="FAQ" title="Frequently asked questions" />
+        <SectionHeader eyebrow={faqSection.eyebrow} title={faqSection.title} />
         <div className="space-y-3 mt-12">
-          {faqs.map((f) => (
-            <details key={f.q} className="group rounded-xl border border-border bg-card p-5 [&_summary]:cursor-pointer">
+          {faqSection.items.map((f) => (
+            <details key={f.question} className="group rounded-xl border border-border bg-card p-5 [&_summary]:cursor-pointer">
               <summary className="flex items-center justify-between gap-4 font-semibold">
-                {f.q}
+                {f.question}
                 <span className="h-7 w-7 rounded-full bg-muted flex items-center justify-center group-open:bg-primary group-open:text-primary-foreground transition-colors">+</span>
               </summary>
-              <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{f.a}</p>
+              <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{f.answer}</p>
             </details>
           ))}
         </div>

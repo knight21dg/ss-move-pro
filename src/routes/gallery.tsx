@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
 import { PageHero } from "./about";
-import { useGallery } from "@/hooks/use-cms";
+import { useGallery, useSettings } from "@/hooks/use-cms";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -15,10 +15,17 @@ export const Route = createFileRoute("/gallery")({
 
 function GalleryPage() {
   const { data: items = [], isLoading } = useGallery();
+  const { data: s } = useSettings();
+  const heroImage = s?.hero_images?.gallery;
 
   return (
     <SiteLayout>
-      <PageHero eyebrow="Gallery" title="A look at our work" subtitle="Real moments from real moves we've handled across India." />
+      <PageHero
+        eyebrow="Gallery"
+        title="A look at our work"
+        subtitle="Real moments from real moves we've handled across India."
+        backgroundImage={heroImage}
+      />
       <section className="container mx-auto px-4 py-16">
         {isLoading ? (
           <p className="text-center text-muted-foreground">Loading...</p>

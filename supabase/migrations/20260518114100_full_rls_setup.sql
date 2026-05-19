@@ -147,6 +147,45 @@ INSERT INTO public.site_settings (key, value) VALUES
     'email', 'info@sspackersmovers.in', 'address', 'Kakinada, Andhra Pradesh, India',
     'whatsapp_enquiry_message', 'Hi, I''m interested in your services. Can you please share a quote based on my details?')),
   ('hero',   jsonb_build_object('title','SS Packers & Movers','subtitle','Trusted Relocation in Kakinada & Across India','cta','Get Free Quote')),
+  ('hero_images', jsonb_build_object(
+    'home','',
+    'about','',
+    'services','',
+    'gallery','',
+    'videos','',
+    'enquiry','',
+    'contact',''
+  )),
+  ('home_why_us', jsonb_build_object(
+    'eyebrow','Why Choose Us',
+    'title','Moving made simple, safe and stress-free',
+    'items', jsonb_build_array(
+      jsonb_build_object('title','Safe & Insured','desc','Every shipment is handled with care and fully insured for peace of mind.'),
+      jsonb_build_object('title','On-Time Delivery','desc','We respect deadlines. Scheduled and delivered on time, every time.'),
+      jsonb_build_object('title','Trained Professionals','desc','Skilled packers and movers trained in modern handling techniques.'),
+      jsonb_build_object('title','Pan-India Network','desc','Dedicated fleet covering Kakinada and all major Indian cities.')
+    )
+  )),
+  ('home_process', jsonb_build_object(
+    'eyebrow','Our Process',
+    'title','A simple 4-step move',
+    'items', jsonb_build_array(
+      jsonb_build_object('step','01','title','Get a Free Quote','desc','Share your move details and receive a transparent estimate within hours.'),
+      jsonb_build_object('step','02','title','Survey & Plan','desc','Our team plans packing, manpower and the right vehicle for your move.'),
+      jsonb_build_object('step','03','title','Pack & Load','desc','Professional packing with quality materials. Safe loading by trained crew.'),
+      jsonb_build_object('step','04','title','Transport & Deliver','desc','Careful unloading and unpacking at your new place.')
+    )
+  )),
+  ('home_faqs', jsonb_build_object(
+    'eyebrow','FAQ',
+    'title','Frequently asked questions',
+    'items', jsonb_build_array(
+      jsonb_build_object('question','Do you provide service across India?','answer','Yes — we offer relocation, vehicle transport and warehousing across all major Indian cities from our Kakinada hub.'),
+      jsonb_build_object('question','How are charges calculated?','answer','Charges depend on distance, volume of goods, type of service, packing material and floor access. Get a free transparent quote with no hidden fees.'),
+      jsonb_build_object('question','Is my shipment insured?','answer','Yes, we offer transit insurance options to fully cover your goods during shifting.'),
+      jsonb_build_object('question','How long does household shifting take?','answer','Local moves are usually completed in 1 day. Intercity moves take 2–7 days depending on distance.')
+    )
+  )),
   ('about',  jsonb_build_object(
     'heading','About SS Packers & Movers','body','We are a trusted relocation company based in Kakinada with years of experience in safe, on-time moves across India.',
     'years_experience','10+','happy_customers','5000+','cities_covered','100+')),
@@ -156,6 +195,58 @@ INSERT INTO public.site_settings (key, value) VALUES
     'site_name','SS Packers & Movers','default_title','SS Packers & Movers - Trusted Relocation in Kakinada',
     'default_description','Professional packers and movers in Kakinada offering home, office and vehicle transport across India.',
     'keywords','packers movers kakinada,home relocation,office shifting,vehicle transport,andhra pradesh')),
+  ('seo',    jsonb_build_object(
+    'default', jsonb_build_object(
+      'title','SS Packers & Movers Kakinada | Trusted Relocation & Transport',
+      'description','Professional packers & movers in Kakinada — household shifting, office relocation, car transport, warehouse storage. Get a free quote today.',
+      'keywords','packers and movers Kakinada, movers Kakinada, household shifting Kakinada, car transport Andhra Pradesh, office relocation Kakinada',
+      'og_image','https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d064612a-e467-4d5d-9eb9-00159ad5972e'
+    ),
+    'pages', jsonb_build_object(
+      'home', jsonb_build_object(
+        'title','SS Packers & Movers Kakinada | Trusted Relocation & Transport',
+        'description','Professional packers & movers in Kakinada — household shifting, office relocation, car transport, warehouse storage. Get a free quote today.',
+        'keywords','packers and movers Kakinada, movers Kakinada, household shifting Kakinada, car transport Andhra Pradesh, office relocation Kakinada',
+        'og_image','https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d064612a-e467-4d5d-9eb9-00159ad5972e'
+      ),
+      'about', jsonb_build_object(
+        'title','About SS Packers & Movers Kakinada',
+        'description','Learn about SS Packers & Movers — Kakinada''s trusted relocation company serving households and businesses across India.',
+        'keywords','about SS Packers & Movers, Kakinada movers, relocation company Kakinada',
+        'og_image','https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d064612a-e467-4d5d-9eb9-00159ad5972e'
+      ),
+      'services', jsonb_build_object(
+        'title','Services — SS Packers & Movers Kakinada',
+        'description','Household shifting, office relocation, car transport, warehousing, loading & unloading and more — across India from Kakinada.',
+        'keywords','moving services Kakinada, office relocation, household shifting, vehicle transport',
+        'og_image','https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d064612a-e467-4d5d-9eb9-00159ad5972e'
+      ),
+      'gallery', jsonb_build_object(
+        'title','Gallery — SS Packers & Movers',
+        'description','Photos from our packing, moving, warehousing and vehicle transport operations.',
+        'keywords','packers movers gallery, relocation photos, moving company Kakinada',
+        'og_image','https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d064612a-e467-4d5d-9eb9-00159ad5972e'
+      ),
+      'videos', jsonb_build_object(
+        'title','Videos — SS Packers & Movers',
+        'description','Watch how SS Packers & Movers handles your relocation.',
+        'keywords','packers movers videos, relocation process, moving company videos',
+        'og_image','https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d064612a-e467-4d5d-9eb9-00159ad5972e'
+      ),
+      'enquiry', jsonb_build_object(
+        'title','Get a Free Quote — SS Packers & Movers Kakinada',
+        'description','Tell us about your move and get a free, no-obligation quote from SS Packers & Movers.',
+        'keywords','moving quote Kakinada, relocation estimate, packers movers enquiry',
+        'og_image','https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d064612a-e467-4d5d-9eb9-00159ad5972e'
+      ),
+      'contact', jsonb_build_object(
+        'title','Contact SS Packers & Movers Kakinada',
+        'description','Reach SS Packers & Movers in Kakinada — phone, WhatsApp, email and address.',
+        'keywords','contact packers movers Kakinada, moving company phone, relocation contact',
+        'og_image','https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/d064612a-e467-4d5d-9eb9-00159ad5972e'
+      )
+    )
+  )),
   ('cta',    jsonb_build_object('banner_text','Get a Free Quote Today!','banner_link','#contact','banner_button','Request Quote','show_banner',true))
 ON CONFLICT (key) DO NOTHING;
 

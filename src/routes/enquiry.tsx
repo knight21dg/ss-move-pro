@@ -40,6 +40,7 @@ function EnquiryPage() {
   const wa = (settings?.contact.whatsapp ?? "+919876543210").replace(/\D/g, "");
   const phone = settings?.contact.phone ?? "+91 98765 43210";
   const waTpl = settings?.contact.whatsapp_enquiry_message ?? "Hi, I’m interested in your services. Can I get a quote?";
+  const heroImage = settings?.hero_images?.enquiry;
 
   function fillWa(msg: string, vars: Record<string, string>) {
     let t = msg;
@@ -98,7 +99,12 @@ function EnquiryPage() {
 
   return (
     <SiteLayout>
-      <PageHero eyebrow="Enquiry" title="Get a free quote" subtitle="Fill in your details and we'll get back with a transparent estimate." />
+      <PageHero
+        eyebrow="Enquiry"
+        title="Get a free quote"
+        subtitle="Fill in your details and we'll get back with a transparent estimate."
+        backgroundImage={heroImage}
+      />
       <section className="container mx-auto px-4 py-16 grid lg:grid-cols-5 gap-10">
         <div className="lg:col-span-3">
           <form id="enquiry-form" onSubmit={onSubmit} className="grid sm:grid-cols-2 gap-5 rounded-2xl border border-border bg-card p-6 md:p-8 shadow-soft">

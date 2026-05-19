@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
 import { PageHero } from "./about";
-import { useVideos } from "@/hooks/use-cms";
+import { useSettings, useVideos } from "@/hooks/use-cms";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
@@ -20,10 +20,12 @@ function getYoutubeId(url: string) {
 
 function VideosPage() {
   const { data: videos = [], isLoading } = useVideos();
+  const { data: s } = useSettings();
+  const heroImage = s?.hero_images?.videos;
 
   return (
     <SiteLayout>
-      <PageHero eyebrow="Videos" title="See us in action" />
+      <PageHero eyebrow="Videos" title="See us in action" backgroundImage={heroImage} />
       <section className="container mx-auto px-4 py-16">
         {isLoading ? (
           <p className="text-center text-muted-foreground">Loading...</p>

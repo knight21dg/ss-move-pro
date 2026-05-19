@@ -19,6 +19,7 @@ function ContactPage() {
   const { data: s } = useSettings();
   const c = s?.contact;
   const phone = c?.phone ?? "+91 98765 43210";
+  const heroImage = s?.hero_images?.contact;
   const phoneHref = `tel:${phone.replace(/\s/g, "")}`;
   const wa = (c?.whatsapp ?? "+919876543210").replace(/\D/g, "");
   const email = c?.email ?? "info@sspackersmovers.in";
@@ -33,7 +34,12 @@ function ContactPage() {
 
   return (
     <SiteLayout>
-      <PageHero eyebrow="Contact" title="Let's talk about your move" subtitle="We respond to most enquiries within an hour." />
+      <PageHero
+        eyebrow="Contact"
+        title="Let's talk about your move"
+        subtitle="We respond to most enquiries within an hour."
+        backgroundImage={heroImage}
+      />
       <section className="container mx-auto px-4 py-16 grid md:grid-cols-2 gap-6">
         {items.map(({ icon: Icon, title, value, href }) => (
           <div key={title} className="rounded-2xl border border-border bg-card p-7 flex gap-4">

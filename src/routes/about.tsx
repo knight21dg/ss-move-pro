@@ -19,10 +19,16 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   const { data: s } = useSettings();
   const about = s?.about;
+  const heroImage = s?.hero_images?.about;
 
   return (
     <SiteLayout>
-      <PageHero eyebrow="About Us" title="Moving families and businesses with care since day one" subtitle="SS Packers & Movers is a Kakinada-based relocation company built on trust, reliability and customer-first service." />
+      <PageHero
+        eyebrow="About Us"
+        title="Moving families and businesses with care since day one"
+        subtitle="SS Packers & Movers is a Kakinada-based relocation company built on trust, reliability and customer-first service."
+        backgroundImage={heroImage}
+      />
       <section className="container mx-auto px-4 py-16 grid lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-5">
           <h2 className="text-3xl md:text-4xl font-extrabold">{about?.heading ?? "Your trusted relocation partner in Kakinada"}</h2>
@@ -70,10 +76,17 @@ function AboutPage() {
   );
 }
 
-export function PageHero({ eyebrow, title, subtitle }: { eyebrow: string; title: string; subtitle?: string }) {
+export function PageHero({ eyebrow, title, subtitle, backgroundImage }: { eyebrow: string; title: string; subtitle?: string; backgroundImage?: string }) {
+  const hasImage = Boolean(backgroundImage);
   return (
-    <section className="bg-gradient-dark text-white">
-      <div className="container mx-auto px-4 py-20 md:py-28 text-center max-w-3xl">
+    <section className={hasImage ? "relative overflow-hidden text-white" : "bg-gradient-dark text-white"}>
+      {hasImage && (
+        <div className="absolute inset-0">
+          <img src={backgroundImage} alt={title} className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-hero" />
+        </div>
+      )}
+      <div className="relative container mx-auto px-4 py-20 md:py-28 text-center max-w-3xl">
         <div className="text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">{eyebrow}</div>
         <h1 className="text-4xl md:text-6xl font-extrabold text-balance">{title}</h1>
         {subtitle && <p className="mt-5 text-white/80 text-lg">{subtitle}</p>}

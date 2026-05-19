@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import { PageHero } from "./about";
-import { useServices } from "@/hooks/use-cms";
+import { useServices, useSettings } from "@/hooks/use-cms";
 import { getIcon } from "@/lib/icons";
 
 export const Route = createFileRoute("/services")({
@@ -18,10 +18,17 @@ export const Route = createFileRoute("/services")({
 
 function ServicesPage() {
   const { data: services = [], isLoading } = useServices();
+  const { data: s } = useSettings();
+  const heroImage = s?.hero_images?.services;
 
   return (
     <SiteLayout>
-      <PageHero eyebrow="Services" title="Complete relocation solutions" subtitle="From a single carton to a full office, we handle moves of every size with the same professionalism." />
+      <PageHero
+        eyebrow="Services"
+        title="Complete relocation solutions"
+        subtitle="From a single carton to a full office, we handle moves of every size with the same professionalism."
+        backgroundImage={heroImage}
+      />
       <section className="container mx-auto px-4 py-16">
         {isLoading ? (
           <p className="text-center text-muted-foreground">Loading services...</p>
