@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSettingsForm } from "@/hooks/use-settings-form";
 import type { SiteSettings } from "@/hooks/use-cms";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/settings/seo")({ component: SeoSettings });
 
@@ -53,7 +54,7 @@ function SeoSettings() {
             <div><Label>Title</Label><Input value={form.seo.default.title} onChange={(e) => updateSeo("default", "title", e.target.value)} /></div>
             <div><Label>Description</Label><Textarea rows={2} value={form.seo.default.description} onChange={(e) => updateSeo("default", "description", e.target.value)} /></div>
             <div><Label>Keywords</Label><Textarea rows={2} value={form.seo.default.keywords} onChange={(e) => updateSeo("default", "keywords", e.target.value)} /></div>
-            <div><Label>OG Image URL</Label><Input value={form.seo.default.og_image} onChange={(e) => updateSeo("default", "og_image", e.target.value)} placeholder="https://..." /></div>
+            <div><Label>OG Image</Label><ImageUpload value={form.seo.default.og_image} onChange={(url) => updateSeo("default", "og_image", url)} /></div>
           </CardContent>
         </Card>
 
@@ -74,7 +75,7 @@ function SeoSettings() {
                 <div><Label>Title</Label><Input value={form.seo.pages[key].title} onChange={(e) => updateSeo(key, "title", e.target.value)} /></div>
                 <div><Label>Description</Label><Textarea rows={2} value={form.seo.pages[key].description} onChange={(e) => updateSeo(key, "description", e.target.value)} /></div>
                 <div><Label>Keywords</Label><Textarea rows={2} value={form.seo.pages[key].keywords} onChange={(e) => updateSeo(key, "keywords", e.target.value)} /></div>
-                <div><Label>OG Image URL</Label><Input value={form.seo.pages[key].og_image} onChange={(e) => updateSeo(key, "og_image", e.target.value)} placeholder="https://..." /></div>
+                <div><Label>OG Image</Label><ImageUpload value={form.seo.pages[key].og_image} onChange={(url) => updateSeo(key, "og_image", url)} /></div>
               </div>
             ))}
           </CardContent>

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSettingsForm } from "@/hooks/use-settings-form";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/settings/hero")({ component: HeroSettings });
 
@@ -22,6 +23,7 @@ function HeroSettings() {
         <Card>
           <CardHeader><CardTitle>Home Hero Text</CardTitle></CardHeader>
           <CardContent className="space-y-4">
+            <div><Label>Badge</Label><Input value={form.hero.badge as string | undefined} onChange={(e) => setForm({ ...form, hero: { ...form.hero, badge: e.target.value } })} /></div>
             <div><Label>Title</Label><Input value={form.hero.title as string | undefined} onChange={(e) => setForm({ ...form, hero: { ...form.hero, title: e.target.value } })} /></div>
             <div><Label>Subtitle</Label><Input value={form.hero.subtitle as string | undefined} onChange={(e) => setForm({ ...form, hero: { ...form.hero, subtitle: e.target.value } })} /></div>
             <div><Label>CTA Button Text</Label><Input value={form.hero.cta as string | undefined} onChange={(e) => setForm({ ...form, hero: { ...form.hero, cta: e.target.value } })} /></div>
@@ -34,10 +36,9 @@ function HeroSettings() {
             {HERO_IMAGE_KEYS.map((key) => (
               <div key={key}>
                 <Label>{key.charAt(0).toUpperCase() + key.slice(1)} Page</Label>
-                <Input
+                <ImageUpload
                   value={form.hero_images[key] as string | undefined}
-                  onChange={(e) => setForm({ ...form, hero_images: { ...form.hero_images, [key]: e.target.value } })}
-                  placeholder="https://..."
+                  onChange={(url) => setForm({ ...form, hero_images: { ...form.hero_images, [key]: url } })}
                 />
               </div>
             ))}

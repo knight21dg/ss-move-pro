@@ -3,7 +3,19 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const TABLES = [
-  "site_settings",
+  "hero_settings",
+  "hero_images_settings",
+  "home_why_us_settings",
+  "home_process_settings",
+  "home_faqs_settings",
+  "about_settings",
+  "contact_settings",
+  "social_settings",
+  "cta_settings",
+  "footer_settings",
+  "seo_default_settings",
+  "seo_page_settings",
+  "ga_settings",
   "services",
   "gallery_images",
   "testimonials",

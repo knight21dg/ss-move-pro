@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -83,7 +84,7 @@ function AdminVideos() {
               <div><Label>Title</Label><Input value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} /></div>
               <div><Label>YouTube URL</Label><Input placeholder="https://www.youtube.com/watch?v=..." value={editing.video_url} onChange={(e) => setEditing({ ...editing, video_url: e.target.value })} /></div>
               <div><Label>Description (optional)</Label><Textarea rows={2} value={editing.description ?? ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} /></div>
-              <div><Label>Thumbnail URL (optional — auto from YouTube)</Label><Input value={editing.thumbnail_url ?? ""} onChange={(e) => setEditing({ ...editing, thumbnail_url: e.target.value })} /></div>
+              <div><Label>Thumbnail URL (optional — auto from YouTube)</Label><ImageUpload folder="videos" value={editing.thumbnail_url ?? ""} onChange={(url) => setEditing({ ...editing, thumbnail_url: url })} /></div>
               <div className="flex justify-between items-end gap-4">
                 <div className="flex-1"><Label>Sort Order</Label><Input type="number" value={editing.sort_order} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></div>
                 <div className="flex items-center gap-2 pb-2"><Switch checked={editing.is_active} onCheckedChange={(v) => setEditing({ ...editing, is_active: v })} /> <Label>Active</Label></div>

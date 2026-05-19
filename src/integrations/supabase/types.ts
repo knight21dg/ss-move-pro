@@ -182,6 +182,372 @@ export type Database = {
         }
         Relationships: []
       }
+      about_settings: {
+        Row: {
+          body: string
+          cities_covered: string
+          created_at: string
+          heading: string
+          happy_customers: string
+          id: number
+          updated_at: string
+          years_experience: string
+        }
+        Insert: {
+          body?: string
+          cities_covered?: string
+          created_at?: string
+          heading?: string
+          happy_customers?: string
+          id?: number
+          updated_at?: string
+          years_experience?: string
+        }
+        Update: {
+          body?: string
+          cities_covered?: string
+          created_at?: string
+          heading?: string
+          happy_customers?: string
+          id?: number
+          updated_at?: string
+          years_experience?: string
+        }
+        Relationships: []
+      }
+      contact_settings: {
+        Row: {
+          address: string
+          created_at: string
+          email: string
+          id: number
+          phone: string
+          updated_at: string
+          whatsapp: string
+          whatsapp_enquiry_message: string
+        }
+        Insert: {
+          address?: string
+          created_at?: string
+          email?: string
+          id?: number
+          phone?: string
+          updated_at?: string
+          whatsapp?: string
+          whatsapp_enquiry_message?: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          email?: string
+          id?: number
+          phone?: string
+          updated_at?: string
+          whatsapp?: string
+          whatsapp_enquiry_message?: string
+        }
+        Relationships: []
+      }
+      cta_settings: {
+        Row: {
+          banner_button: string
+          banner_link: string
+          banner_subtitle: string
+          banner_text: string
+          created_at: string
+          id: number
+          show_banner: boolean
+          updated_at: string
+        }
+        Insert: {
+          banner_button?: string
+          banner_link?: string
+          banner_subtitle?: string
+          banner_text?: string
+          created_at?: string
+          id?: number
+          show_banner?: boolean
+          updated_at?: string
+        }
+        Update: {
+          banner_button?: string
+          banner_link?: string
+          banner_subtitle?: string
+          banner_text?: string
+          created_at?: string
+          id?: number
+          show_banner?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      footer_settings: {
+        Row: {
+          created_at: string
+          description: string
+          id: number
+          quick_links: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: number
+          quick_links?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: number
+          quick_links?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ga_settings: {
+        Row: {
+          created_at: string
+          ga_measurement_id: string
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ga_measurement_id?: string
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ga_measurement_id?: string
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hero_images_settings: {
+        Row: {
+          about: string
+          contact: string
+          created_at: string
+          gallery: string
+          home: string
+          id: number
+          enquiry: string
+          services: string
+          updated_at: string
+          videos: string
+        }
+        Insert: {
+          about?: string
+          contact?: string
+          created_at?: string
+          gallery?: string
+          home?: string
+          id?: number
+          enquiry?: string
+          services?: string
+          updated_at?: string
+          videos?: string
+        }
+        Update: {
+          about?: string
+          contact?: string
+          created_at?: string
+          gallery?: string
+          home?: string
+          id?: number
+          enquiry?: string
+          services?: string
+          updated_at?: string
+          videos?: string
+        }
+        Relationships: []
+      }
+      hero_settings: {
+        Row: {
+          badge: string
+          created_at: string
+          cta: string
+          id: number
+          subtitle: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          badge?: string
+          created_at?: string
+          cta?: string
+          id?: number
+          subtitle?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          badge?: string
+          created_at?: string
+          cta?: string
+          id?: number
+          subtitle?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      home_faqs_settings: {
+        Row: {
+          content: Json
+          created_at: string
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      home_process_settings: {
+        Row: {
+          content: Json
+          created_at: string
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      home_why_us_settings: {
+        Row: {
+          content: Json
+          created_at: string
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      seo_default_settings: {
+        Row: {
+          created_at: string
+          id: number
+          og_image: string
+          site_description: string
+          site_keywords: string
+          site_title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          og_image?: string
+          site_description?: string
+          site_keywords?: string
+          site_title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          og_image?: string
+          site_description?: string
+          site_keywords?: string
+          site_title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      seo_page_settings: {
+        Row: {
+          created_at: string
+          description: string
+          id: number
+          keywords: string
+          og_image: string
+          page_key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: number
+          keywords?: string
+          og_image?: string
+          page_key?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: number
+          keywords?: string
+          og_image?: string
+          page_key?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      social_settings: {
+        Row: {
+          created_at: string
+          facebook: string
+          id: number
+          instagram: string
+          updated_at: string
+          youtube: string
+        }
+        Insert: {
+          created_at?: string
+          facebook?: string
+          id?: number
+          instagram?: string
+          updated_at?: string
+          youtube?: string
+        }
+        Update: {
+          created_at?: string
+          facebook?: string
+          id?: number
+          instagram?: string
+          updated_at?: string
+          youtube?: string
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           avatar_url: string | null

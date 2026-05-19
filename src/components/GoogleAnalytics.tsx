@@ -3,20 +3,21 @@ import { useQuery, QueryClient } from "@tanstack/react-query";
 import { supabase } from "../integrations/supabase/client";
 
 export function GoogleAnalytics({ queryClient }: { queryClient: QueryClient }) {
-  const { data: settings } = useQuery({
-    queryKey: ["site_settings"],
+  const { data: row } = useQuery({
+    queryKey: ["ga_settings"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("site_settings")
-        .select("key,value")
-        .eq("key", "ga_measurement_id");
+        .from("ga_settings")
+        .select("ga_measurement_id")
+        .eq("id", 1)
+        .single();
       if (error) throw error;
-      return data?.[0] ?? null;
+      return data;
     },
     enabled: !!queryClient,
   }, queryClient);
 
-  const gaMeasurementId = (settings?.value as any)?.ga_measurement_id;
+  const gaMeasurementId = row?.ga_measurement_id ?? "";
 
   if (!gaMeasurementId) {
     return null;
