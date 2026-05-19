@@ -39,6 +39,13 @@ function EnquiryPage() {
   const { data: settings } = useSettings();
   const wa = (settings?.contact.whatsapp ?? "+919876543210").replace(/\D/g, "");
   const phone = settings?.contact.phone ?? "+91 98765 43210";
+  const waTpl = settings?.contact.whatsapp_enquiry_message ?? "Hi, I’m interested in your services. Can I get a quote?";
+
+  function fillWa(msg: string, vars: Record<string, string>) {
+    let t = msg;
+    for (const [k, v] of Object.entries(vars)) t = t.replace(new RegExp(`\\{${k}\\}`, "g"), v);
+    return encodeURIComponent(t);
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -65,8 +72,19 @@ function EnquiryPage() {
       toast.error(error.message);
       return;
     }
+    // auto-open WhatsApp to business with pre-filled enquiry
+    const vars = {
+      name: parsed.data.name,
+      phone: parsed.data.phone,
+      from_city: parsed.data.from_city,
+      to_city: parsed.data.to_city,
+      service: parsed.data.service,
+      moving_date: parsed.data.moving_date,
+      message: parsed.data.message || "",
+    };
+    window.open(`https://wa.me/${wa}?text=${fillWa(waTpl, vars)}`, "_blank");
     form.reset();
-    toast.success("Enquiry sent! Our team will reach out within hours.");
+    toast.success("Enquiry sent! WhatsApp should open for a direct chat with our team.");
   }
 
   function whatsappQuote() {

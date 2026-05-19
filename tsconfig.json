@@ -10,8 +10,9 @@
     /* Bundler mode */
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": false,
-    "noEmit": true,
+"verbatimModuleSyntax": false,
+"noEmit": true,
+"baseUrl": ".",
 
     /* Linting */
     "skipLibCheck": true,

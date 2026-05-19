@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SigninRouteImport } from './routes/signin'
 import { Route as ServicesRouteImport } from './routes/services'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as EnquiryRouteImport } from './routes/enquiry'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -36,14 +36,14 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SigninRoute = SigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -113,8 +113,8 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/enquiry': typeof EnquiryRoute
   '/gallery': typeof GalleryRoute
-  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
+  '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
@@ -131,8 +131,8 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/enquiry': typeof EnquiryRoute
   '/gallery': typeof GalleryRoute
-  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
+  '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
@@ -150,8 +150,8 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/enquiry': typeof EnquiryRoute
   '/gallery': typeof GalleryRoute
-  '/login': typeof LoginRoute
   '/services': typeof ServicesRoute
+  '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
@@ -170,8 +170,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/enquiry'
     | '/gallery'
-    | '/login'
     | '/services'
+    | '/signin'
     | '/sitemap.xml'
     | '/videos'
     | '/admin/enquiries'
@@ -188,8 +188,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/enquiry'
     | '/gallery'
-    | '/login'
     | '/services'
+    | '/signin'
     | '/sitemap.xml'
     | '/videos'
     | '/admin/enquiries'
@@ -206,8 +206,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/enquiry'
     | '/gallery'
-    | '/login'
     | '/services'
+    | '/signin'
     | '/sitemap.xml'
     | '/videos'
     | '/admin/enquiries'
@@ -225,8 +225,8 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   EnquiryRoute: typeof EnquiryRoute
   GalleryRoute: typeof GalleryRoute
-  LoginRoute: typeof LoginRoute
   ServicesRoute: typeof ServicesRoute
+  SigninRoute: typeof SigninRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VideosRoute: typeof VideosRoute
   AdminEnquiriesRoute: typeof AdminEnquiriesRoute
@@ -254,18 +254,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -361,8 +361,8 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   EnquiryRoute: EnquiryRoute,
   GalleryRoute: GalleryRoute,
-  LoginRoute: LoginRoute,
   ServicesRoute: ServicesRoute,
+  SigninRoute: SigninRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VideosRoute: VideosRoute,
   AdminEnquiriesRoute: AdminEnquiriesRoute,
@@ -376,3 +376,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

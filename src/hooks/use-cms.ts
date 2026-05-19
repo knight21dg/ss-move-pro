@@ -56,14 +56,14 @@ export function useTestimonials(activeOnly = true) {
 export type SiteSettings = {
   hero: { title: string; subtitle: string; cta: string };
   about: { heading: string; body: string; years_experience: string; happy_customers: string; cities_covered: string };
-  contact: { phone: string; whatsapp: string; email: string; address: string };
+  contact: { phone: string; whatsapp: string; email: string; address: string; whatsapp_enquiry_message: string };
   social: { facebook: string; instagram: string; youtube: string };
 };
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   hero: { title: "SS Packers & Movers", subtitle: "Trusted Relocation in Kakinada & Across India", cta: "Get Free Quote" },
   about: { heading: "About SS Packers & Movers", body: "We are a trusted relocation company based in Kakinada.", years_experience: "10+", happy_customers: "5000+", cities_covered: "100+" },
-  contact: { phone: "+91 9876543210", whatsapp: "+91 9876543210", email: "info@sspackersmovers.in", address: "Kakinada, Andhra Pradesh, India" },
+  contact: { phone: "+91 9876543210", whatsapp: "+91 9876543210", email: "info@sspackersmovers.in", address: "Kakinada, Andhra Pradesh, India", whatsapp_enquiry_message: "Hi, I’m interested in your services. Can I get a quote?" },
   social: { facebook: "", instagram: "", youtube: "" },
 };
 

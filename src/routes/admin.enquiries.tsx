@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Mail, Phone, Trash2, MapPin, Calendar } from "lucide-react";
+import { Mail, Phone, Trash2, MapPin, Calendar, MessageCircle } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -119,6 +119,13 @@ function AdminEnquiries() {
           <DialogFooter className="flex-wrap gap-2">
             <Button variant="ghost" className="text-destructive mr-auto" onClick={() => selected && confirm("Delete this enquiry?") && del.mutate(selected.id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
             <Button variant="outline" onClick={() => setSelected(null)}>Close</Button>
+            {selected?.phone && (
+              <Button variant="outline" asChild>
+                <a href={`https://wa.me/${selected.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="h-4 w-4 mr-1" /> WhatsApp
+                </a>
+              </Button>
+            )}
             <Button variant="brand" onClick={() => selected && update.mutate({ id: selected.id, status: selected.status, admin_notes: selected.admin_notes })}>Save</Button>
           </DialogFooter>
         </DialogContent>

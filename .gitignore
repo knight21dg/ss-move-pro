@@ -16,6 +16,9 @@ dist-ssr
 .nitro
 *.local
 
+# Scripts with secrets (local only)
+scripts/
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars

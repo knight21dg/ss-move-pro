@@ -67,6 +67,11 @@ function AdminSettings() {
             </div>
             <div><Label>Email</Label><Input value={form.contact.email} onChange={(e) => setForm({ ...form, contact: { ...form.contact, email: e.target.value } })} /></div>
             <div><Label>Address</Label><Textarea rows={2} value={form.contact.address} onChange={(e) => setForm({ ...form, contact: { ...form.contact, address: e.target.value } })} /></div>
+            <div>
+              <Label>WhatsApp Enquiry Message Template</Label>
+              <p className="text-xs text-muted-foreground mt-1 mb-2">Use {'{name}'}, {'{phone}'}, {'{from_city}'}, {'{to_city}'}, {'{service}'}, {'{moving_date}'}, {'{message}'} as placeholders.</p>
+              <Textarea rows={3} value={form.contact.whatsapp_enquiry_message} onChange={(e) => setForm({ ...form, contact: { ...form.contact, whatsapp_enquiry_message: e.target.value } })} />
+            </div>
           </CardContent>
         </Card>
 
