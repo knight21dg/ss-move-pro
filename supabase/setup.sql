@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS public.user_roles (
 ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_roles DROP CONSTRAINT IF EXISTS user_roles_user_id_key;
 ALTER TABLE public.user_roles ADD CONSTRAINT user_roles_user_id_key UNIQUE (user_id);
+DROP POLICY IF EXISTS "admins_manage_roles" ON public.user_roles;
 CREATE POLICY "admins_manage_roles" ON public.user_roles FOR ALL USING (public.has_role(auth.uid()::text,'admin')) WITH CHECK (public.has_role(auth.uid()::text,'admin'));
 DROP POLICY IF EXISTS "users_read_own_role" ON public.user_roles;
 CREATE POLICY "users_read_own_role" ON public.user_roles FOR SELECT USING (user_id = auth.uid()::text);
@@ -530,7 +531,7 @@ ON CONFLICT (id) DO NOTHING;
 -- ── BLOCK 5: migrate existing data from site_settings to the new tables ──────
 -- Hero text
 INSERT INTO public.hero_settings (id, badge, title, subtitle, cta)
-  SELECT 1, (ss.value->>'badge')::text, (ss.value->>'title')::text, (ss.value->>'subtitle')::text, (ss.value->>'cta')::text
+  SELECT 1, COALESCE((ss.value->>'badge')::text, ''), (ss.value->>'title')::text, (ss.value->>'subtitle')::text, (ss.value->>'cta')::text
   FROM public.site_settings ss WHERE ss.key = 'hero'
 ON CONFLICT (id) DO UPDATE SET
   badge    = EXCLUDED.badge,

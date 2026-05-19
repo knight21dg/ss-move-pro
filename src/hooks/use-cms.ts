@@ -459,7 +459,15 @@ export function useSettings() {
   };
 
   const pagesData = seoPages.data ?? [];
-  const pages: Record<string, SeoFields> = {};
+  const pages: Record<string, SeoFields> = {
+    home: EMPTY_SETTINGS.seo.default,
+    about: EMPTY_SETTINGS.seo.default,
+    services: EMPTY_SETTINGS.seo.default,
+    gallery: EMPTY_SETTINGS.seo.default,
+    videos: EMPTY_SETTINGS.seo.default,
+    enquiry: EMPTY_SETTINGS.seo.default,
+    contact: EMPTY_SETTINGS.seo.default,
+  };
   for (const p of pagesData) {
     pages[p.page_key] = {
       title: p.title,

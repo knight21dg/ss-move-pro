@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -48,14 +48,19 @@ export function useSettingsForm() {
   const { data, isLoading } = useSettings();
   const qc = useQueryClient();
   const [form, _setFormRaw] = useState<SiteSettings>(EMPTY_SETTINGS);
+  const isLoaded = useRef(false);
 
+  // Only set form state on initial load, not on refetches
   useEffect(() => {
-    if (data) _setFormRaw(data);
+    if (data && !isLoaded.current) {
+      _setFormRaw(data);
+      isLoaded.current = true;
+    }
   }, [data]);
 
   const setForm = (updater: SiteSettings | ((prev: SiteSettings) => SiteSettings)) => {
     if (typeof updater === "function") {
-      _setFormRaw((updater as (s: SiteSettings) => SiteSettings)(form));
+      _setFormRaw((prev) => (updater as (s: SiteSettings) => SiteSettings)(prev));
     } else {
       _setFormRaw(updater);
     }
