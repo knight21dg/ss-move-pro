@@ -201,12 +201,22 @@ async function fetchSingleton<T>(table: string): Promise<T | null> {
 
 async function fetchHomeSection<TItem>(config: {
   settingsTable: string;
-  parseContent: (raw: unknown) => { eyebrow: string; title: string; items: TItem[] };
+  itemsTable: string;
+  parseItem: (item: unknown, index: number) => TItem;
 }): Promise<{ eyebrow: string; title: string; items: TItem[] }> {
-  const { data, error } = await from(config.settingsTable).select("eyebrow,title,content").eq("id", 1).single();
-  if (error) throw error;
-  const s = data as { eyebrow: string | null; title: string | null; content: unknown } | null;
-  return config.parseContent(s?.content ?? {});
+  const [{ data: settings, error: settingsError }, { data: items, error: itemsError }] = await Promise.all([
+    from(config.settingsTable).select("eyebrow,title").eq("id", 1).single(),
+    from(config.itemsTable).select("*").eq(`${config.settingsTable.replace("_settings", "")}_id`, 1).order("sort_order"),
+  ]);
+  if (settingsError) throw settingsError;
+  if (itemsError) throw itemsError;
+  const s = settings as { eyebrow: string | null; title: string | null } | null;
+  const itemsArray = items ?? [];
+  return {
+    eyebrow: s?.eyebrow ?? "",
+    title: s?.title ?? "",
+    items: itemsArray.map((item, idx) => config.parseItem(item, idx)),
+  };
 }
 
 export function useHero() {
@@ -232,21 +242,14 @@ export function useHomeWhyUs() {
     queryFn: () =>
       fetchHomeSection<WhyUsItem>({
         settingsTable: "home_why_us_settings",
-        parseContent: (raw: unknown) => {
-          const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
-          const items: WhyUsItem[] = (c.items || []).map((i: unknown, idx: number) => {
-            const item = i as { title?: string; desc?: string; sort_order?: number };
-            return {
-              id: String(idx),
-              title: item.title ?? "",
-              description: item.desc ?? "",
-              sort_order: item.sort_order ?? idx,
-            };
-          });
+        itemsTable: "home_why_us_items",
+        parseItem: (item: unknown) => {
+          const i = item as { id?: string; title?: string; description?: string; sort_order?: number };
           return {
-            eyebrow: c.eyebrow ?? "",
-            title: c.title ?? "",
-            items,
+            id: i.id ?? "",
+            title: i.title ?? "",
+            description: i.description ?? "",
+            sort_order: i.sort_order ?? 0,
           };
         },
       }),
@@ -259,22 +262,15 @@ export function useHomeProcess() {
     queryFn: () =>
       fetchHomeSection<ProcessItem>({
         settingsTable: "home_process_settings",
-        parseContent: (raw: unknown) => {
-          const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
-          const items: ProcessItem[] = (c.items || []).map((i: unknown, idx: number) => {
-            const item = i as { step?: string; title?: string; desc?: string; sort_order?: number };
-            return {
-              id: String(idx),
-              step: item.step ?? String(idx + 1).padStart(2, "0"),
-              title: item.title ?? "",
-              description: item.desc ?? "",
-              sort_order: item.sort_order ?? idx,
-            };
-          });
+        itemsTable: "home_process_items",
+        parseItem: (item: unknown) => {
+          const i = item as { id?: string; step?: string; title?: string; description?: string; sort_order?: number };
           return {
-            eyebrow: c.eyebrow ?? "",
-            title: c.title ?? "",
-            items,
+            id: i.id ?? "",
+            step: i.step ?? "",
+            title: i.title ?? "",
+            description: i.description ?? "",
+            sort_order: i.sort_order ?? 0,
           };
         },
       }),
@@ -287,21 +283,14 @@ export function useHomeFaqs() {
     queryFn: () =>
       fetchHomeSection<FaqItem>({
         settingsTable: "home_faqs_settings",
-        parseContent: (raw: unknown) => {
-          const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
-          const items: FaqItem[] = (c.items || []).map((i: unknown, idx: number) => {
-            const item = i as { question?: string; answer?: string; sort_order?: number };
-            return {
-              id: String(idx),
-              question: item.question ?? "",
-              answer: item.answer ?? "",
-              sort_order: item.sort_order ?? idx,
-            };
-          });
+        itemsTable: "home_faqs_items",
+        parseItem: (item: unknown) => {
+          const i = item as { id?: string; question?: string; answer?: string; sort_order?: number };
           return {
-            eyebrow: c.eyebrow ?? "",
-            title: c.title ?? "",
-            items,
+            id: i.id ?? "",
+            question: i.question ?? "",
+            answer: i.answer ?? "",
+            sort_order: i.sort_order ?? 0,
           };
         },
       }),
@@ -413,18 +402,15 @@ export function useSettings() {
         queryFn: () =>
           fetchHomeSection<WhyUsItem>({
             settingsTable: "home_why_us_settings",
-            parseContent: (raw: unknown) => {
-              const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
-              const items: WhyUsItem[] = (c.items || []).map((i: unknown, idx: number) => {
-                const item = i as { title?: string; desc?: string; sort_order?: number };
-                return {
-                  id: String(idx),
-                  title: item.title ?? "",
-                  description: item.desc ?? "",
-                  sort_order: item.sort_order ?? idx,
-                };
-              });
-              return { eyebrow: c.eyebrow ?? "", title: c.title ?? "", items };
+            itemsTable: "home_why_us_items",
+            parseItem: (item) => {
+              const i = item as { id?: string; title?: string; description?: string; sort_order?: number };
+              return {
+                id: i.id ?? "",
+                title: i.title ?? "",
+                description: i.description ?? "",
+                sort_order: i.sort_order ?? 0,
+              };
             },
           }),
       },
@@ -433,19 +419,16 @@ export function useSettings() {
         queryFn: () =>
           fetchHomeSection<ProcessItem>({
             settingsTable: "home_process_settings",
-            parseContent: (raw: unknown) => {
-              const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
-              const items: ProcessItem[] = (c.items || []).map((i: unknown, idx: number) => {
-                const item = i as { step?: string; title?: string; desc?: string; sort_order?: number };
-                return {
-                  id: String(idx),
-                  step: item.step ?? String(idx + 1).padStart(2, "0"),
-                  title: item.title ?? "",
-                  description: item.desc ?? "",
-                  sort_order: item.sort_order ?? idx,
-                };
-              });
-              return { eyebrow: c.eyebrow ?? "", title: c.title ?? "", items };
+            itemsTable: "home_process_items",
+            parseItem: (item) => {
+              const i = item as { id?: string; step?: string; title?: string; description?: string; sort_order?: number };
+              return {
+                id: i.id ?? "",
+                step: i.step ?? "",
+                title: i.title ?? "",
+                description: i.description ?? "",
+                sort_order: i.sort_order ?? 0,
+              };
             },
           }),
       },
@@ -454,18 +437,15 @@ export function useSettings() {
         queryFn: () =>
           fetchHomeSection<FaqItem>({
             settingsTable: "home_faqs_settings",
-            parseContent: (raw: unknown) => {
-              const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
-              const items: FaqItem[] = (c.items || []).map((i: unknown, idx: number) => {
-                const item = i as { question?: string; answer?: string; sort_order?: number };
-                return {
-                  id: String(idx),
-                  question: item.question ?? "",
-                  answer: item.answer ?? "",
-                  sort_order: item.sort_order ?? idx,
-                };
-              });
-              return { eyebrow: c.eyebrow ?? "", title: c.title ?? "", items };
+            itemsTable: "home_faqs_items",
+            parseItem: (item) => {
+              const i = item as { id?: string; question?: string; answer?: string; sort_order?: number };
+              return {
+                id: i.id ?? "",
+                question: i.question ?? "",
+                answer: i.answer ?? "",
+                sort_order: i.sort_order ?? 0,
+              };
             },
           }),
       },
