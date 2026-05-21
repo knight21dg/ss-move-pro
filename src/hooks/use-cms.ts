@@ -205,12 +205,12 @@ async function fetchHomeSection<TItem>(config: {
   parseItem: (item: unknown, index: number) => TItem;
 }): Promise<{ eyebrow: string; title: string; items: TItem[] }> {
   const { data: settings, error: settingsError } = await from(config.settingsTable)
-    .select("eyebrow,title,content")
+    .select("content")
     .eq("id", 1)
     .single();
   if (settingsError) throw settingsError;
 
-  const s = settings as { eyebrow: string | null; title: string | null; content?: unknown } | null;
+  const s = settings as { content?: unknown } | null;
   const fkColumn = `${config.settingsTable.replace(/_settings$/, "")}_settings_id`;
 
   let items: TItem[] = [];
@@ -227,20 +227,21 @@ async function fetchHomeSection<TItem>(config: {
     // items table doesn't exist, fall through to content fallback
   }
 
-  if (items.length === 0) {
-    const content = s?.content;
-    if (content && typeof content === "object" && !Array.isArray(content)) {
-      const c = content as { eyebrow?: string; title?: string; items?: unknown[] };
+  const content = s?.content;
+  if (content && typeof content === "object" && !Array.isArray(content)) {
+    const c = content as { eyebrow?: string; title?: string; items?: unknown[] };
+    if (items.length === 0) {
       const itemsArray = (c.items ?? []) as unknown[];
       items = itemsArray.map((item, idx) => config.parseItem(item, idx));
     }
+    return {
+      eyebrow: c.eyebrow ?? "",
+      title: c.title ?? "",
+      items,
+    };
   }
 
-  return {
-    eyebrow: s?.eyebrow ?? "",
-    title: s?.title ?? "",
-    items,
-  };
+  return { eyebrow: "", title: "", items };
 }
 
 export function useHero() {
