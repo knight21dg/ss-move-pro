@@ -204,18 +204,42 @@ async function fetchHomeSection<TItem>(config: {
   itemsTable: string;
   parseItem: (item: unknown, index: number) => TItem;
 }): Promise<{ eyebrow: string; title: string; items: TItem[] }> {
-  const [{ data: settings, error: settingsError }, { data: items, error: itemsError }] = await Promise.all([
-    from(config.settingsTable).select("eyebrow,title").eq("id", 1).single(),
-    from(config.itemsTable).select("*").eq(`${config.settingsTable.replace(/_settings$/, "")}_settings_id`, 1).order("sort_order"),
-  ]);
+  const { data: settings, error: settingsError } = await from(config.settingsTable)
+    .select("eyebrow,title,content")
+    .eq("id", 1)
+    .single();
   if (settingsError) throw settingsError;
-  if (itemsError) throw itemsError;
-  const s = settings as { eyebrow: string | null; title: string | null } | null;
-  const itemsArray = items ?? [];
+
+  const s = settings as { eyebrow: string | null; title: string | null; content?: unknown } | null;
+  const fkColumn = `${config.settingsTable.replace(/_settings$/, "")}_settings_id`;
+
+  let items: TItem[] = [];
+
+  try {
+    const { data: itemsData, error: itemsError } = await from(config.itemsTable)
+      .select("*")
+      .eq(fkColumn, 1)
+      .order("sort_order");
+    if (!itemsError && itemsData) {
+      items = itemsData.map((item, idx) => config.parseItem(item, idx));
+    }
+  } catch {
+    // items table doesn't exist, fall through to content fallback
+  }
+
+  if (items.length === 0) {
+    const content = s?.content;
+    if (content && typeof content === "object" && !Array.isArray(content)) {
+      const c = content as { eyebrow?: string; title?: string; items?: unknown[] };
+      const itemsArray = (c.items ?? []) as unknown[];
+      items = itemsArray.map((item, idx) => config.parseItem(item, idx));
+    }
+  }
+
   return {
     eyebrow: s?.eyebrow ?? "",
     title: s?.title ?? "",
-    items: itemsArray.map((item, idx) => config.parseItem(item, idx)),
+    items,
   };
 }
 
