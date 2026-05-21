@@ -201,26 +201,12 @@ async function fetchSingleton<T>(table: string): Promise<T | null> {
 
 async function fetchHomeSection<TItem>(config: {
   settingsTable: string;
-  itemsTable: string;
-  parentIdField: string;
-  parseItem: (raw: unknown) => TItem;
+  parseContent: (raw: unknown) => { eyebrow: string; title: string; items: TItem[] };
 }): Promise<{ eyebrow: string; title: string; items: TItem[] }> {
-  const [settingsRes, itemsRes] = await Promise.all([
-    from(config.settingsTable).select("*").eq("id", 1).single(),
-    from(config.itemsTable).select("*").eq(`${config.parentIdField}`, 1).order("sort_order"),
-  ]);
-
-  if (settingsRes.error) throw settingsRes.error;
-  if (itemsRes.error) throw itemsRes.error;
-
-  const s = settingsRes.data as { eyebrow: string | null; title: string | null; id: number } | null;
-  const items = (itemsRes.data ?? []).map(config.parseItem);
-
-  return {
-    eyebrow: s?.eyebrow ?? "",
-    title: s?.title ?? "",
-    items,
-  };
+  const { data, error } = await from(config.settingsTable).select("eyebrow,title,content").eq("id", 1).single();
+  if (error) throw error;
+  const s = data as { eyebrow: string | null; title: string | null; content: unknown } | null;
+  return config.parseContent(s?.content ?? {});
 }
 
 export function useHero() {
@@ -243,36 +229,82 @@ export function useHeroImages() {
 export function useHomeWhyUs() {
   return useQuery({
     queryKey: ["home_why_us_settings"],
-    queryFn: () => fetchHomeSection<WhyUsItem>({
-      settingsTable: "home_why_us_settings",
-      itemsTable: "home_why_us_items",
-      parentIdField: "home_why_us_settings_id",
-      parseItem: (raw) => raw as WhyUsItem,
-    }),
+    queryFn: () =>
+      fetchHomeSection<WhyUsItem>({
+        settingsTable: "home_why_us_settings",
+        parseContent: (raw: unknown) => {
+          const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
+          const items: WhyUsItem[] = (c.items || []).map((i: unknown, idx: number) => {
+            const item = i as { title?: string; desc?: string; sort_order?: number };
+            return {
+              id: String(idx),
+              title: item.title ?? "",
+              description: item.desc ?? "",
+              sort_order: item.sort_order ?? idx,
+            };
+          });
+          return {
+            eyebrow: c.eyebrow ?? "",
+            title: c.title ?? "",
+            items,
+          };
+        },
+      }),
   });
 }
 
 export function useHomeProcess() {
   return useQuery({
     queryKey: ["home_process_settings"],
-    queryFn: () => fetchHomeSection<ProcessItem>({
-      settingsTable: "home_process_settings",
-      itemsTable: "home_process_items",
-      parentIdField: "home_process_settings_id",
-      parseItem: (raw) => raw as ProcessItem,
-    }),
+    queryFn: () =>
+      fetchHomeSection<ProcessItem>({
+        settingsTable: "home_process_settings",
+        parseContent: (raw: unknown) => {
+          const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
+          const items: ProcessItem[] = (c.items || []).map((i: unknown, idx: number) => {
+            const item = i as { step?: string; title?: string; desc?: string; sort_order?: number };
+            return {
+              id: String(idx),
+              step: item.step ?? String(idx + 1).padStart(2, "0"),
+              title: item.title ?? "",
+              description: item.desc ?? "",
+              sort_order: item.sort_order ?? idx,
+            };
+          });
+          return {
+            eyebrow: c.eyebrow ?? "",
+            title: c.title ?? "",
+            items,
+          };
+        },
+      }),
   });
 }
 
 export function useHomeFaqs() {
   return useQuery({
     queryKey: ["home_faqs_settings"],
-    queryFn: () => fetchHomeSection<FaqItem>({
-      settingsTable: "home_faqs_settings",
-      itemsTable: "home_faqs_items",
-      parentIdField: "home_faqs_settings_id",
-      parseItem: (raw) => raw as FaqItem,
-    }),
+    queryFn: () =>
+      fetchHomeSection<FaqItem>({
+        settingsTable: "home_faqs_settings",
+        parseContent: (raw: unknown) => {
+          const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
+          const items: FaqItem[] = (c.items || []).map((i: unknown, idx: number) => {
+            const item = i as { question?: string; answer?: string; sort_order?: number };
+            return {
+              id: String(idx),
+              question: item.question ?? "",
+              answer: item.answer ?? "",
+              sort_order: item.sort_order ?? idx,
+            };
+          });
+          return {
+            eyebrow: c.eyebrow ?? "",
+            title: c.title ?? "",
+            items,
+          };
+        },
+      }),
   });
 }
 
@@ -378,30 +410,64 @@ export function useSettings() {
       },
       {
         queryKey: ["home_why_us_settings"],
-        queryFn: () => fetchHomeSection<WhyUsItem>({
-          settingsTable: "home_why_us_settings",
-          itemsTable: "home_why_us_items",
-          parentIdField: "home_why_us_settings_id",
-          parseItem: (raw) => raw as WhyUsItem,
-        }),
+        queryFn: () =>
+          fetchHomeSection<WhyUsItem>({
+            settingsTable: "home_why_us_settings",
+            parseContent: (raw: unknown) => {
+              const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
+              const items: WhyUsItem[] = (c.items || []).map((i: unknown, idx: number) => {
+                const item = i as { title?: string; desc?: string; sort_order?: number };
+                return {
+                  id: String(idx),
+                  title: item.title ?? "",
+                  description: item.desc ?? "",
+                  sort_order: item.sort_order ?? idx,
+                };
+              });
+              return { eyebrow: c.eyebrow ?? "", title: c.title ?? "", items };
+            },
+          }),
       },
       {
         queryKey: ["home_process_settings"],
-        queryFn: () => fetchHomeSection<ProcessItem>({
-          settingsTable: "home_process_settings",
-          itemsTable: "home_process_items",
-          parentIdField: "home_process_settings_id",
-          parseItem: (raw) => raw as ProcessItem,
-        }),
+        queryFn: () =>
+          fetchHomeSection<ProcessItem>({
+            settingsTable: "home_process_settings",
+            parseContent: (raw: unknown) => {
+              const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
+              const items: ProcessItem[] = (c.items || []).map((i: unknown, idx: number) => {
+                const item = i as { step?: string; title?: string; desc?: string; sort_order?: number };
+                return {
+                  id: String(idx),
+                  step: item.step ?? String(idx + 1).padStart(2, "0"),
+                  title: item.title ?? "",
+                  description: item.desc ?? "",
+                  sort_order: item.sort_order ?? idx,
+                };
+              });
+              return { eyebrow: c.eyebrow ?? "", title: c.title ?? "", items };
+            },
+          }),
       },
       {
         queryKey: ["home_faqs_settings"],
-        queryFn: () => fetchHomeSection<FaqItem>({
-          settingsTable: "home_faqs_settings",
-          itemsTable: "home_faqs_items",
-          parentIdField: "home_faqs_settings_id",
-          parseItem: (raw) => raw as FaqItem,
-        }),
+        queryFn: () =>
+          fetchHomeSection<FaqItem>({
+            settingsTable: "home_faqs_settings",
+            parseContent: (raw: unknown) => {
+              const c = (raw as { eyebrow?: string; title?: string; items?: unknown[] }) || {};
+              const items: FaqItem[] = (c.items || []).map((i: unknown, idx: number) => {
+                const item = i as { question?: string; answer?: string; sort_order?: number };
+                return {
+                  id: String(idx),
+                  question: item.question ?? "",
+                  answer: item.answer ?? "",
+                  sort_order: item.sort_order ?? idx,
+                };
+              });
+              return { eyebrow: c.eyebrow ?? "", title: c.title ?? "", items };
+            },
+          }),
       },
       {
         queryKey: ["about_settings"],
