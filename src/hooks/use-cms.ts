@@ -206,7 +206,7 @@ async function fetchHomeSection<TItem>(config: {
 }): Promise<{ eyebrow: string; title: string; items: TItem[] }> {
   const [{ data: settings, error: settingsError }, { data: items, error: itemsError }] = await Promise.all([
     from(config.settingsTable).select("eyebrow,title").eq("id", 1).single(),
-    from(config.itemsTable).select("*").eq(`${config.settingsTable.replace("_settings", "")}_id`, 1).order("sort_order"),
+    from(config.itemsTable).select("*").eq(`${config.settingsTable.replace(/_settings$/, "")}_settings_id`, 1).order("sort_order"),
   ]);
   if (settingsError) throw settingsError;
   if (itemsError) throw itemsError;
