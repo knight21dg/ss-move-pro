@@ -6,56 +6,56 @@ import type { Json } from "@/integrations/supabase/types";
 const from = (table: string) => supabase.from(table as any);
 
 export function useServices(activeOnly = true) {
-  return useQuery({
-    queryKey: ["services", activeOnly],
-    queryFn: async () => {
-      let q = supabase.from("services").select("*").order("sort_order");
-      if (activeOnly) q = q.eq("is_active", true);
-      const { data, error } = await q;
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-}
+   return useQuery({
+     queryKey: ["services", activeOnly],
+     queryFn: async () => {
+       let q = from("services").select("*").order("sort_order");
+       if (activeOnly) q = q.eq("is_active", true);
+       const { data, error } = await q;
+       if (error) throw error;
+       return data ?? [];
+     },
+   });
+ }
 
-export function useGallery(activeOnly = true) {
-  return useQuery({
-    queryKey: ["gallery", activeOnly],
-    queryFn: async () => {
-      let q = supabase.from("gallery_images").select("*").order("sort_order");
-      if (activeOnly) q = q.eq("is_active", true);
-      const { data, error } = await q;
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-}
+ export function useGallery(activeOnly = true) {
+   return useQuery({
+     queryKey: ["gallery", activeOnly],
+     queryFn: async () => {
+       let q = from("gallery_images").select("*").order("sort_order");
+       if (activeOnly) q = q.eq("is_active", true);
+       const { data, error } = await q;
+       if (error) throw error;
+       return data ?? [];
+     },
+   });
+ }
 
-export function useVideos(activeOnly = true) {
-  return useQuery({
-    queryKey: ["videos", activeOnly],
-    queryFn: async () => {
-      let q = supabase.from("videos").select("*").order("sort_order");
-      if (activeOnly) q = q.eq("is_active", true);
-      const { data, error } = await q;
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-}
+ export function useVideos(activeOnly = true) {
+   return useQuery({
+     queryKey: ["videos", activeOnly],
+     queryFn: async () => {
+       let q = from("videos").select("*").order("sort_order");
+       if (activeOnly) q = q.eq("is_active", true);
+       const { data, error } = await q;
+       if (error) throw error;
+       return data ?? [];
+     },
+   });
+ }
 
-export function useTestimonials(activeOnly = true) {
-  return useQuery({
-    queryKey: ["testimonials", activeOnly],
-    queryFn: async () => {
-      let q = supabase.from("testimonials").select("*").order("sort_order");
-      if (activeOnly) q = q.eq("is_active", true);
-      const { data, error } = await q;
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-}
+ export function useTestimonials(activeOnly = true) {
+   return useQuery({
+     queryKey: ["testimonials", activeOnly],
+     queryFn: async () => {
+       let q = from("testimonials").select("*").order("sort_order");
+       if (activeOnly) q = q.eq("is_active", true);
+       const { data, error } = await q;
+       if (error) throw error;
+       return data ?? [];
+     },
+   });
+ }
 
 export type SeoFields = { title: string; description: string; keywords: string; og_image: string };
 

@@ -54,11 +54,11 @@ function AdminVideos() {
     mutationFn: async (v: V) => {
       if (!getYoutubeId(v.video_url)) throw new Error("Provide a valid YouTube URL");
       if (v.id) {
-        const { error } = await supabase.from("videos").update(v).eq("id", v.id);
+        const { error } = await (supabase.from("videos") as any).update(v).eq("id", v.id);
         if (error) throw error;
       } else {
         const { id: _, ...rest } = v;
-        const { error } = await supabase.from("videos").insert(rest);
+        const { error } = await (supabase.from("videos") as any).insert(rest);
         if (error) throw error;
       }
     },
@@ -72,7 +72,7 @@ function AdminVideos() {
 
   const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("videos").delete().eq("id", id);
+      const { error } = await (supabase.from("videos") as any).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

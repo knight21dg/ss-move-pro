@@ -44,7 +44,8 @@ async function saveHomeSection<TItem>(config: {
   parentId: number;
   eyebrow: string;
   title: string;
-  getItemData: (item: TItem, index: number) => { insert: Record<string, unknown> };
+  items: TItem[];
+  getItemData: (item: TItem, index: number) => Record<string, unknown>;
 }) {
   // Upsert the parent settings row
   const { error: settingsError } = await from(config.settingsTable).upsert({
@@ -59,7 +60,7 @@ async function saveHomeSection<TItem>(config: {
   if (deleteError) throw deleteError;
 
   // Insert new items
-  const itemsToInsert = config.items.map((item: TItem, index: number) => config.getItemData(item, index));
+  const itemsToInsert = config.items.map((item, index) => config.getItemData(item, index));
   if (itemsToInsert.length > 0) {
     const { error: insertError } = await from(config.itemsTable).insert(itemsToInsert);
     if (insertError) throw insertError;
@@ -114,6 +115,7 @@ export function useSettingsForm() {
         parentId: 1,
         eyebrow: form.home_why_us.eyebrow,
         title: form.home_why_us.title,
+        items: form.home_why_us.items,
         getItemData: (item) => ({
           home_why_us_settings_id: 1,
           title: item.title,
@@ -128,6 +130,7 @@ export function useSettingsForm() {
         parentId: 1,
         eyebrow: form.home_process.eyebrow,
         title: form.home_process.title,
+        items: form.home_process.items,
         getItemData: (item) => ({
           home_process_settings_id: 1,
           step: item.step,
@@ -143,6 +146,7 @@ export function useSettingsForm() {
         parentId: 1,
         eyebrow: form.home_faqs.eyebrow,
         title: form.home_faqs.title,
+        items: form.home_faqs.items,
         getItemData: (item) => ({
           home_faqs_settings_id: 1,
           question: item.question,

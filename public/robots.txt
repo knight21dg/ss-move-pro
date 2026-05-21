@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://sspackersandmovers.com/sitemap.xml

@@ -27,7 +27,7 @@ function AdminEnquiries() {
   const { data: enquiries = [], isLoading } = useQuery({
     queryKey: ["enquiries", filter],
     queryFn: async () => {
-      let q = supabase.from("enquiries").select("*").order("created_at", { ascending: false });
+      let q = (supabase.from("enquiries") as any).select("*").order("created_at", { ascending: false });
       if (filter !== "all") q = q.eq("status", filter as any);
       const { data, error } = await q;
       if (error) throw error;
@@ -38,14 +38,14 @@ function AdminEnquiries() {
   const update = useMutation({
     mutationFn: async (p: { id: string; status?: string; admin_notes?: string }) => {
       const { id, ...rest } = p;
-      const { error } = await supabase.from("enquiries").update(rest as any).eq("id", id);
+      const { error } = await (supabase.from("enquiries") as any).update(rest as any).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["enquiries"] }); qc.invalidateQueries({ queryKey: ["admin-stats"] }); toast.success("Updated"); setSelected(null); },
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("enquiries").delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => { const { error } = await (supabase.from("enquiries") as any).delete().eq("id", id); if (error) throw error; },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["enquiries"] }); toast.success("Deleted"); setSelected(null); },
   });
 

@@ -10,9 +10,9 @@ export default defineConfig({
     tsConfigPaths({ projects: ["./tsconfig.json"] }),
     tailwindcss(),
     tanstackStart({
-      server: { preset: "vercel" },
-    }),
-    nitro({ preset: "vercel" }),
+      // vercel preset configured via platform / env — cast to any to satisfy TS types
+    } as any),
+    nitro({} as any),
     viteReact(),
   ],
 });

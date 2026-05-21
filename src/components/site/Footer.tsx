@@ -3,11 +3,45 @@ import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react"
 import logo from "@/assets/logo.png";
 import { useSettings } from "@/hooks/use-cms";
 
+/** Map footer quick-link labels → public routes */
+const QUICK_LINK_MAP: Record<string, string> = {
+  home: "/",
+  services: "/services",
+  about: "/about",
+  contact: "/contact",
+  enquiry: "/enquiry",
+  gallery: "/gallery",
+  videos: "/videos",
+  "about us": "/about",
+  "get free quote": "/enquiry",
+  "get a quote": "/enquiry",
+  "free quote": "/enquiry",
+};
+
+function parseQuickLinks(text: string | null | undefined): { label: string; href: string }[] {
+  if (!text) return [];
+  return text
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((label) => {
+      const href = QUICK_LINK_MAP[label.toLowerCase()] || "/";
+      return { label, href };
+    });
+}
+
+const SOCIAL_LINKS = [
+  { Icon: Facebook, key: "facebook", label: "Facebook" },
+  { Icon: Instagram, key: "instagram", label: "Instagram" },
+  { Icon: Youtube, key: "youtube", label: "YouTube" },
+] as const;
+
 export function Footer() {
-  const { data: s } = useSettings();
+  const { data: s, isLoading } = useSettings();
   const contact = s?.contact;
   const social = s?.social;
   const footer = s?.footer;
+  const quickLinks = parseQuickLinks(footer?.quick_links);
 
   return (
     <footer className="bg-gradient-dark text-white mt-24">
@@ -16,32 +50,39 @@ export function Footer() {
           <div className="bg-white rounded-lg p-3 inline-block">
             <img src={logo} alt="SS Packers & Movers" className="h-12 w-auto" />
           </div>
-          <p className="text-sm text-white/70 leading-relaxed">
-            {footer?.description || contact?.address || ""}
-          </p>
+          {isLoading ? (
+            <p className="text-sm text-white/50 animate-pulse">Loading…</p>
+          ) : (
+            <p className="text-sm text-white/70 leading-relaxed">
+              {footer?.description || contact?.address || ""}
+            </p>
+          )}
         </div>
         <div>
           <h4 className="font-semibold mb-4 text-white">Quick Links</h4>
-          <ul className="space-y-2 text-sm text-white/70">
-            {[
-              ["/about", "About Us"],
-              ["/services", "Services"],
-              ["/gallery", "Gallery"],
-              ["/enquiry", "Get a Quote"],
-              ["/contact", "Contact"],
-            ].map(([to, label]) => (
-              <li key={to}><Link to={to} className="hover:text-primary transition-colors">{label}</Link></li>
-            ))}
-          </ul>
+          {isLoading ? (
+            <p className="text-sm text-white/50 animate-pulse">Loading…</p>
+          ) : quickLinks.length > 0 ? (
+            <ul className="space-y-2 text-sm text-white/70">
+              {quickLinks.map(({ label, href }) => (
+                <li key={`${label}-${href}`}>
+                  <Link to={href} className="hover:text-primary transition-colors">{label}</Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-white/50">No links configured.</p>
+          )}
         </div>
         <div>
           <h4 className="font-semibold mb-4 text-white">Services</h4>
           <ul className="space-y-2 text-sm text-white/70">
             <li>Household Shifting</li>
             <li>Office Relocation</li>
+            <li>Bike Transportation</li>
             <li>Car Transportation</li>
-            <li>Warehouse Storage</li>
             <li>Loading &amp; Unloading</li>
+            <li className="text-white/40">Warehouse Storage</li>
           </ul>
         </div>
         <div>
@@ -56,15 +97,22 @@ export function Footer() {
             <p className="text-sm text-white/50">Loading contact details…</p>
           )}
           <div className="flex gap-3 mt-5">
-            {[
-              { Icon: Facebook, href: social?.facebook },
-              { Icon: Instagram, href: social?.instagram },
-              { Icon: Youtube, href: social?.youtube },
-            ].map(({ Icon, href }, i) => (
-              <a key={i} href={href || "#"} target="_blank" rel="noreferrer" className="h-9 w-9 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors">
-                <Icon className="h-4 w-4" />
-              </a>
-            ))}
+            {SOCIAL_LINKS.map(({ Icon, key, label }) => {
+              const href = social?.[key];
+              if (!href) return null;
+              return (
+                <a
+                  key={key}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={label}
+                  className="h-9 w-9 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              );
+            })}
           </div>
         </div>
       </div>

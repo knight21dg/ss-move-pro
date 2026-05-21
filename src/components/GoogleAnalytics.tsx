@@ -6,11 +6,12 @@ export function GoogleAnalytics({ queryClient }: { queryClient: QueryClient }) {
   const { data: row } = useQuery({
     queryKey: ["ga_settings"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase
         .from("ga_settings")
         .select("ga_measurement_id")
         .eq("id", 1)
-        .single();
+        .single() as any);
       if (error) throw error;
       return data;
     },

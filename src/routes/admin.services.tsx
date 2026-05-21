@@ -38,11 +38,11 @@ function AdminServices() {
     mutationFn: async (s: Service) => {
       const payload = { ...s, slug: s.slug || slugify(s.title) };
       if (s.id) {
-        const { error } = await supabase.from("services").update(payload).eq("id", s.id);
+        const { error } = await (supabase.from("services") as any).update(payload).eq("id", s.id);
         if (error) throw error;
       } else {
         const { id: _i, ...rest } = payload;
-        const { error } = await supabase.from("services").insert(rest);
+        const { error } = await (supabase.from("services") as any).insert(rest);
         if (error) throw error;
       }
     },
@@ -50,9 +50,9 @@ function AdminServices() {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const del = useMutation({
+const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("services").delete().eq("id", id);
+      const { error } = await (supabase.from("services") as any).delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["services"] }); toast.success("Deleted"); },

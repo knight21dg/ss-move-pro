@@ -26,15 +26,15 @@ function AdminTestimonials() {
 
   const save = useMutation({
     mutationFn: async (it: T) => {
-      if (it.id) { const { error } = await supabase.from("testimonials").update(it).eq("id", it.id); if (error) throw error; }
-      else { const { id: _, ...rest } = it; const { error } = await supabase.from("testimonials").insert(rest); if (error) throw error; }
+      if (it.id) { const { error } = await (supabase.from("testimonials") as any).update(it).eq("id", it.id); if (error) throw error; }
+      else { const { id: _, ...rest } = it; const { error } = await (supabase.from("testimonials") as any).insert(rest); if (error) throw error; }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["testimonials"] }); setEditing(null); toast.success("Saved"); },
     onError: (e: any) => toast.error(e.message),
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("testimonials").delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => { const { error } = await (supabase.from("testimonials") as any).delete().eq("id", id); if (error) throw error; },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["testimonials"] }); toast.success("Deleted"); },
   });
 

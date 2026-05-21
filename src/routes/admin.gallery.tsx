@@ -27,11 +27,11 @@ function AdminGallery() {
     mutationFn: async (it: Item) => {
       if (!it.image_url) throw new Error("Image required");
       if (it.id) {
-        const { error } = await supabase.from("gallery_images").update(it).eq("id", it.id);
+        const { error } = await (supabase.from("gallery_images") as any).update(it).eq("id", it.id);
         if (error) throw error;
       } else {
         const { id: _i, ...rest } = it;
-        const { error } = await supabase.from("gallery_images").insert(rest);
+        const { error } = await (supabase.from("gallery_images") as any).insert(rest);
         if (error) throw error;
       }
     },
@@ -40,7 +40,7 @@ function AdminGallery() {
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from("gallery_images").delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => { const { error } = await (supabase.from("gallery_images") as any).delete().eq("id", id); if (error) throw error; },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["gallery"] }); toast.success("Deleted"); },
   });
 
