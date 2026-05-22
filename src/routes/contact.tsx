@@ -23,7 +23,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
-  const { data: s, isLoading } = useSettings();
+  const { data: s } = useSettings();
   const c = s?.contact;
   const phone = c?.phone;
   const heroImage = s?.hero_images?.contact;
@@ -37,20 +37,6 @@ function ContactPage() {
     ...(phone ? [{ icon: Phone, title: "Phone", value: phone, href: phoneHref }] : []),
     ...(email ? [{ icon: Mail, title: "Email", value: email, href: `mailto:${email}` }] : []),
   ];
-
-  if (isLoading) {
-    return (
-      <SiteLayout>
-        <section className="relative overflow-hidden">
-          <div className="h-[50vh] min-h-[360px] w-full bg-muted" />
-          <div className="absolute inset-0 bg-gradient-hero" />
-        </section>
-        <section className="container mx-auto px-4 py-16 grid md:grid-cols-2 gap-6">
-          <p className="text-center text-muted-foreground col-span-full">Loading contact details…</p>
-        </section>
-      </SiteLayout>
-    );
-  }
 
   return (
     <SiteLayout>

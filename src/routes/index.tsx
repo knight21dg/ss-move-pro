@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Award, Clock, MessageCircle, Phone, ShieldCheck, Star, Truck } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   useGallery,
   useServices,
@@ -37,10 +36,10 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { data: settings, isLoading: settingsLoading } = useSettings();
-  const { data: services = [], isLoading: servicesLoading } = useServices();
-  const { data: testimonials = [], isLoading: testimonialsLoading } = useTestimonials();
-  const { data: gallery = [], isLoading: galleryLoading } = useGallery();
+  const { data: settings } = useSettings();
+  const { data: services = [] } = useServices();
+  const { data: testimonials = [] } = useTestimonials();
+  const { data: gallery = [] } = useGallery();
 
   const s = settings ?? EMPTY_SETTINGS;
   const hero = s.hero;
@@ -54,12 +53,6 @@ function HomePage() {
   const phone = contact?.phone;
   const phoneHref = phone ? `tel:${phone.replace(/\s/g, "")}` : "";
   const wa = contact?.whatsapp ? contact.whatsapp.replace(/\D/g, "") : "";
-
-  const loading = settingsLoading || servicesLoading || testimonialsLoading || galleryLoading;
-
-  if (loading) {
-    return <HomeSkeleton />;
-  }
 
   const stats = about?.happy_customers || about?.years_experience || about?.cities_covered
     ? [
@@ -321,76 +314,7 @@ function HomePage() {
   );
 }
 
-function HomeSkeleton() {
-  return (
-    <SiteLayout>
-      {/* Hero skeleton */}
-      <section className="relative overflow-hidden">
-        <div className="h-[70vh] min-h-[480px] w-full bg-muted" />
-        <div className="absolute inset-0 bg-gradient-hero" />
-        <div className="relative container mx-auto px-4 py-28 md:py-40 max-w-5xl space-y-6">
-          <Skeleton className="h-4 w-32 rounded-full" />
-          <Skeleton className="h-16 md:h-20 w-4/5" />
-          <Skeleton className="h-6 w-3/5" />
-          <div className="flex gap-3 pt-2">
-            <Skeleton className="h-12 w-36 rounded-lg" />
-            <Skeleton className="h-12 w-36 rounded-lg" />
-            <Skeleton className="h-12 w-36 rounded-lg" />
-          </div>
-        </div>
-      </section>
 
-      {/* Stats skeleton */}
-      <section className="bg-secondary text-secondary-foreground">
-        <div className="container mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="text-center space-y-2">
-              <Skeleton className="h-9 w-24 mx-auto" />
-              <Skeleton className="h-3 w-20 mx-auto" />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Why Us skeleton */}
-      <section className="container mx-auto px-4 py-20 md:py-28">
-        <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
-          <Skeleton className="h-3 w-20 mx-auto" />
-          <Skeleton className="h-8 w-2/3 mx-auto" />
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-2xl border border-border bg-card p-7 space-y-4">
-              <Skeleton className="h-12 w-12 rounded-xl" />
-              <Skeleton className="h-5 w-3/4" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-5/6" />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Services skeleton */}
-      <section className="bg-muted/50 py-20 md:py-28">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
-            <Skeleton className="h-3 w-20 mx-auto" />
-            <Skeleton className="h-8 w-2/3 mx-auto" />
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-2xl border border-border bg-card p-6 space-y-4">
-                <Skeleton className="h-14 w-14 rounded-2xl" />
-                <Skeleton className="h-5 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </SiteLayout>
-  );
-}
 
 export function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (

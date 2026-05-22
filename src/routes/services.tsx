@@ -28,7 +28,7 @@ export const Route = createFileRoute("/services")({
 });
 
 function ServicesPage() {
-  const { data: services = [], isLoading } = useServices();
+  const { data: services = [] } = useServices();
   const { data: s } = useSettings();
   const heroImage = s?.hero_images?.services;
 
@@ -41,9 +41,7 @@ function ServicesPage() {
         backgroundImage={heroImage}
       />
       <section className="container mx-auto px-4 py-16">
-        {isLoading ? (
-          <p className="text-center text-muted-foreground">Loading services...</p>
-        ) : services.length === 0 ? (
+        {services.length === 0 ? (
           <p className="text-center text-muted-foreground">No services available yet.</p>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

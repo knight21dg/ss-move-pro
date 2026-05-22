@@ -37,7 +37,7 @@ const SOCIAL_LINKS = [
 ] as const;
 
 export function Footer() {
-  const { data: s, isLoading } = useSettings();
+  const { data: s } = useSettings();
   const contact = s?.contact;
   const social = s?.social;
   const footer = s?.footer;
@@ -50,19 +50,13 @@ export function Footer() {
           <div className="bg-white rounded-lg p-3 inline-block">
             <img src={logo} alt="SS Packers & Movers" className="h-12 w-auto" />
           </div>
-          {isLoading ? (
-            <p className="text-sm text-white/50 animate-pulse">Loading…</p>
-          ) : (
-            <p className="text-sm text-white/70 leading-relaxed">
-              {footer?.description || contact?.address || ""}
-            </p>
-          )}
+          <p className="text-sm text-white/70 leading-relaxed">
+            {footer?.description || contact?.address || ""}
+          </p>
         </div>
         <div>
           <h4 className="font-semibold mb-4 text-white">Quick Links</h4>
-          {isLoading ? (
-            <p className="text-sm text-white/50 animate-pulse">Loading…</p>
-          ) : quickLinks.length > 0 ? (
+          {quickLinks.length > 0 ? (
             <ul className="space-y-2 text-sm text-white/70">
               {quickLinks.map(({ label, href }) => (
                 <li key={`${label}-${href}`}>
@@ -87,15 +81,11 @@ export function Footer() {
         </div>
         <div>
           <h4 className="font-semibold mb-4 text-white">Contact</h4>
-          {contact ? (
-            <ul className="space-y-3 text-sm text-white/70">
-              <li className="flex gap-3">{contact.address && <><MapPin className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact.address}</span></>}</li>
-              <li className="flex gap-3">{contact.phone && <><Phone className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact.phone}</span></>}</li>
-              <li className="flex gap-3">{contact.email && <><Mail className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact.email}</span></>}</li>
-            </ul>
-          ) : (
-            <p className="text-sm text-white/50">Loading contact details…</p>
-          )}
+          <ul className="space-y-3 text-sm text-white/70">
+            {contact?.address && <li className="flex gap-3"><MapPin className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact.address}</span></li>}
+            {contact?.phone && <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact.phone}</span></li>}
+            {contact?.email && <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact.email}</span></li>}
+          </ul>
           <div className="flex gap-3 mt-5">
             {SOCIAL_LINKS.map(({ Icon, key, label }) => {
               const href = social?.[key];

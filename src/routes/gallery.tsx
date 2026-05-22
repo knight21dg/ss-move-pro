@@ -25,7 +25,7 @@ export const Route = createFileRoute("/gallery")({
 });
 
 function GalleryPage() {
-  const { data: items = [], isLoading } = useGallery();
+  const { data: items = [] } = useGallery();
   const { data: s } = useSettings();
   const heroImage = s?.hero_images?.gallery;
 
@@ -38,9 +38,7 @@ function GalleryPage() {
         backgroundImage={heroImage}
       />
       <section className="container mx-auto px-4 py-16">
-        {isLoading ? (
-          <p className="text-center text-muted-foreground">Loading...</p>
-        ) : items.length === 0 ? (
+        {items.length === 0 ? (
           <p className="text-center text-muted-foreground">No gallery images yet.</p>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">

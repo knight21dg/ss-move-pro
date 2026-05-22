@@ -29,7 +29,7 @@ function getYoutubeId(url: string) {
 }
 
 function VideosPage() {
-  const { data: videos = [], isLoading } = useVideos();
+  const { data: videos = [] } = useVideos();
   const { data: s } = useSettings();
   const heroImage = s?.hero_images?.videos;
 
@@ -37,9 +37,7 @@ function VideosPage() {
     <SiteLayout>
       <PageHero eyebrow="Videos" title="See us in action" backgroundImage={heroImage} />
       <section className="container mx-auto px-4 py-16">
-        {isLoading ? (
-          <p className="text-center text-muted-foreground">Loading...</p>
-        ) : videos.length === 0 ? (
+        {videos.length === 0 ? (
           <p className="text-center text-muted-foreground">No videos yet.</p>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

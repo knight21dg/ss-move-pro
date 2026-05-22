@@ -25,39 +25,9 @@ export const Route = createFileRoute("/about")({
 });
 
 function AboutPage() {
-  const { data: s, isLoading } = useSettings();
+  const { data: s } = useSettings();
   const about = s?.about;
   const heroImage = s?.hero_images?.about;
-
-  if (isLoading) {
-    return (
-      <SiteLayout>
-        <section className="relative overflow-hidden">
-          <div className="h-[50vh] min-h-[360px] w-full bg-muted" />
-          <div className="absolute inset-0 bg-gradient-hero" />
-        </section>
-        <section className="container mx-auto px-4 py-16 grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-5">
-            <div className="h-10 w-3/4 bg-muted rounded animate-pulse" />
-            <div className="space-y-3">
-              <div className="h-4 bg-muted rounded animate-pulse" />
-              <div className="h-4 bg-muted rounded animate-pulse w-5/6" />
-              <div className="h-4 bg-muted rounded animate-pulse w-4/6" />
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="rounded-2xl border border-border bg-card p-6 space-y-3">
-                <div className="h-8 w-8 bg-muted rounded-xl animate-pulse" />
-                <div className="h-8 w-16 bg-muted rounded animate-pulse" />
-                <div className="h-3 w-12 bg-muted rounded animate-pulse" />
-              </div>
-            ))}
-          </div>
-        </section>
-      </SiteLayout>
-    );
-  }
 
   return (
     <SiteLayout>
