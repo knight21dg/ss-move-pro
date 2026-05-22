@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { useGallery } from "@/hooks/use-cms";
 import { toast } from "sonner";
 
@@ -27,12 +28,9 @@ function AdminGallery() {
     mutationFn: async (it: Item) => {
       if (!it.image_url) throw new Error("Image required");
       if (it.id) {
-        const { error } = await (supabase.from("gallery_images") as any).update(it).eq("id", it.id);
-        if (error) throw error;
+        await updateDoc(doc(db, "gallery_images", it.id), it);
       } else {
-        const { id: _i, ...rest } = it;
-        const { error } = await (supabase.from("gallery_images") as any).insert(rest);
-        if (error) throw error;
+        await addDoc(collection(db, "gallery_images"), it);
       }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["gallery"] }); setEditing(null); toast.success("Saved"); },
@@ -40,7 +38,9 @@ function AdminGallery() {
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await (supabase.from("gallery_images") as any).delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => {
+      await deleteDoc(doc(db, "gallery_images", id));
+    },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["gallery"] }); toast.success("Deleted"); },
   });
 
@@ -72,7 +72,6 @@ function AdminGallery() {
           ))}
         </div>
       )}
-
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>{editing?.id ? "Edit Image" : "Add Image"}</DialogTitle></DialogHeader>

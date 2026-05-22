@@ -2,7 +2,7 @@
 
 ## Project Overview
 Full-stack website for "SS Packers & Movers" — a relocation company based in Kakinada, India.
-Built with TanStack Start, React, Supabase, and Tailwind CSS v4.
+Built with TanStack Start, React, Firebase, Cloudinary, and Tailwind CSS v4.
 
 ## Stack
 | Layer | Tech |
@@ -10,13 +10,14 @@ Built with TanStack Start, React, Supabase, and Tailwind CSS v4.
 | Framework | TanStack Start (TanStack Router) |
 | UI | React 19, Tailwind CSS v4 |
 | Data Fetching | TanStack Query (`@tanstack/react-query`) |
-| Database | Supabase (PostgreSQL) |
-| Auth | Supabase Auth + Row Level Security (RLS) |
+| Database | Firebase Firestore (NoSQL) |
+| Auth | Firebase Auth + Firestore Security Rules |
+| Storage | Cloudinary (unsigned preset uploads) |
 | Icons | lucide-react |
 | Forms | react-hook-form + zod |
 | Notifications | sonner (toasts) |
 | Hosting | Vercel |
-| Analytics | Google Analytics (via `ga_settings` table) |
+| Analytics | Google Analytics (via `ga` settings in Firestore) |
 
 ## Path Aliases
 - `@/` → `src/`
@@ -28,11 +29,11 @@ src/
 ├── components/
 │   ├── admin/
 │   │   ├── AdminLayout.tsx    # Admin shell — sidebar, auth guard
-│   │   └── ImageUpload.tsx    # Upload to Supabase Storage (site-media bucket)
+│   │   └── ImageUpload.tsx    # Upload to Cloudinary using uploadToCloudinary
 │   ├── site/
 │   │   ├── Layout.tsx         # Public shell — Header, Footer, FloatingActions, DynamicSeo
 │   │   ├── Header.tsx         # Nav bar, shows "Admin" link if isAdmin=true
-│   │   ├── Footer.tsx         # Footer — parses footer_settings quick_links dynamically
+│   │   ├── Footer.tsx         # Footer — parses footer settings quick_links dynamically
 │   │   ├── FloatingActions.tsx # WhatsApp + Call buttons (bottom-right)
 │   │   └── DynamicSeo.tsx     # Per-page SEO meta tags from seo_page_settings
 │   ├── ui/                    # shadcn/ui components
@@ -40,14 +41,10 @@ src/
 ├── hooks/
 │   ├── use-auth.ts            # Auth state + admin role check
 │   ├── use-cms.ts             # All data fetching hooks (services, gallery, etc.)
-│   ├── use-settings-form.ts   # Composite settings form hook (save all tables at once)
-│   └── use-realtime.ts        # Subscribes to Supabase CDC for all tables
-├── integrations/supabase/
-│   ├── client.ts              # Browser Supabase client
-│   ├── client.server.ts       # Server-side Supabase client
-│   ├── types.ts               # Generated Supabase types
-│   ├── auth-middleware.ts     # SS auth middleware
-│   └── auth-attacher.ts       # Auth helper
+│   ├── use-settings-form.ts   # Composite settings form hook (saves settings & pages in Firestore)
+│   └── use-realtime.ts        # Subscribes to Firestore snapshot listeners
+├── integrations/firebase/
+│   └── client.ts              # Browser Firebase client re-exports
 ├── routes/
 │   ├── __root.tsx             # Root route — HTML shell, global head/meta
 │   ├── index.tsx              # Home page (public)
@@ -77,167 +74,75 @@ src/
 │   ├── admin.settings.footer.tsx      # Footer content
 │   └── admin.settings.analytics.tsx   # GA measurement ID
 └── lib/
+    ├── cloudinary.ts          # Handles uploads to Cloudinary using Cloud name dp9pbu8wr
+    ├── firebase.ts            # Firebase app setup + service wrappers + listeners
     └── icons.ts               # Maps icon string names → lucide-react components
 ```
 
-## Database Schema
+## Firestore Schema
 
-### Auth & Users
-| Table | Description |
-|-------|-------------|
-| `profiles` | Extended user data (name, phone, avatar). 1-to-1 with `auth.users`. |
-| `user_roles` | Role per user (`app_role` enum: `user` \| `admin`). Unique on `user_id`. |
+### Collections
+1. `services`:
+   - Auto-generated Document ID.
+   - Fields: `title` (string), `slug` (string), `description` (string), `icon` (string), `image_url` (string), `sort_order` (number), `is_active` (boolean).
+2. `gallery_images`:
+   - Auto-generated Document ID.
+   - Fields: `title` (string), `image_url` (string), `category` (string), `sort_order` (number), `is_active` (boolean).
+3. `videos`:
+   - Auto-generated Document ID.
+   - Fields: `title` (string), `description` (string), `video_url` (string), `thumbnail_url` (string), `sort_order` (number), `is_active` (boolean).
+4. `testimonials`:
+   - Auto-generated Document ID.
+   - Fields: `name` (string), `location` (string), `rating` (number), `message` (string), `avatar_url` (string), `sort_order` (number), `is_active` (boolean).
+5. `enquiries`:
+   - Auto-generated Document ID.
+   - Fields: `name` (string), `phone` (string), `email` (string | null), `service` (string | null), `from_city` (string | null), `to_city` (string | null), `status` (string), `admin_notes` (string | null), `created_at` (string).
+6. `settings`:
+   - Document ID: `all` (contains the unified settings document).
+   - Fields: `hero` (object), `hero_images` (object), `home_why_us` (object containing items), `home_process` (object containing items), `home_faqs` (object containing items), `about` (object), `contact` (object), `social` (object), `cta` (object), `footer` (object), `seo_default` (object), `ga` (object), `updated_at` (string).
+7. `seo_page_settings`:
+   - Document ID: matches the route page key (e.g. `home`, `about`, `services`, `gallery`, `videos`, `enquiry`, `contact`).
+   - Fields: `page_key` (string), `title` (string), `description` (string), `keywords` (string), `og_image` (string).
+8. `user_roles`:
+   - Document ID: matches the user's Auth `uid`.
+   - Fields: `role` (string: `"admin"` or `"user"`).
 
-### Content Tables
-| Table | Sync / rename to be fully clarified here |
-|-------|----------------------------------------------|
-| `services` | Service offerings (title, slug, description, icon, image_url, active, sort_order). UUID PK. |
-| `gallery_images` | Photo gallery (title, image_url, category, sort_order, active). UUID PK. |
-| `videos` | Video entries (title, description, video_url, thumbnail_url, sort_order, active). UUID PK. |
-| `testimonials` | Customer reviews (name, location, rating, message, avatar_url, active, sort_order). UUID PK. |
-| `enquiries` | Quote requests (name, phone, email, service, from/to city, moving date, status, admin_notes). UUID PK. |
-
-### Settings / Singleton Tables
-All use `id INT PRIMARY KEY DEFAULT 1` + `CHECK(id = 1)` constraint (singleton pattern).
-Public read by default, admin write only.
-
-| Table | Key columns |
-|-------|-------------|
-| `hero_settings` | badge, title, subtitle, cta text |
-| `hero_images_settings` | home, about, services, gallery, videos, enquiry, contact image URLs |
-| `home_why_us_settings` | id + `home_why_us_items` children (title, description, sort_order, id as uuid) |
-| `home_process_settings` | id + `home_process_items` children (step label, title, description, sort_order, id as uuid) |
-| `home_faqs_settings` | id + `home_faqs_items` children (question, answer, sort_order, id as uuid) |
-| `about_settings` | heading, body, years_experience, happy_customers, cities_covered |
-| `contact_settings` | phone, whatsapp, email, address, whatsapp_enquiry_message |
-| `social_settings` | facebook, instagram, youtube URLs |
-| `cta_settings` | banner_text, banner_subtitle, banner_link, banner_button, show_banner |
-| `footer_settings` | description, quick_links (comma-separated labels like "Home, About, Contact") |
-| `seo_default_settings` | site_title, site_description, site_keywords, og_image |
-| `seo_page_settings` | page_key (enum: home/about/services/gallery/videos/enquiry/contact), title, description, keywords, og_image |
-| `ga_settings` | ga_measurement_id |
-
-## Enums
-| Enum | Values |
-|------|--------|
-| `app_role` | `user`, `admin` |
-| `enquiry_status` | `new`, `contacted`, `closed` |
-
-## RLS Policies
-- **Public pages** — All `*_settings` tables, `services`, `gallery_images`, `videos`, `testimonials`: readable by everyone (if active flag is on); only admins can write.
-- **Enquiries** — Anyone can INSERT; only admins can SELECT/UPDATE/DELETE.
-- **Admin-only tables** — `user_roles`, `profiles`: admins full access; users see their own row.
-- **Storage bucket `site-media`** — Public read; admin upload/update/delete only.
+## Firestore Security Rules
+Managed via `firestore.rules` in the project root:
+- Public read access for active collections (`services`, `gallery_images`, `videos`, `testimonials`).
+- Public read access for global settings and per-page SEO configs.
+- Anyone can create (submit) an enquiry, but only admins can view, update, or delete them.
+- User roles can only be read by the owner or an admin; only admins can write roles.
+- Admins have full access to create, update, and delete all collections and documents.
 
 ## Auth Flow
 
-1. New user signs up at `/signin`.
-2. `handle_new_user()` trigger on `auth.users` INSERT creates a `profiles` row and assigns:
-   - **Admin role** if no other admin exists yet in `user_roles`
-   - **User role** otherwise
-3. `useAuth()` hooks into `supabase.auth.onAuthStateChange` and checks `user_roles` to set `isAdmin` state.
-4. `AdminLayout` redirects to `/signin` if `!user`, and shows "Admin access required" if `!isAdmin`.
-5. First admin seed (SQL): `INSERT INTO public.user_roles (user_id, role) SELECT id, 'admin' FROM auth.users WHERE email = 'your@email.com';`
+1. Users sign up/sign in at `/signin` using Firebase Authentication.
+2. The user's role is checked by fetching their document in `/user_roles/{uid}`.
+3. `useAuth()` sets `isAdmin` based on whether `{ role: "admin" }` is returned.
+4. `AdminLayout` redirects to `/signin` if not authenticated, and blocks access if `!isAdmin`.
+5. The first admin is promoted manually in the Firestore console by creating a document under `user_roles/{userId}` with `role: "admin"`.
 
 ## Key Hooks
 
-- **`useSettings()`** — Polls all singleton settings tables in parallel via `useQueries`. Returns `{ data: SiteSettings, isLoading: false }` once settled.
-- **`useSettingsForm()`** — Wraps `useSettings()`. Returns `{ form, setForm, isLoading, save }` where `save` is a `useMutation` that upserts all 17 singleton/items tables atomically.
-- **`useServices(activeOnly?)`** — Services list; active-only filter for frontend.
-- **`useGallery()`, `useVideos()`, `useTestimonials()`** — Same pattern, all accept `activeOnly` boolean.
-- **`useAuth()`** — Returns `{ session, user, isAdmin, loading }`.
-- **`useRealtime()`** — Subscribes to CDC events on all 18 CMS tables; calls `qc.invalidateQueries()` on any change. Used in `AdminLayout` and `AdminDashboard`.
-- **`use-enquiry.tsx` fetches but doesn't fire a live listener.**
+- **`useSettings()`** — Fetches the `settings/all` document and `seo_page_settings` collections. Returns unified `SiteSettings` state.
+- **`useSettingsForm()`** — Controls setting updates, offering a `save` mutation that writes settings atomically to Firestore.
+- **`useServices()`, `useGallery()`, `useVideos()`, `useTestimonials()`** — Fetches list documents from Firestore (with optional `activeOnly` filter).
+- **`useAuth()`** — Exposes Firebase Auth status, current user/session, and `isAdmin` role status.
+- **`useRealtime()`** — Leverages Firestore `onSnapshot` listeners to invalidate TanStack query cache in real-time.
 
-## Admin Panel Routes
+## Storage (Media)
+- Bucket and processing is managed on **Cloudinary**.
+- Unsigned preset uploads are performed directly from the browser using the helper `uploadToCloudinary` in `src/lib/cloudinary.ts`.
+- Presets and paths are organized by categories (e.g., `uploads`, `gallery`, `services`, `videos`, `avatars`).
 
-| Route | CRUD | Source |
-|-------|------|--------|
-| `/admin/` | Dashboard (read-only stats) | `admin.index.tsx` |
-| `/admin/services` | Full CRUD | `admin.services.tsx` |
-| `/admin/gallery` | Full CRUD | `admin.gallery.tsx` |
-| `/admin/videos` | Full CRUD | `admin.videos.tsx` |
-| `/admin/testimonials` | Full CRUD | `admin.testimonials.tsx` |
-| `/admin/enquiries` | Read + update status/admin_notes + delete | `admin.enquiries.tsx` |
-| `/admin/settings/hero` | Text + background images | `settings.hero.tsx` |
-| `/admin/settings/home` | Why-Us, Process, FAQ items | `settings.home.tsx` |
-| `/admin/settings/about` | About section | `settings.about.tsx` |
-| `/admin/settings/contact` | Contact info | `settings.contact.tsx` |
-| `/admin/settings/social` | Social URLs | `settings.social.tsx` |
-| `/admin/settings/seo` | Default + per-page SEO | `settings.seo.tsx` |
-| `/admin/settings/cta` | Banner text/link/button | `settings.cta.tsx` |
-| `/admin/settings/footer` | Footer description + quick_links | `settings.footer.tsx` |
-| `/admin/settings/analytics` | GA measurement ID | `settings.analytics.tsx` |
+## Seeding & Verification Scripts
 
-## User Panel (Public Pages)
-
-| Route | Description |
-|-------|-------------|
-| `/` | Home page — hero, services grid, why-us, process, gallery, testimonials, FAQ, CTA band. |
-| `/about` | About section from `about_settings`. |
-| `/services` | Full service catalogue from `services` table (active only). |
-| `/gallery` | Gallery grid from `gallery_images` table (active only). |
-| `/videos` | YouTube embeds from `videos` table (active only). |
-| `/contact` | Contact details + Google Maps from `contact_settings`. |
-| `/enquiry` | Enquiry form → INSERT into `enquiries` table → opens WhatsApp. |
-
-## Enquiry Submission Flow
-
-1. User submits form at `/enquiry`.
-2. Validated with zod schema; record inserted with `WHO_CREATED_BY` partial hash.
-3. On success, opens WhatsApp with the configured `whatsapp_enquiry_message` template.
-4. Admin sees it in `/admin/enquiries` with status `new`.
-5. Admin toggles status to `contacted`/`closed` and adds admin notes.
-
-## Storage
-
-- Bucket: `site-media`
-- Path convention: `${folder}/${timestamp}-${random}.${ext}`
-- Folders used: `uploads` (general), `gallery`, `services`, `videos`, `avatars`
-- Public read, admin write.
-
-## Environment Variables
-
-| Variable | Required | Purpose |
-|----------|---------|---------|
-| `SUPABASE_URL` | Yes | Supabase project URL |
-| `SUPABASE_PUBLISHABLE_KEY` | Yes | Supabase anon key |
-| `VITE_SITE_URL` | No | Absolute site URL for sitemap.xml |
-| `VITE_AUTH_REDIRECT_URL` | No | OAuth redirect after signup |
-
-## Common Tasks
-
-### Add a new content field to settings
-
-1. Alter the relevant `_settings` table in Supabase SQL.
-2. Regenerate Supabase types: `npx supabase gen types typescript --project-id <id> > src/integrations/supabase/types.ts`.
-3. Update `EMPTY_SETTINGS`, `SiteSettings`, `useSettings()`, `useSettingsForm()` and HTML form.
-4. Update AdminLayout side nav if needed.
-
-### Promote a user to admin
-
-```sql
-INSERT INTO public.user_roles (user_id, role)
-SELECT id, 'admin' FROM auth.users WHERE email = 'user@example.com';
-```
-
-### Reset all seed data (dev only)
-
-Run `supabase/setup.sql` in Supabase SQL Editor — it uses `ON CONFLICT DO NOTHING/UPDATE`.
+- **`npm run seed:firestore`** — Runs `tsx scripts/seed-firestore.ts` to clear and seed Firestore with default hero contents, FAQ items, Why Us sections, initial service cards, and SEO default meta tags.
+- **`npx tsx scripts/test-db.ts`** — Runs a fast verification query to count active Firestore document configurations.
 
 ## Conventions
 
-- Admin settings pages call `useSettingsForm()` from `@/hooks/use-settings-form`.
-- Admin CRUD pages use `@tanstack/react-query` mutations + `qc.invalidateQueries()`.
-- All admin mutations show `sonner` toasts on success/failure.
-- "Active" flag on content tables — only active rows are shown on the public site.
-- `sort_order` integer field controls display order everywhere.
-- `id` UUIDs are auto-generated by DB.
-
-### Naming Conventions
-
-- Colors: Base palette is neutral with primary accent (blue) and danger (red)
-- Effects: Primary glow and subtle shadows with smooth transitions
-- Edge treatments: Rounded-xl/2xl profiles with soft borders
-- Semantic HTML: maximum contrast + 16px base + generous whitespace
-- Anti-patterns: placeholder labels, modals inside modals, tiny interactive targets, equal-weight buttons, spinner-only loaders, hamburger on desktop
+- Admin configurations use `@/hooks/use-settings-form` for form management.
+- Admin CMS tables use `@tanstack/react-query` mutations combined with query invalidation.
+- All actions display feedback through `sonner` toasts.

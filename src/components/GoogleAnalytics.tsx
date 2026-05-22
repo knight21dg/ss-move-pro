@@ -1,35 +1,23 @@
+import { useQuery } from "@tanstack/react-query";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-import { useQuery, QueryClient } from "@tanstack/react-query";
-import { supabase } from "../integrations/supabase/client";
-
-export function GoogleAnalytics({ queryClient }: { queryClient: QueryClient }) {
+export function GoogleAnalytics() {
   const { data: row } = useQuery({
     queryKey: ["ga_settings"],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase
-        .from("ga_settings")
-        .select("ga_measurement_id")
-        .eq("id", 1)
-        .single() as any);
-      if (error) throw error;
-      return data;
+      const snap = await getDoc(doc(db, "ga_settings", "singleton"));
+      return (snap.data() as { ga_measurement_id?: string } | undefined) ?? null;
     },
-    enabled: !!queryClient,
-  }, queryClient);
+  });
 
   const gaMeasurementId = row?.ga_measurement_id ?? "";
 
-  if (!gaMeasurementId) {
-    return null;
-  }
+  if (!gaMeasurementId) return null;
 
   return (
     <>
-      <script
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
-      ></script>
+      <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}></script>
       <script
         dangerouslySetInnerHTML={{
           __html: `
@@ -39,7 +27,7 @@ export function GoogleAnalytics({ queryClient }: { queryClient: QueryClient }) {
             gtag('config', '${gaMeasurementId}');
           `,
         }}
-      ></script>
+      />
     </>
   );
 }

@@ -1,84 +1,83 @@
 import { useEffect, useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, runTransaction, collection, query, where, getDocs, addDoc, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { toast } from "sonner";
-import { EMPTY_SETTINGS, useSettings, type SiteSettings } from "@/hooks/use-cms";
+import type { SiteSettings, AppDoc } from "@/hooks/use-cms";
+import { EMPTY_SETTINGS } from "@/hooks/use-cms";
 
-const SINGLETON_TABLES = [
-  "hero_settings",
-  "hero_images_settings",
-  "about_settings",
-  "contact_settings",
-  "social_settings",
-  "cta_settings",
-  "footer_settings",
-  "ga_settings",
-  "seo_default_settings",
-] as const;
+// ─ ALL home item types ────────────────────────────────────────────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const from = (table: string) => supabase.from(table as any);
+export type WhyUsItem = { id: string; title: string; description: string; sort_order: number };
+export type ProcessItem = { id: string; step: string; title: string; description: string; sort_order: number };
+export type FaqItem = { id: string; question: string; answer: string; sort_order: number };
 
-async function upsertSingleton(table: string, values: Record<string, unknown>) {
-  const { error } = await from(table).upsert(values, { onConflict: "id" });
-  if (error) throw error;
+// ─ Shapes inside the singleton doc ───────────────────────────────────────────
+
+type HeroSettings = { badge?: string; title: string; subtitle: string; cta: string };
+type HeroImagesSettings = { home: string; about: string; services: string; gallery: string; videos: string; enquiry: string; contact: string };
+type AboutSettings = SiteSettings["about"];
+type ContactSettings = SiteSettings["contact"];
+type SocialSettings = SiteSettings["social"];
+type CtaSettings = SiteSettings["cta"];
+type FooterSettings = SiteSettings["footer"];
+type DefaultSeoSettings = { site_title: string; site_description: string; site_keywords: string; og_image: string };
+
+// ─ Firestore singleton doc ────────────────────────────────────────────────────
+
+const ALL_DOC = doc(db, "settings", "all");
+
+function writeTimestamp(): string {
+  return new Date().toISOString();
 }
 
-async function upsertSeoPages(pages: SiteSettings["seo"]["pages"]) {
-  const rows = Object.entries(pages).map(([page_key, val]) => ({
-    page_key,
-    title: val.title,
-    description: val.description,
-    keywords: val.keywords,
-    og_image: val.og_image,
-  }));
-  for (const row of rows) {
-    const { error } = await from("seo_page_settings").upsert(row, { onConflict: "page_key" });
-    if (error) throw error;
-  }
+async function loadDoc(): Promise<AppDoc | null> {
+  const snap = await getDoc(ALL_DOC);
+  return snap.exists() ? (snap.data() as AppDoc) : null;
 }
 
-async function saveHomeSection<TItem>(config: {
-  settingsTable: string;
-  itemsTable: string;
-  parentId: number;
-  eyebrow: string;
-  title: string;
-  items: TItem[];
-  getItemData: (item: TItem, index: number) => Record<string, unknown>;
-}) {
-  // Upsert the parent settings row
-  const { error: settingsError } = await from(config.settingsTable).upsert({
-    id: config.parentId,
-    eyebrow: config.eyebrow,
-    title: config.title,
-  }, { onConflict: "id" });
-  if (settingsError) throw settingsError;
-
-  // Delete existing items
-  const { error: deleteError } = await from(config.itemsTable).delete().eq(`${config.settingsTable.replace("_settings", "")}_id`, config.parentId);
-  if (deleteError) throw deleteError;
-
-  // Insert new items
-  const itemsToInsert = config.items.map((item, index) => config.getItemData(item, index));
-  if (itemsToInsert.length > 0) {
-    const { error: insertError } = await from(config.itemsTable).insert(itemsToInsert);
-    if (insertError) throw insertError;
-  }
+async function saveDoc(data: AppDoc): Promise<void> {
+  await setDoc(ALL_DOC, { ...data, updated_at: writeTimestamp() }, { merge: true });
 }
 
+// ─ atomic helper ─────────────────────────────────────────────────────────────
+
+export async function saveHomeSectionInDoc(
+  key: keyof AppDoc["home_why_us"] | keyof AppDoc["home_process"] | keyof AppDoc["home_faqs"],
+  eyebrow: string,
+  title: string,
+  items: WhyUsItem[] | ProcessItem[] | FaqItem[],
+): Promise<void> {
+  const patch: Record<string, any> = {
+    [`home_${key}`]: { eyebrow, title, items },
+    updated_at: writeTimestamp(),
+  };
+  await updateDoc(ALL_DOC, patch);
+}
+
+export async function saveSeoPage(page_key: string, fields: { title: string; description: string; keywords: string; og_image: string }): Promise<void> {
+  await setDoc(doc(db, "seo_page_settings", page_key), { ...fields, page_key }, { merge: true });
+}
+
+export async function deleteSeoPage(page_key: string): Promise<void> {
+  await deleteDoc(doc(db, "seo_page_settings", page_key));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
 export function useSettingsForm() {
-  const { data, isLoading } = useSettings();
   const qc = useQueryClient();
-  const [form, _setFormRaw] = useState<SiteSettings>(EMPTY_SETTINGS);
+  const [form, _setFormRaw] = useState<SiteSettings>({ ...EMPTY_SETTINGS } as any);
   const isLoaded = useRef(false);
 
+  // populate form from settings doc
   useEffect(() => {
-    if (data && !isLoaded.current) {
-      _setFormRaw(data);
+    (async () => {
+      const d = await loadDoc();
+      if (!d || isLoaded.current) return;
       isLoaded.current = true;
-    }
-  }, [data]);
+      _setFormRaw(fromDoc(d));
+    })();
+  }, []);
 
   const setForm = (updater: SiteSettings | ((prev: SiteSettings) => SiteSettings)) => {
     if (typeof updater === "function") {
@@ -90,138 +89,128 @@ export function useSettingsForm() {
 
   const save = useMutation({
     mutationFn: async (): Promise<void> => {
-      await upsertSingleton("hero_settings", {
-        id: 1,
+      const fd = await loadDoc();
+
+      // ── hero ──
+      const heroPatch: HeroSettings = {
+        badge: (form.hero.badge ?? fd?.hero?.badge ?? "") as string,
         title: form.hero.title,
         subtitle: form.hero.subtitle,
         cta: form.hero.cta,
-        badge: form.hero.badge,
-      });
+      };
 
-      await upsertSingleton("hero_images_settings", {
-        id: 1,
-        home: form.hero_images.home,
-        about: form.hero_images.about,
-        services: form.hero_images.services,
-        gallery: form.hero_images.gallery,
-        videos: form.hero_images.videos,
-        enquiry: form.hero_images.enquiry,
-        contact: form.hero_images.contact,
-      });
+      // ── hero images ──
+      const heroImagesPatch: HeroImagesSettings = { ...form.hero_images };
 
-      await saveHomeSection({
-        settingsTable: "home_why_us_settings",
-        itemsTable: "home_why_us_items",
-        parentId: 1,
-        eyebrow: form.home_why_us.eyebrow,
-        title: form.home_why_us.title,
-        items: form.home_why_us.items,
-        getItemData: (item) => ({
-          home_why_us_settings_id: 1,
-          title: item.title,
-          description: item.description,
-          sort_order: item.sort_order,
-        }),
-      });
+      // ── about ──
+      const aboutPatch = { ...form.about };
 
-      await saveHomeSection({
-        settingsTable: "home_process_settings",
-        itemsTable: "home_process_items",
-        parentId: 1,
-        eyebrow: form.home_process.eyebrow,
-        title: form.home_process.title,
-        items: form.home_process.items,
-        getItemData: (item) => ({
-          home_process_settings_id: 1,
-          step: item.step,
-          title: item.title,
-          description: item.description,
-          sort_order: item.sort_order,
-        }),
-      });
+      // ── contact ──
+      const contactPatch = { ...form.contact };
 
-      await saveHomeSection({
-        settingsTable: "home_faqs_settings",
-        itemsTable: "home_faqs_items",
-        parentId: 1,
-        eyebrow: form.home_faqs.eyebrow,
-        title: form.home_faqs.title,
-        items: form.home_faqs.items,
-        getItemData: (item) => ({
-          home_faqs_settings_id: 1,
-          question: item.question,
-          answer: item.answer,
-          sort_order: item.sort_order,
-        }),
-      });
+      // ── social ──
+      const socialPatch = { ...form.social };
 
-      await upsertSingleton("about_settings", {
-        id: 1,
-        heading: form.about.heading,
-        body: form.about.body,
-        years_experience: form.about.years_experience,
-        happy_customers: form.about.happy_customers,
-        cities_covered: form.about.cities_covered,
-      });
+      // ── cta ──
+      const ctaPatch = { ...form.cta };
 
-      await upsertSingleton("contact_settings", {
-        id: 1,
-        phone: form.contact.phone,
-        whatsapp: form.contact.whatsapp,
-        email: form.contact.email,
-        address: form.contact.address,
-        whatsapp_enquiry_message: form.contact.whatsapp_enquiry_message,
-      });
+      // ── footer ──
+      const footerPatch = { ...form.footer };
 
-      await upsertSingleton("social_settings", {
-        id: 1,
-        facebook: form.social.facebook,
-        instagram: form.social.instagram,
-        youtube: form.social.youtube,
-      });
-
-      await upsertSingleton("cta_settings", {
-        id: 1,
-        banner_text: form.cta.banner_text,
-        banner_subtitle: form.cta.banner_subtitle,
-        banner_link: form.cta.banner_link,
-        banner_button: form.cta.banner_button,
-        show_banner: form.cta.show_banner,
-      });
-
-      await upsertSingleton("footer_settings", {
-        id: 1,
-        description: form.footer.description,
-        quick_links: form.footer.quick_links,
-      });
-
-      await upsertSingleton("seo_default_settings", {
-        id: 1,
+      // ── seo default ──
+      const seoDefaultPatch: DefaultSeoSettings = {
         site_title: form.seo.default.title,
         site_description: form.seo.default.description,
         site_keywords: form.seo.default.keywords,
         og_image: form.seo.default.og_image,
-      });
+      };
 
-      await upsertSeoPages(form.seo.pages);
+      // build app doc
+      const appDocPayload: AppDoc = {
+        hero: heroPatch,
+        hero_images: heroImagesPatch,
+        home_why_us: { eyebrow: form.home_why_us.eyebrow, title: form.home_why_us.title, items: form.home_why_us.items },
+        home_process: { eyebrow: form.home_process.eyebrow, title: form.home_process.title, items: form.home_process.items },
+        home_faqs: { eyebrow: form.home_faqs.eyebrow, title: form.home_faqs.title, items: form.home_faqs.items },
+        about: aboutPatch,
+        contact: contactPatch,
+        social: socialPatch,
+        cta: ctaPatch,
+        footer: footerPatch,
+        seo_default: seoDefaultPatch,
+        ga: { measurement_id: (fd?.ga as any)?.measurement_id ?? "" },
+        updated_at: writeTimestamp(),
+      };
+
+      await saveDoc(appDocPayload);
+
+      // ── seo pages (individual docs) ──
+      const pages = form.seo.pages;
+      const pageKeys = Object.keys(pages);
+      const batchArr: Promise<any>[] = [];
+      // delete pages not in form
+      const existingSnap = await getDocs(query(collection(db, "seo_page_settings"), orderBy("page_key", "asc")));
+      const existingKeys = existingSnap.docs.map((d) => d.id);
+      for (const k of existingKeys) {
+        if (!pageKeys.includes(k) && isDefaultSeoPage(k)) continue; // skip homepage default collapse
+        if (!pageKeys.includes(k)) batchArr.push(deleteDoc(doc(db, "seo_page_settings", k)));
+      }
+      // upsert pages in form
+      for (const [key, val] of Object.entries(pages)) {
+        batchArr.push(setDoc(doc(db, "seo_page_settings", key), { page_key: key, ...val }, { merge: true }));
+      }
+      await Promise.all(batchArr);
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["hero_settings"] });
-      qc.invalidateQueries({ queryKey: ["hero_images_settings"] });
-      qc.invalidateQueries({ queryKey: ["home_why_us_settings"] });
-      qc.invalidateQueries({ queryKey: ["home_process_settings"] });
-      qc.invalidateQueries({ queryKey: ["home_faqs_settings"] });
-      qc.invalidateQueries({ queryKey: ["about_settings"] });
-      qc.invalidateQueries({ queryKey: ["contact_settings"] });
-      qc.invalidateQueries({ queryKey: ["social_settings"] });
-      qc.invalidateQueries({ queryKey: ["cta_settings"] });
-      qc.invalidateQueries({ queryKey: ["footer_settings"] });
-      qc.invalidateQueries({ queryKey: ["seo_default_settings"] });
-      qc.invalidateQueries({ queryKey: ["seo_page_settings"] });
+      qc.invalidateQueries({ queryKey: ["hero_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["hero_images_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["home_why_us_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["home_process_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["home_faqs_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["about_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["contact_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["social_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["cta_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["footer_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["seo_default_settings"], exact: false });
+      qc.invalidateQueries({ queryKey: ["seo_page_settings"], exact: false });
       toast.success("Saved");
     },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Failed to save"),
   });
 
-  return { form, setForm, isLoading, save };
+  return { form, setForm, isLoading: !isLoaded.current, save };
+}
+
+// ─── Private helpers ──────────────────────────────────────────────────────────
+
+const DEFAULT_SEO_PAGES = new Set(["home", "about", "services", "gallery", "videos", "enquiry", "contact"]);
+
+function isDefaultSeoPage(key: string): boolean {
+  return DEFAULT_SEO_PAGES.has(key);
+}
+
+function fromDoc(d: AppDoc): SiteSettings {
+  const s = (d as any);
+  return {
+    hero: { badge: s.hero?.badge ?? "", title: s.hero?.title ?? "", subtitle: s.hero?.subtitle ?? "", cta: s.hero?.cta ?? "" },
+    hero_images: s.hero_images ?? {},
+    home_why_us: { eyebrow: s.home_why_us?.eyebrow ?? "", title: s.home_why_us?.title ?? "", items: (s.home_why_us?.items ?? []) as any },
+    home_process: { eyebrow: s.home_process?.eyebrow ?? "", title: s.home_process?.title ?? "", items: (s.home_process?.items ?? []) as any },
+    home_faqs: { eyebrow: s.home_faqs?.eyebrow ?? "", title: s.home_faqs?.title ?? "", items: (s.home_faqs?.items ?? []) as any },
+    about: s.about ?? EMPTY_SETTINGS.about,
+    contact: s.contact ?? EMPTY_SETTINGS.contact,
+    social: s.social ?? EMPTY_SETTINGS.social,
+    cta: s.cta ?? EMPTY_SETTINGS.cta,
+    footer: s.footer ?? EMPTY_SETTINGS.footer,
+    seo: {
+      default: {
+        title: s.seo_default?.site_title ?? "",
+        description: s.seo_default?.site_description ?? "",
+        keywords: s.seo_default?.site_keywords ?? "",
+        og_image: s.seo_default?.og_image ?? "",
+      },
+      pages: {},
+    },
+  };
 }

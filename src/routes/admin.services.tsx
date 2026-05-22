@@ -11,7 +11,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  collection,
+  query,
+  orderBy,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  where,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { useServices } from "@/hooks/use-cms";
 import { ICON_NAMES, getIcon } from "@/lib/icons";
 import { toast } from "sonner";
@@ -19,10 +30,15 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/admin/services")({ component: AdminServices });
 
 type Service = {
-  id?: string; title: string; slug: string; description: string; icon: string;
-  image_url: string; sort_order: number; is_active: boolean;
+  id?: string;
+  title: string;
+  slug: string;
+  description: string;
+  icon: string;
+  image_url: string;
+  sort_order: number;
+  is_active: boolean;
 };
-
 const empty: Service = { title: "", slug: "", description: "", icon: "Package", image_url: "", sort_order: 0, is_active: true };
 
 function slugify(s: string) {
@@ -36,24 +52,21 @@ function AdminServices() {
 
   const save = useMutation({
     mutationFn: async (s: Service) => {
-      const payload = { ...s, slug: s.slug || slugify(s.title) };
+      const payload = { ...s, slug: s.slug || slugify(s.title), updatedAt: new Date().toISOString() };
       if (s.id) {
-        const { error } = await (supabase.from("services") as any).update(payload).eq("id", s.id);
-        if (error) throw error;
+        await updateDoc(doc(db, "services", s.id), payload);
       } else {
         const { id: _i, ...rest } = payload;
-        const { error } = await (supabase.from("services") as any).insert(rest);
-        if (error) throw error;
+        await addDoc(collection(db, "services"), rest);
       }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["services"] }); setEditing(null); toast.success("Saved"); },
     onError: (e: any) => toast.error(e.message),
   });
 
-const del = useMutation({
+  const del = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase.from("services") as any).delete().eq("id", id);
-      if (error) throw error;
+      await deleteDoc(doc(db, "services", id));
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["services"] }); toast.success("Deleted"); },
   });
@@ -85,7 +98,6 @@ const del = useMutation({
           })}
         </div>
       )}
-
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>{editing?.id ? "Edit Service" : "Add Service"}</DialogTitle></DialogHeader>
@@ -97,13 +109,10 @@ const del = useMutation({
               </div>
               <div><Label>Description</Label><Textarea rows={3} value={editing.description ?? ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} /></div>
               <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <Label>Icon</Label>
+                <div><Label>Icon</Label>
                   <Select value={editing.icon} onValueChange={(v) => setEditing({ ...editing, icon: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent className="max-h-72">
-                      {ICON_NAMES.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}
-                    </SelectContent>
+                    <SelectContent className="max-h-72">{ICON_NAMES.map((n) => <SelectItem key={n} value={n}>{n}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
                 <div><Label>Sort Order</Label><Input type="number" value={editing.sort_order} onChange={(e) => setEditing({ ...editing, sort_order: Number(e.target.value) })} /></div>

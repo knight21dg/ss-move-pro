@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper to check if the current user is an admin
+    function isAdmin() {
+      return request.auth != null && 
+        exists(/databases/$(database)/documents/user_roles/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/user_roles/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Services
+    match /services/{document} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Gallery Images
+    match /gallery_images/{document} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Videos
+    match /videos/{document} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Testimonials
+    match /testimonials/{document} {
+      allow read: if resource.data.is_active == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Enquiries
+    match /enquiries/{document} {
+      allow create: if true; // anyone can submit an enquiry
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Settings
+    match /settings/{document} {
+      allow read: if true; // public settings
+      allow write: if isAdmin();
+    }
+
+    // SEO Page Settings
+    match /seo_page_settings/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // User Roles
+    match /user_roles/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin(); // only admins can change roles
+    }
+  }
+}

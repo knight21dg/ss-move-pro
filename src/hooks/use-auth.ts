@@ -1,49 +1,38 @@
-import { useEffect, useState } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState, useCallback } from "react";
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as fbSignOut, sendPasswordResetEmail, updatePassword, type User as AuthUser } from "firebase/auth";
+import { doc, getDoc, setDoc, getDocs, query, where } from "firebase/firestore";
+import { db, auth } from "@/lib/firebase";
+import { toast } from "sonner";
 
 export function useAuth() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        checkAdmin(s.user.id);
-      } else {
-        setIsAdmin(false);
-      }
-    });
-
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        checkAdmin(s.user.id);
+    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+      setSession(firebaseUser);
+      setUser(firebaseUser);
+      if (firebaseUser) {
+        const snap = await getDoc(doc(db, "user_roles", firebaseUser.uid));
+        setIsAdmin(snap.exists() && (snap.data() as { role?: string }).role === "admin");
       } else {
         setIsAdmin(false);
       }
       setLoading(false);
     });
-
-    async function checkAdmin(uid: string) {
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", uid)
-        .eq("role", "admin")
-        .maybeSingle();
-      setIsAdmin(!!data);
-    }
-
-    return () => subscription.unsubscribe();
+    return () => unsub();
   }, []);
 
-  return { session, user, isAdmin, loading };
+  const signIn = useCallback(async (email: string, password: string) => { await signInWithEmailAndPassword(auth, email, password); }, []);
+  const signUp = useCallback(async (email: string, password: string) => { await createUserWithEmailAndPassword(auth, email, password); }, []);
+  const logout = useCallback(async () => { await fbSignOut(auth); }, []);
+  const resetPassword = useCallback(async (email: string) => { await sendPasswordResetEmail(auth, email); }, []);
+  const updateUserPassword = useCallback(async (newPassword: string) => {
+    if (!auth.currentUser) throw new Error("No user in session");
+    await updatePassword(auth.currentUser, newPassword);
+  }, []);
+
+  return { user, session, isAdmin, loading, signIn, signUp, logout, resetPassword, updateUserPassword };
 }

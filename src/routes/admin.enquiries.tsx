@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { collection, query, orderBy, getDocs, doc, updateDoc, deleteDoc, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/enquiries")({ component: AdminEnquiries });
@@ -19,34 +20,47 @@ const statusColors: Record<string, string> = {
   closed: "bg-muted text-muted-foreground",
 };
 
+type Enquiry = { id: string; name: string; phone: string; email: string | null; from_city: string | null; to_city: string | null; service: string | null; moving_date: string | null; status: string; admin_notes: string | null; created_at: string };
+
 function AdminEnquiries() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<string>("all");
-  const [selected, setSelected] = useState<any | null>(null);
+  const [selected, setSelected] = useState<Enquiry | null>(null);
 
   const { data: enquiries = [], isLoading } = useQuery({
     queryKey: ["enquiries", filter],
     queryFn: async () => {
-      let q = (supabase.from("enquiries") as any).select("*").order("created_at", { ascending: false });
-      if (filter !== "all") q = q.eq("status", filter as any);
-      const { data, error } = await q;
-      if (error) throw error;
-      return data ?? [];
+      let colQuery = query(collection(db, "enquiries"), orderBy("created_at", "desc"));
+      if (filter !== "all") {
+        colQuery = query(colQuery, where("status", "==", filter));
+      }
+      const snap = await getDocs(colQuery);
+      return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Enquiry));
     },
   });
 
   const update = useMutation({
     mutationFn: async (p: { id: string; status?: string; admin_notes?: string }) => {
       const { id, ...rest } = p;
-      const { error } = await (supabase.from("enquiries") as any).update(rest as any).eq("id", id);
-      if (error) throw error;
+      await updateDoc(doc(db, "enquiries", id), rest);
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["enquiries"] }); qc.invalidateQueries({ queryKey: ["admin-stats"] }); toast.success("Updated"); setSelected(null); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["enquiries"], exact: false });
+      qc.invalidateQueries({ queryKey: ["admin-stats"], exact: false });
+      toast.success("Updated");
+      setSelected(null);
+    },
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await (supabase.from("enquiries") as any).delete().eq("id", id); if (error) throw error; },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["enquiries"] }); toast.success("Deleted"); setSelected(null); },
+    mutationFn: async (id: string) => {
+      await deleteDoc(doc(db, "enquiries", id));
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["enquiries"], exact: false });
+      toast.success("Deleted");
+      setSelected(null);
+    },
   });
 
   return (
@@ -67,7 +81,7 @@ function AdminEnquiries() {
         <div className="rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">No enquiries yet</div>
       ) : (
         <div className="space-y-3">
-          {enquiries.map((e: any) => (
+          {enquiries.map((e) => (
             <button key={e.id} onClick={() => setSelected(e)} className="w-full text-left rounded-xl border border-border bg-card p-5 hover:border-primary transition-colors">
               <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
                 <div>
@@ -117,7 +131,7 @@ function AdminEnquiries() {
             </div>
           )}
           <DialogFooter className="flex-wrap gap-2">
-            <Button variant="ghost" className="text-destructive mr-auto" onClick={() => selected && confirm("Delete this enquiry?") && del.mutate(selected.id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
+            <Button variant="ghost" className="text-destructive mr-auto" onClick={() => selected && confirm("Delete?") && del.mutate(selected.id)}><Trash2 className="h-4 w-4 mr-1" /> Delete</Button>
             <Button variant="outline" onClick={() => setSelected(null)}>Close</Button>
             {selected?.phone && (
               <Button variant="outline" asChild>

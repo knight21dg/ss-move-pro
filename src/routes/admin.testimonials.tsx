@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query as fQuery, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { useTestimonials } from "@/hooks/use-cms";
 import { toast } from "sonner";
 
@@ -26,15 +27,21 @@ function AdminTestimonials() {
 
   const save = useMutation({
     mutationFn: async (it: T) => {
-      if (it.id) { const { error } = await (supabase.from("testimonials") as any).update(it).eq("id", it.id); if (error) throw error; }
-      else { const { id: _, ...rest } = it; const { error } = await (supabase.from("testimonials") as any).insert(rest); if (error) throw error; }
+      if (it.id) {
+        await updateDoc(doc(db, "testimonials", it.id), it);
+      } else {
+        const { id: _, ...rest } = it;
+        await addDoc(collection(db, "testimonials"), rest);
+      }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["testimonials"] }); setEditing(null); toast.success("Saved"); },
     onError: (e: any) => toast.error(e.message),
   });
 
   const del = useMutation({
-    mutationFn: async (id: string) => { const { error } = await (supabase.from("testimonials") as any).delete().eq("id", id); if (error) throw error; },
+    mutationFn: async (id: string) => {
+      await deleteDoc(doc(db, "testimonials", id));
+    },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["testimonials"] }); toast.success("Deleted"); },
   });
 
@@ -63,7 +70,6 @@ function AdminTestimonials() {
           ))}
         </div>
       )}
-
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>{editing?.id ? "Edit Testimonial" : "Add Testimonial"}</DialogTitle></DialogHeader>

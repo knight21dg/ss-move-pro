@@ -1,64 +1,99 @@
-import { useQuery, useQueries } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import type { Json } from "@/integrations/supabase/types";
+import { useQuery } from "@tanstack/react-query";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  getDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const from = (table: string) => supabase.from(table as any);
+// ─── DB helpers ────────────────────────────────────────────────────────────────
 
-export function useServices(activeOnly = true) {
-   return useQuery({
-     queryKey: ["services", activeOnly],
-     queryFn: async () => {
-       let q = from("services").select("*").order("sort_order");
-       if (activeOnly) q = q.eq("is_active", true);
-       const { data, error } = await q;
-       if (error) throw error;
-       return data ?? [];
-     },
-   });
- }
+async function fetchDocs<T extends { id: string }>(
+  ref: any,
+  filterActive = false,
+): Promise<T[]> {
+  let q: any = query(ref, orderBy("sort_order", "asc"));
+  if (filterActive) q = query(q, where("is_active", "==", true));
+  const snap = await getDocs(q);
+  return snap.docs.map((d: any) => ({ id: d.id, ...d.data() })) as T[];
+}
 
- export function useGallery(activeOnly = true) {
-   return useQuery({
-     queryKey: ["gallery", activeOnly],
-     queryFn: async () => {
-       let q = from("gallery_images").select("*").order("sort_order");
-       if (activeOnly) q = q.eq("is_active", true);
-       const { data, error } = await q;
-       if (error) throw error;
-       return data ?? [];
-     },
-   });
- }
+// ═══════════════════════════════════════════════════════════════════════════════════
+// TYPES (imported by lib/firebase.ts)
+// ═══════════════════════════════════════════════════════════════════════════════════
 
- export function useVideos(activeOnly = true) {
-   return useQuery({
-     queryKey: ["videos", activeOnly],
-     queryFn: async () => {
-       let q = from("videos").select("*").order("sort_order");
-       if (activeOnly) q = q.eq("is_active", true);
-       const { data, error } = await q;
-       if (error) throw error;
-       return data ?? [];
-     },
-   });
- }
+export type Service = {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  icon: string;
+  image_url: string;
+  sort_order: number;
+  is_active: boolean;
+};
 
- export function useTestimonials(activeOnly = true) {
-   return useQuery({
-     queryKey: ["testimonials", activeOnly],
-     queryFn: async () => {
-       let q = from("testimonials").select("*").order("sort_order");
-       if (activeOnly) q = q.eq("is_active", true);
-       const { data, error } = await q;
-       if (error) throw error;
-       return data ?? [];
-     },
-   });
- }
+export type GalleryImage = {
+  id: string;
+  title: string;
+  image_url: string;
+  category: string;
+  sort_order: number;
+  is_active: boolean;
+};
 
-export type SeoFields = { title: string; description: string; keywords: string; og_image: string };
+export type Video = {
+  id: string;
+  title: string;
+  description: string;
+  video_url: string;
+  thumbnail_url: string;
+  sort_order: number;
+  is_active: boolean;
+};
 
+export type Testimonial = {
+  id: string;
+  name: string;
+  location: string;
+  rating: number;
+  message: string;
+  avatar_url: string;
+  sort_order: number;
+  is_active: boolean;
+};
+
+export type WhyUsItem = {
+  id: string;
+  title: string;
+  description: string;
+  sort_order: number;
+};
+export type ProcessItem = {
+  id: string;
+  step: string;
+  title: string;
+  description: string;
+  sort_order: number;
+};
+export type FaqItem = {
+  id: string;
+  question: string;
+  answer: string;
+  sort_order: number;
+};
+
+export interface AboutSettings {
+  heading: string;
+  body: string;
+  years_experience: string;
+  happy_customers: string;
+  cities_covered: string;
+}
 export interface ContactSettings {
   phone: string;
   whatsapp: string;
@@ -66,13 +101,22 @@ export interface ContactSettings {
   address: string;
   whatsapp_enquiry_message: string;
 }
-
 export interface SocialSettings {
   facebook: string;
   instagram: string;
   youtube: string;
 }
-
+export interface CtaSettings {
+  banner_text: string;
+  banner_subtitle: string;
+  banner_link: string;
+  banner_button: string;
+  show_banner: boolean;
+}
+export interface FooterSettings {
+  description: string;
+  quick_links: string;
+}
 export interface HeroImages {
   home: string;
   about: string;
@@ -82,35 +126,16 @@ export interface HeroImages {
   enquiry: string;
   contact: string;
 }
-
-export interface AboutSettings {
-  heading: string;
-  body: string;
-  years_experience: string;
-  happy_customers: string;
-  cities_covered: string;
-}
-
-export interface WhyUsItem {
-  id: string;
+export interface SeoFields {
   title: string;
   description: string;
-  sort_order: number;
+  keywords: string;
+  og_image: string;
 }
-export interface ProcessItem {
-  id: string;
-  step: string;
-  title: string;
-  description: string;
-  sort_order: number;
+export interface SeoSettings {
+  default: SeoFields;
+  pages: Record<string, SeoFields>;
 }
-export interface FaqItem {
-  id: string;
-  question: string;
-  answer: string;
-  sort_order: number;
-}
-
 export interface HomeWhyUs {
   eyebrow: string;
   title: string;
@@ -127,24 +152,6 @@ export interface HomeFaqs {
   items: FaqItem[];
 }
 
-export interface CtaSettings {
-  banner_text: string;
-  banner_subtitle: string;
-  banner_link: string;
-  banner_button: string;
-  show_banner: boolean;
-}
-
-export interface FooterSettings {
-  description: string;
-  quick_links: string;
-}
-
-export interface SeoSettings {
-  default: SeoFields;
-  pages: Record<string, SeoFields>;
-}
-
 export type SiteSettings = {
   hero: { badge?: string; title: string; subtitle: string; cta: string };
   hero_images: HeroImages;
@@ -158,6 +165,182 @@ export type SiteSettings = {
   footer: FooterSettings;
   seo: SeoSettings;
 };
+
+export type Enquiry = {
+  id: string;
+  name: string;
+  phone: string;
+  email: string | null;
+  from_city: string | null;
+  to_city: string | null;
+  service: string | null;
+  moving_date: string | null;
+  status: string;
+  admin_notes: string | null;
+  created_at: string;
+};
+
+// ─── AppDoc – unified settings document shape ──────────────────────────────────
+export type AppDoc = {
+  hero: { badge?: string; title: string; subtitle: string; cta: string };
+  hero_images: HeroImages;
+  home_why_us: { eyebrow: string; title: string; items: WhyUsItem[] };
+  home_process: { eyebrow: string; title: string; items: ProcessItem[] };
+  home_faqs: { eyebrow: string; title: string; items: FaqItem[] };
+  about: AboutSettings;
+  contact: ContactSettings;
+  social: SocialSettings;
+  cta: CtaSettings;
+  footer: FooterSettings;
+  seo_default: { site_title: string; site_description: string; site_keywords: string; og_image: string };
+  ga: { measurement_id: string };
+  updated_at: string;
+};
+
+// ─── slugify helper ────────────────────────────────────────────────────────────
+
+function slugify(s: string): string {
+  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// PUBLIC QUERY HOOKS
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+export function useServices(activeOnly = true) {
+  return useQuery({
+    queryKey: ["services", activeOnly],
+    queryFn: () => fetchDocs<Service>(collection(db, "services"), activeOnly),
+  });
+}
+
+export function useGallery(activeOnly = true) {
+  return useQuery({
+    queryKey: ["gallery", activeOnly],
+    queryFn: () => fetchDocs<GalleryImage>(collection(db, "gallery_images"), activeOnly),
+  });
+}
+
+export function useVideos(activeOnly = true) {
+  return useQuery({
+    queryKey: ["videos", activeOnly],
+    queryFn: () => fetchDocs<Video>(collection(db, "videos"), activeOnly),
+  });
+}
+
+export function useTestimonials(activeOnly = true) {
+  return useQuery({
+    queryKey: ["testimonials", activeOnly],
+    queryFn: () => fetchDocs<Testimonial>(collection(db, "testimonials"), activeOnly),
+  });
+}
+
+// ─── Settings queries ─────────────────────────────────────────────────────────
+
+function pickSeo(d?: { site_title?: string; site_description?: string; site_keywords?: string; og_image?: string } | null): SeoFields {
+  return {
+    title: d?.site_title ?? "",
+    description: d?.site_description ?? "",
+    keywords: d?.site_keywords ?? "",
+    og_image: d?.og_image ?? "",
+  };
+}
+
+// ─── Combined settings hook ────────────────────────────────────────────────────
+// Reads from a single settings/all Firestore doc + seo_page_settings per-page docs.
+
+export function useSettings() {
+  return useQuery({
+    queryKey: ["settings"],
+    queryFn: async (): Promise<SiteSettings> => {
+      const [settingsSnap, pagesSnap] = await Promise.all([
+        getDoc(doc(db, "settings", "all")),
+        getDocs(query(collection(db, "seo_page_settings"), orderBy("page_key", "asc"))),
+      ]);
+
+      const s: any = settingsSnap.exists() ? settingsSnap.data() : {};
+
+      const hero = {
+        badge: (s.hero?.badge ?? "") as string,
+        title: (s.hero?.title ?? "") as string,
+        subtitle: (s.hero?.subtitle ?? "") as string,
+        cta: (s.hero?.cta ?? "") as string,
+      };
+
+      const heroImages: HeroImages = (s.hero_images ?? {
+        home: "", about: "", services: "", gallery: "", videos: "", enquiry: "", contact: "",
+      }) as HeroImages;
+
+      const homeWhyUs: HomeWhyUs = {
+        eyebrow: (s.home_why_us?.eyebrow ?? "") as string,
+        title: (s.home_why_us?.title ?? "") as string,
+        items: (s.home_why_us?.items ?? []) as WhyUsItem[],
+      };
+
+      const homeProcess: HomeProcess = {
+        eyebrow: (s.home_process?.eyebrow ?? "") as string,
+        title: (s.home_process?.title ?? "") as string,
+        items: (s.home_process?.items ?? []) as ProcessItem[],
+      };
+
+      const homeFaqs: HomeFaqs = {
+        eyebrow: (s.home_faqs?.eyebrow ?? "") as string,
+        title: (s.home_faqs?.title ?? "") as string,
+        items: (s.home_faqs?.items ?? []) as FaqItem[],
+      };
+
+      const about: AboutSettings = (s.about ?? EMPTY_SETTINGS.about) as AboutSettings;
+      const contactData: ContactSettings = (s.contact ?? EMPTY_SETTINGS.contact) as ContactSettings;
+      const social: SocialSettings = (s.social ?? EMPTY_SETTINGS.social) as SocialSettings;
+      const cta: CtaSettings = (s.cta ?? EMPTY_SETTINGS.cta) as CtaSettings;
+      const footerData: FooterSettings = (s.footer ?? EMPTY_SETTINGS.footer) as FooterSettings;
+
+      const seoDefault: SeoFields = pickSeo({
+        site_title: s.seo_default?.site_title,
+        site_description: s.seo_default?.site_description,
+        site_keywords: s.seo_default?.site_keywords,
+        og_image: s.seo_default?.og_image,
+      });
+
+      const pagesData = pagesSnap.docs.map((d) => ({
+        id: d.id,
+        page_key: d.data().page_key,
+        title: d.data().title,
+        description: d.data().description,
+        keywords: d.data().keywords,
+        og_image: d.data().og_image,
+      })) as { id: string; page_key: string; title: string; description: string; keywords: string; og_image: string }[];
+
+      const pages: Record<string, SeoFields> = {
+        home: EMPTY_SETTINGS.seo.default,
+        about: EMPTY_SETTINGS.seo.default,
+        services: EMPTY_SETTINGS.seo.default,
+        gallery: EMPTY_SETTINGS.seo.default,
+        videos: EMPTY_SETTINGS.seo.default,
+        enquiry: EMPTY_SETTINGS.seo.default,
+        contact: EMPTY_SETTINGS.seo.default,
+      };
+      for (const p of pagesData) {
+        pages[p.page_key] = { title: p.title, description: p.description, keywords: p.keywords, og_image: p.og_image };
+      }
+
+      return {
+        hero,
+        hero_images: heroImages,
+        home_why_us: homeWhyUs,
+        home_process: homeProcess,
+        home_faqs: homeFaqs,
+        about,
+        contact: contactData,
+        social,
+        cta,
+        footer: footerData,
+        seo: { default: seoDefault, pages },
+      };
+    },
+    staleTime: 30_000,
+  });
+}
 
 export const EMPTY_SETTINGS: SiteSettings = {
   hero: { title: "", subtitle: "", cta: "", badge: "" },
@@ -176,409 +359,7 @@ export const EMPTY_SETTINGS: SiteSettings = {
   about: { heading: "", body: "", years_experience: "", happy_customers: "", cities_covered: "" },
   contact: { phone: "", whatsapp: "", email: "", address: "", whatsapp_enquiry_message: "" },
   social: { facebook: "", instagram: "", youtube: "" },
-  cta: {
-    banner_text: "",
-    banner_subtitle: "",
-    banner_link: "",
-    banner_button: "",
-    show_banner: false,
-  },
+  cta: { banner_text: "", banner_subtitle: "", banner_link: "", banner_button: "", show_banner: false },
   footer: { description: "", quick_links: "" },
-  seo: {
-    default: { title: "", description: "", keywords: "", og_image: "" },
-    pages: {},
-  },
+  seo: { default: { title: "", description: "", keywords: "", og_image: "" }, pages: {} },
 };
-
-// ── individual table helpers ─────────────────────────────────────────────────
-
-async function fetchSingleton<T>(table: string): Promise<T | null> {
-  const q = from(table).select("*").eq("id", 1).single();
-  const { data, error } = await q;
-  if (error) throw error;
-  return (data as T) ?? null;
-}
-
-async function fetchHomeSection<TItem>(config: {
-  settingsTable: string;
-  itemsTable: string;
-  parseItem: (item: unknown, index: number) => TItem;
-}): Promise<{ eyebrow: string; title: string; items: TItem[] }> {
-  const { data: settings, error: settingsError } = await from(config.settingsTable)
-    .select("content")
-    .eq("id", 1)
-    .single();
-  if (settingsError) throw settingsError;
-
-  const s = settings as { content?: unknown } | null;
-  const fkColumn = `${config.settingsTable.replace(/_settings$/, "")}_settings_id`;
-
-  let items: TItem[] = [];
-
-  try {
-    const { data: itemsData, error: itemsError } = await from(config.itemsTable)
-      .select("*")
-      .eq(fkColumn, 1)
-      .order("sort_order");
-    if (!itemsError && itemsData) {
-      items = itemsData.map((item, idx) => config.parseItem(item, idx));
-    }
-  } catch {
-    // items table doesn't exist, fall through to content fallback
-  }
-
-  const content = s?.content;
-  if (content && typeof content === "object" && !Array.isArray(content)) {
-    const c = content as { eyebrow?: string; title?: string; items?: unknown[] };
-    if (items.length === 0) {
-      const itemsArray = (c.items ?? []) as unknown[];
-      items = itemsArray.map((item, idx) => config.parseItem(item, idx));
-    }
-    return {
-      eyebrow: c.eyebrow ?? "",
-      title: c.title ?? "",
-      items,
-    };
-  }
-
-  return { eyebrow: "", title: "", items };
-}
-
-export function useHero() {
-  return useQuery({
-    queryKey: ["hero_settings"],
-    queryFn: () =>
-      fetchSingleton<{ title: string; subtitle: string; cta: string; badge: string }>(
-        "hero_settings",
-      ),
-  });
-}
-
-export function useHeroImages() {
-  return useQuery({
-    queryKey: ["hero_images_settings"],
-    queryFn: () => fetchSingleton<HeroImages>("hero_images_settings"),
-  });
-}
-
-export function useHomeWhyUs() {
-  return useQuery({
-    queryKey: ["home_why_us_settings"],
-    queryFn: () =>
-      fetchHomeSection<WhyUsItem>({
-        settingsTable: "home_why_us_settings",
-        itemsTable: "home_why_us_items",
-        parseItem: (item: unknown) => {
-          const i = item as { id?: string; title?: string; description?: string; sort_order?: number };
-          return {
-            id: i.id ?? "",
-            title: i.title ?? "",
-            description: i.description ?? "",
-            sort_order: i.sort_order ?? 0,
-          };
-        },
-      }),
-  });
-}
-
-export function useHomeProcess() {
-  return useQuery({
-    queryKey: ["home_process_settings"],
-    queryFn: () =>
-      fetchHomeSection<ProcessItem>({
-        settingsTable: "home_process_settings",
-        itemsTable: "home_process_items",
-        parseItem: (item: unknown) => {
-          const i = item as { id?: string; step?: string; title?: string; description?: string; sort_order?: number };
-          return {
-            id: i.id ?? "",
-            step: i.step ?? "",
-            title: i.title ?? "",
-            description: i.description ?? "",
-            sort_order: i.sort_order ?? 0,
-          };
-        },
-      }),
-  });
-}
-
-export function useHomeFaqs() {
-  return useQuery({
-    queryKey: ["home_faqs_settings"],
-    queryFn: () =>
-      fetchHomeSection<FaqItem>({
-        settingsTable: "home_faqs_settings",
-        itemsTable: "home_faqs_items",
-        parseItem: (item: unknown) => {
-          const i = item as { id?: string; question?: string; answer?: string; sort_order?: number };
-          return {
-            id: i.id ?? "",
-            question: i.question ?? "",
-            answer: i.answer ?? "",
-            sort_order: i.sort_order ?? 0,
-          };
-        },
-      }),
-  });
-}
-
-export function useAbout() {
-  return useQuery({
-    queryKey: ["about_settings"],
-    queryFn: () => fetchSingleton<AboutSettings>("about_settings"),
-  });
-}
-
-export function useContact() {
-  return useQuery({
-    queryKey: ["contact_settings"],
-    queryFn: () => fetchSingleton<ContactSettings>("contact_settings"),
-  });
-}
-
-export function useSocial() {
-  return useQuery({
-    queryKey: ["social_settings"],
-    queryFn: () => fetchSingleton<SocialSettings>("social_settings"),
-  });
-}
-
-export function useSeoDefault() {
-  return useQuery({
-    queryKey: ["seo_default_settings"],
-    queryFn: () =>
-      fetchSingleton<{
-        site_title: string;
-        site_description: string;
-        site_keywords: string;
-        og_image: string;
-      }>("seo_default_settings"),
-  });
-}
-
-export function useSeoPages() {
-  return useQuery({
-    queryKey: ["seo_page_settings"],
-    queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (from("seo_page_settings")
-        .select("*")
-        .order("page_key") as any);
-      if (error) throw error;
-      return (data ?? []) as {
-        page_key: string;
-        title: string;
-        description: string;
-        keywords: string;
-        og_image: string;
-      }[];
-    },
-  });
-}
-
-export function useCta() {
-  return useQuery({
-    queryKey: ["cta_settings"],
-    queryFn: () => fetchSingleton<CtaSettings>("cta_settings"),
-  });
-}
-
-export function useFooter() {
-  return useQuery({
-    queryKey: ["footer_settings"],
-    queryFn: () => fetchSingleton<FooterSettings>("footer_settings"),
-  });
-}
-
-// ── combined settings hook ────────────────────────────────────────────────────
-
-function pickSeoField(r?: {
-  data?: {
-    site_title?: string;
-    site_description?: string;
-    site_keywords?: string;
-    og_image?: string;
-  } | null;
-}): SeoFields {
-  return {
-    title: (r?.data?.site_title ?? "") as string,
-    description: (r?.data?.site_description ?? "") as string,
-    keywords: (r?.data?.site_keywords ?? "") as string,
-    og_image: (r?.data?.og_image ?? "") as string,
-  };
-}
-
-export function useSettings() {
-  const results = useQueries({
-    queries: [
-      {
-        queryKey: ["hero_settings"],
-        queryFn: () =>
-          fetchSingleton<{ title: string; subtitle: string; cta: string; badge: string }>(
-            "hero_settings",
-          ),
-      },
-      {
-        queryKey: ["hero_images_settings"],
-        queryFn: () => fetchSingleton<HeroImages>("hero_images_settings"),
-      },
-      {
-        queryKey: ["home_why_us_settings"],
-        queryFn: () =>
-          fetchHomeSection<WhyUsItem>({
-            settingsTable: "home_why_us_settings",
-            itemsTable: "home_why_us_items",
-            parseItem: (item) => {
-              const i = item as { id?: string; title?: string; description?: string; sort_order?: number };
-              return {
-                id: i.id ?? "",
-                title: i.title ?? "",
-                description: i.description ?? "",
-                sort_order: i.sort_order ?? 0,
-              };
-            },
-          }),
-      },
-      {
-        queryKey: ["home_process_settings"],
-        queryFn: () =>
-          fetchHomeSection<ProcessItem>({
-            settingsTable: "home_process_settings",
-            itemsTable: "home_process_items",
-            parseItem: (item) => {
-              const i = item as { id?: string; step?: string; title?: string; description?: string; sort_order?: number };
-              return {
-                id: i.id ?? "",
-                step: i.step ?? "",
-                title: i.title ?? "",
-                description: i.description ?? "",
-                sort_order: i.sort_order ?? 0,
-              };
-            },
-          }),
-      },
-      {
-        queryKey: ["home_faqs_settings"],
-        queryFn: () =>
-          fetchHomeSection<FaqItem>({
-            settingsTable: "home_faqs_settings",
-            itemsTable: "home_faqs_items",
-            parseItem: (item) => {
-              const i = item as { id?: string; question?: string; answer?: string; sort_order?: number };
-              return {
-                id: i.id ?? "",
-                question: i.question ?? "",
-                answer: i.answer ?? "",
-                sort_order: i.sort_order ?? 0,
-              };
-            },
-          }),
-      },
-      {
-        queryKey: ["about_settings"],
-        queryFn: () => fetchSingleton<AboutSettings>("about_settings"),
-      },
-      {
-        queryKey: ["contact_settings"],
-        queryFn: () => fetchSingleton<ContactSettings>("contact_settings"),
-      },
-      {
-        queryKey: ["social_settings"],
-        queryFn: () => fetchSingleton<SocialSettings>("social_settings"),
-      },
-      { queryKey: ["cta_settings"], queryFn: () => fetchSingleton<CtaSettings>("cta_settings") },
-      {
-        queryKey: ["footer_settings"],
-        queryFn: () => fetchSingleton<FooterSettings>("footer_settings"),
-      },
-      {
-        queryKey: ["seo_default_settings"],
-        queryFn: () =>
-          fetchSingleton<{
-            site_title: string;
-            site_description: string;
-            site_keywords: string;
-            og_image: string;
-          }>("seo_default_settings"),
-      },
-      {
-        queryKey: ["seo_page_settings"],
-        queryFn: async (): Promise<
-          {
-            page_key: string;
-            title: string;
-            description: string;
-            keywords: string;
-            og_image: string;
-          }[]
-        > => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { data, error } = await (from("seo_page_settings")
-            .select("*")
-            .order("page_key") as any);
-          if (error) throw error;
-          return (data ?? []) as {
-            page_key: string;
-            title: string;
-            description: string;
-            keywords: string;
-            og_image: string;
-          }[];
-        },
-      },
-    ],
-  });
-
-  const isLoading = results.some((r) => r.isLoading);
-  if (isLoading) return { data: null, isLoading };
-
-  const [
-    hero,
-    heroImages,
-    whyUsRaw,
-    processRaw,
-    faqsRaw,
-    about,
-    contact,
-    social,
-    cta,
-    footer,
-    seoDefault,
-    seoPages,
-  ] = results;
-
-  const pagesData = seoPages.data ?? [];
-  const pages: Record<string, SeoFields> = {
-    home: EMPTY_SETTINGS.seo.default,
-    about: EMPTY_SETTINGS.seo.default,
-    services: EMPTY_SETTINGS.seo.default,
-    gallery: EMPTY_SETTINGS.seo.default,
-    videos: EMPTY_SETTINGS.seo.default,
-    enquiry: EMPTY_SETTINGS.seo.default,
-    contact: EMPTY_SETTINGS.seo.default,
-  };
-  for (const p of pagesData) {
-    pages[p.page_key] = {
-      title: p.title,
-      description: p.description,
-      keywords: p.keywords,
-      og_image: p.og_image,
-    };
-  }
-
-  const out: SiteSettings = {
-    hero: hero.data ?? EMPTY_SETTINGS.hero,
-    hero_images: heroImages.data ?? EMPTY_SETTINGS.hero_images,
-    home_why_us: whyUsRaw.data ?? EMPTY_SETTINGS.home_why_us,
-    home_process: processRaw.data ?? EMPTY_SETTINGS.home_process,
-    home_faqs: faqsRaw.data ?? EMPTY_SETTINGS.home_faqs,
-    about: about.data ?? EMPTY_SETTINGS.about,
-    contact: contact.data ?? EMPTY_SETTINGS.contact,
-    social: social.data ?? EMPTY_SETTINGS.social,
-    cta: cta.data ?? EMPTY_SETTINGS.cta,
-    footer: footer.data ?? EMPTY_SETTINGS.footer,
-    seo: { default: pickSeoField(seoDefault), pages },
-  };
-
-  return { data: out, isLoading: false };
-}

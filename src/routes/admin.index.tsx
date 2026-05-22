@@ -2,25 +2,31 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Package, Image as ImageIcon, Video, MessageSquare, Inbox, Settings as SettingsIcon } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { supabase } from "@/integrations/supabase/client";
+import { collection, query, getDocs, where, limit } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-export const Route = createFileRoute("/admin/")({
-  component: AdminDashboard,
-});
+export const Route = createFileRoute("/admin/")({ component: AdminDashboard });
+
+function count(collectionName: string, filterWhere?: { field: string; value: any }): Promise<number> {
+  const q = filterWhere
+    ? query(collection(db, collectionName), where(filterWhere.field, "==", filterWhere.value), limit(1))
+    : query(collection(db, collectionName), limit(1));
+  return getDocs(q).then((snap) => snap.size);
+}
 
 function AdminDashboard() {
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: async () => {
       const [s, g, v, t, e, eNew] = await Promise.all([
-        supabase.from("services").select("id", { count: "exact", head: true }),
-        supabase.from("gallery_images").select("id", { count: "exact", head: true }),
-        supabase.from("videos").select("id", { count: "exact", head: true }),
-        supabase.from("testimonials").select("id", { count: "exact", head: true }),
-        supabase.from("enquiries").select("id", { count: "exact", head: true }),
-        supabase.from("enquiries").select("id", { count: "exact", head: true }).eq("status", "new"),
+        count("services"),
+        count("gallery_images"),
+        count("videos"),
+        count("testimonials"),
+        count("enquiries"),
+        count("enquiries", { field: "status", value: "new" }),
       ]);
-      return { services: s.count ?? 0, gallery: g.count ?? 0, videos: v.count ?? 0, testimonials: t.count ?? 0, enquiries: e.count ?? 0, newEnquiries: eNew.count ?? 0 };
+      return { services: s, gallery: g, videos: v, testimonials: t, enquiries: e, newEnquiries: eNew };
     },
   });
 
@@ -41,9 +47,7 @@ function AdminDashboard() {
           return (
             <Link key={c.to} to={c.to as any} className="rounded-xl border border-border bg-card p-6 hover:shadow-md hover:border-primary transition-all">
               <div className="flex items-start justify-between mb-3">
-                <div className="h-11 w-11 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                  <Icon className="h-5 w-5" />
-                </div>
+                <div className="h-11 w-11 rounded-lg bg-primary/10 text-primary flex items-center justify-center"><Icon className="h-5 w-5" /></div>
                 {!!c.badge && <span className="text-xs font-bold bg-primary text-primary-foreground rounded-full px-2 py-0.5">{c.badge} new</span>}
               </div>
               <div className="text-sm text-muted-foreground">{c.label}</div>
