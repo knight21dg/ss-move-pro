@@ -95,7 +95,7 @@ function AdminVideos() {
       )}
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg" aria-describedby={undefined}>
           <DialogHeader><DialogTitle>{editing?.id ? "Edit Video" : "Add Video"}</DialogTitle></DialogHeader>
           {editing && (
             <div className="space-y-4">

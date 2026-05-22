@@ -99,7 +99,7 @@ function AdminServices() {
         </div>
       )}
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby={undefined}>
           <DialogHeader><DialogTitle>{editing?.id ? "Edit Service" : "Add Service"}</DialogTitle></DialogHeader>
           {editing && (
             <div className="space-y-4">

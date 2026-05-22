@@ -103,7 +103,7 @@ function AdminEnquiries() {
       )}
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg" aria-describedby={undefined}>
           <DialogHeader><DialogTitle>Enquiry from {selected?.name}</DialogTitle></DialogHeader>
           {selected && (
             <div className="space-y-3 text-sm">
