@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { onAuthChange, signIn, signOutUser, resetPassword, updateUserPassword } from "@/lib/firebase";
+import { onAuthChange, signIn, signUp, signOutUser, resetPassword, updateUserPassword } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import logo from "@/assets/logo.png";
-import { Eye, EyeOff, Link } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/signin")({
   head: () => ({ meta: [{ title: "Admin Login — SS Packers & Movers" }] }),
