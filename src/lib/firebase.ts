@@ -372,9 +372,7 @@ export function subscribeRealtime(qc: QueryClientLike): Unsubscribe {
     const q = query(col(table), limit(1));
     const unsub = onSnapshot(q, () => {
       qc.invalidateQueries({ queryKey: [table], exact: false });
-      if (table === "enquiries") {
-        qc.invalidateQueries({ queryKey: ["admin-stats"], exact: false });
-      }
+      qc.invalidateQueries({ queryKey: ["admin-stats"], exact: false });
     });
     unsubs.push(unsub);
   }

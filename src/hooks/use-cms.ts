@@ -211,6 +211,7 @@ export function servicesQueryOptions(activeOnly = true) {
   return queryOptions({
     queryKey: ["services", activeOnly],
     queryFn: () => fetchDocs<Service>(collection(db, "services"), activeOnly),
+    staleTime: 600_000,
   });
 }
 
@@ -222,6 +223,7 @@ export function galleryQueryOptions(activeOnly = true) {
   return queryOptions({
     queryKey: ["gallery", activeOnly],
     queryFn: () => fetchDocs<GalleryImage>(collection(db, "gallery_images"), activeOnly),
+    staleTime: 600_000,
   });
 }
 
@@ -233,6 +235,7 @@ export function videosQueryOptions(activeOnly = true) {
   return queryOptions({
     queryKey: ["videos", activeOnly],
     queryFn: () => fetchDocs<Video>(collection(db, "videos"), activeOnly),
+    staleTime: 600_000,
   });
 }
 
@@ -244,6 +247,7 @@ export function testimonialsQueryOptions(activeOnly = true) {
   return queryOptions({
     queryKey: ["testimonials", activeOnly],
     queryFn: () => fetchDocs<Testimonial>(collection(db, "testimonials"), activeOnly),
+    staleTime: 600_000,
   });
 }
 
@@ -354,7 +358,7 @@ export function settingsQueryOptions() {
         seo: { default: seoDefault, pages },
       };
     },
-    staleTime: 30_000,
+    staleTime: 600_000,
   });
 }
 

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
 import { PageHero } from "./about";
 import { useGallery, useSettings, galleryQueryOptions, settingsQueryOptions } from "@/hooks/use-cms";
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -45,7 +46,7 @@ function GalleryPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {items.map((it) => (
               <div key={it.id} className="relative group overflow-hidden rounded-2xl aspect-[4/3]">
-                <img src={it.image_url} alt={it.title ?? ""} loading="lazy" className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <img src={optimizeCloudinaryUrl(it.image_url, 600)} alt={it.title ?? ""} loading="lazy" className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 {(it.title || it.category) && (
                   <>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />

@@ -15,8 +15,8 @@ import {
   galleryQueryOptions,
 } from "@/hooks/use-cms";
 import type { WhyUsItem, ProcessItem, FaqItem } from "@/hooks/use-cms";
-import { useRealtime } from "@/hooks/use-realtime";
 import { getIcon } from "@/lib/icons";
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary";
 
 const iconList = [ShieldCheck, Clock, Award, Truck];
 
@@ -37,7 +37,6 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  useRealtime();
   const { data: settings, isLoading: settingsLoading } = useSettings();
   const { data: services = [], isLoading: servicesLoading } = useServices();
   const { data: testimonials = [], isLoading: testimonialsLoading } = useTestimonials();
@@ -80,11 +79,11 @@ function HomePage() {
         <div className="absolute inset-0">
           {heroBackground ? (
             <img
-              src={heroBackground}
+              src={optimizeCloudinaryUrl(heroBackground, 1200)}
               alt={(hero?.title as string) ?? "Hero background"}
               className="h-full w-full object-cover"
-              width={1920}
-              height={1080}
+              width={1200}
+              height={675}
               fetchPriority="high"
               decoding="async"
             />
@@ -225,7 +224,7 @@ function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-12" style={{ contentVisibility: "auto", containIntrinsicSize: "0 400px" } as React.CSSProperties}>
             {galleryItems.map((src, i) => (
               <div key={i} className="aspect-square overflow-hidden rounded-2xl">
-                <img src={src} alt={`Gallery ${i + 1}`} loading="lazy" decoding="async" className="h-full w-full object-cover hover:scale-110 transition-transform duration-500" />
+                <img src={optimizeCloudinaryUrl(src, 500, 500)} alt={`Gallery ${i + 1}`} loading="lazy" decoding="async" className="h-full w-full object-cover hover:scale-110 transition-transform duration-500" />
               </div>
             ))}
           </div>
@@ -252,7 +251,7 @@ function HomePage() {
                   <p className="text-foreground/85 leading-relaxed mb-5">"{t.message}"</p>
                   <div className="flex items-center gap-3">
                     {t.avatar_url ? (
-                      <img src={t.avatar_url} alt={t.name} className="h-10 w-10 rounded-full object-cover" loading="lazy" />
+                      <img src={optimizeCloudinaryUrl(t.avatar_url, 80, 80)} alt={t.name} className="h-10 w-10 rounded-full object-cover" loading="lazy" />
                     ) : (
                       <div className="h-10 w-10 rounded-full bg-gradient-brand text-white flex items-center justify-center font-bold">{t.name[0]}</div>
                     )}

@@ -2,16 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Package, Image as ImageIcon, Video, MessageSquare, Inbox, Settings as SettingsIcon } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { collection, query, getDocs, where, limit } from "firebase/firestore";
+import { collection, query, getCountFromServer, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export const Route = createFileRoute("/admin/")({ component: AdminDashboard });
 
-function count(collectionName: string, filterWhere?: { field: string; value: any }): Promise<number> {
+async function count(collectionName: string, filterWhere?: { field: string; value: any }): Promise<number> {
   const q = filterWhere
-    ? query(collection(db, collectionName), where(filterWhere.field, "==", filterWhere.value), limit(1))
-    : query(collection(db, collectionName), limit(1));
-  return getDocs(q).then((snap) => snap.size);
+    ? query(collection(db, collectionName), where(filterWhere.field, "==", filterWhere.value))
+    : query(collection(db, collectionName));
+  const snap = await getCountFromServer(q);
+  return snap.data().count;
 }
 
 function AdminDashboard() {

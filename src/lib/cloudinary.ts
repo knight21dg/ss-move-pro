@@ -24,3 +24,24 @@ export async function uploadToCloudinary(
   const data = await res.json();
   return data.secure_url as string;
 }
+
+export function optimizeCloudinaryUrl(
+  url: string | null | undefined,
+  width?: number,
+  height?: number
+): string {
+  if (!url) return "";
+  if (!url.includes("res.cloudinary.com")) return url;
+
+  const params: string[] = ["f_auto", "q_auto"];
+  if (width && height) {
+    params.push(`w_${width}`, `h_${height}`, "c_fill");
+  } else if (width) {
+    params.push(`w_${width}`);
+  } else if (height) {
+    params.push(`h_${height}`);
+  }
+
+  const transformStr = params.join(",");
+  return url.replace("/image/upload/", `/image/upload/${transformStr}/`);
+}

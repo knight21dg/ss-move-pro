@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PageHero } from "./about";
 import { useServices, useSettings, servicesQueryOptions, settingsQueryOptions } from "@/hooks/use-cms";
 import { getIcon } from "@/lib/icons";
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
@@ -52,7 +53,7 @@ function ServicesPage() {
                 <div key={s.id} className="group rounded-2xl bg-card border border-border p-7 hover:shadow-brand hover:-translate-y-1 transition-all">
                   {s.image_url ? (
                     <div className="aspect-video rounded-xl overflow-hidden mb-5 -mx-2 -mt-2">
-                      <img src={s.image_url} alt={s.title} className="h-full w-full object-cover" />
+                      <img src={optimizeCloudinaryUrl(s.image_url, 600)} alt={s.title} className="h-full w-full object-cover" />
                     </div>
                   ) : (
                     <div className="h-14 w-14 rounded-2xl bg-gradient-brand text-white flex items-center justify-center mb-5">

@@ -3,6 +3,7 @@ import { Award, CheckCircle2, Target, Users } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import { useSettings, settingsQueryOptions } from "@/hooks/use-cms";
+import { optimizeCloudinaryUrl } from "@/lib/cloudinary";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -102,11 +103,12 @@ function StatCard({ icon: Icon, value, label }: { icon: React.ElementType; value
 
 export function PageHero({ eyebrow, title, subtitle, backgroundImage }: { eyebrow?: string; title: string; subtitle?: string; backgroundImage?: string }) {
   const hasImage = Boolean(backgroundImage);
+  const optimizedImage = backgroundImage ? optimizeCloudinaryUrl(backgroundImage, 1200) : undefined;
   return (
     <section className={hasImage ? "relative overflow-hidden text-white" : "bg-gradient-dark text-white"}>
       {hasImage && (
         <div className="absolute inset-0">
-          <img src={backgroundImage} alt={title} className="h-full w-full object-cover" />
+          <img src={optimizedImage} alt={title} className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-hero" />
         </div>
       )}

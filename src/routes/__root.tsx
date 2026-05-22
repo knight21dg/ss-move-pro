@@ -9,6 +9,7 @@ import {
 import appCss from "../styles.css?url";
 import { GoogleAnalytics } from "../components/GoogleAnalytics.tsx";
 import { NotFoundComponent } from "../components/NotFoundComponent.tsx";
+import { useRealtime } from "../hooks/use-realtime";
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
@@ -73,10 +74,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+function RealtimeSync() {
+  useRealtime();
+  return null;
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
+      <RealtimeSync />
       <Outlet />
     </QueryClientProvider>
   );
