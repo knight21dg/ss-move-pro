@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
 import { PageHero } from "./about";
-import { useGallery, useSettings } from "@/hooks/use-cms";
+import { useGallery, useSettings, galleryQueryOptions, settingsQueryOptions } from "@/hooks/use-cms";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -10,6 +10,16 @@ export const Route = createFileRoute("/gallery")({
       { name: "description", content: "Photos from our packing, moving, warehousing and vehicle transport operations." },
     ],
   }),
+  loader: async ({ context }) => {
+    try {
+      await Promise.all([
+        context.queryClient.ensureQueryData(settingsQueryOptions()),
+        context.queryClient.ensureQueryData(galleryQueryOptions(true)),
+      ]);
+    } catch (error) {
+      console.error("Error prefetching data for gallery route:", error);
+    }
+  },
   component: GalleryPage,
 });
 

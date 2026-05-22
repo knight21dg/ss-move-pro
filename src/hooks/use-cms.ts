@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, queryOptions } from "@tanstack/react-query";
 import {
   collection,
   query,
@@ -207,32 +207,48 @@ function slugify(s: string): string {
 // PUBLIC QUERY HOOKS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
-export function useServices(activeOnly = true) {
-  return useQuery({
+export function servicesQueryOptions(activeOnly = true) {
+  return queryOptions({
     queryKey: ["services", activeOnly],
     queryFn: () => fetchDocs<Service>(collection(db, "services"), activeOnly),
   });
 }
 
-export function useGallery(activeOnly = true) {
-  return useQuery({
+export function useServices(activeOnly = true) {
+  return useQuery(servicesQueryOptions(activeOnly));
+}
+
+export function galleryQueryOptions(activeOnly = true) {
+  return queryOptions({
     queryKey: ["gallery", activeOnly],
     queryFn: () => fetchDocs<GalleryImage>(collection(db, "gallery_images"), activeOnly),
   });
 }
 
-export function useVideos(activeOnly = true) {
-  return useQuery({
+export function useGallery(activeOnly = true) {
+  return useQuery(galleryQueryOptions(activeOnly));
+}
+
+export function videosQueryOptions(activeOnly = true) {
+  return queryOptions({
     queryKey: ["videos", activeOnly],
     queryFn: () => fetchDocs<Video>(collection(db, "videos"), activeOnly),
   });
 }
 
-export function useTestimonials(activeOnly = true) {
-  return useQuery({
+export function useVideos(activeOnly = true) {
+  return useQuery(videosQueryOptions(activeOnly));
+}
+
+export function testimonialsQueryOptions(activeOnly = true) {
+  return queryOptions({
     queryKey: ["testimonials", activeOnly],
     queryFn: () => fetchDocs<Testimonial>(collection(db, "testimonials"), activeOnly),
   });
+}
+
+export function useTestimonials(activeOnly = true) {
+  return useQuery(testimonialsQueryOptions(activeOnly));
 }
 
 // ─── Settings queries ─────────────────────────────────────────────────────────
@@ -249,8 +265,8 @@ function pickSeo(d?: { site_title?: string; site_description?: string; site_keyw
 // ─── Combined settings hook ────────────────────────────────────────────────────
 // Reads from a single settings/all Firestore doc + seo_page_settings per-page docs.
 
-export function useSettings() {
-  return useQuery({
+export function settingsQueryOptions() {
+  return queryOptions({
     queryKey: ["settings"],
     queryFn: async (): Promise<SiteSettings> => {
       const [settingsSnap, pagesSnap] = await Promise.all([
@@ -340,6 +356,10 @@ export function useSettings() {
     },
     staleTime: 30_000,
   });
+}
+
+export function useSettings() {
+  return useQuery(settingsQueryOptions());
 }
 
 export const EMPTY_SETTINGS: SiteSettings = {

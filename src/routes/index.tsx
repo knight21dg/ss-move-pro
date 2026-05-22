@@ -3,14 +3,38 @@ import { ArrowRight, Award, Clock, MessageCircle, Phone, ShieldCheck, Star, Truc
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGallery, useServices, useSettings, useTestimonials, EMPTY_SETTINGS } from "@/hooks/use-cms";
+import {
+  useGallery,
+  useServices,
+  useSettings,
+  useTestimonials,
+  EMPTY_SETTINGS,
+  settingsQueryOptions,
+  servicesQueryOptions,
+  testimonialsQueryOptions,
+  galleryQueryOptions,
+} from "@/hooks/use-cms";
 import type { WhyUsItem, ProcessItem, FaqItem } from "@/hooks/use-cms";
 import { useRealtime } from "@/hooks/use-realtime";
 import { getIcon } from "@/lib/icons";
 
 const iconList = [ShieldCheck, Clock, Award, Truck];
 
-export const Route = createFileRoute("/")({ component: HomePage });
+export const Route = createFileRoute("/")({
+  loader: async ({ context }) => {
+    try {
+      await Promise.all([
+        context.queryClient.ensureQueryData(settingsQueryOptions()),
+        context.queryClient.ensureQueryData(servicesQueryOptions(true)),
+        context.queryClient.ensureQueryData(testimonialsQueryOptions(true)),
+        context.queryClient.ensureQueryData(galleryQueryOptions(true)),
+      ]);
+    } catch (error) {
+      console.error("Error prefetching data for home route:", error);
+    }
+  },
+  component: HomePage,
+});
 
 function HomePage() {
   useRealtime();

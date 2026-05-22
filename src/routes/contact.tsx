@@ -3,7 +3,7 @@ import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { PageHero } from "./about";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-cms";
+import { useSettings, settingsQueryOptions } from "@/hooks/use-cms";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -12,6 +12,13 @@ export const Route = createFileRoute("/contact")({
       { name: "description", content: "Reach SS Packers & Movers in Kakinada — phone, WhatsApp, email and address." },
     ],
   }),
+  loader: async ({ context }) => {
+    try {
+      await context.queryClient.ensureQueryData(settingsQueryOptions());
+    } catch (error) {
+      console.error("Error prefetching data for contact route:", error);
+    }
+  },
   component: ContactPage,
 });
 

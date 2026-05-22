@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
 import { PageHero } from "./about";
-import { useSettings, useVideos } from "@/hooks/use-cms";
+import { useSettings, useVideos, videosQueryOptions, settingsQueryOptions } from "@/hooks/use-cms";
 
 export const Route = createFileRoute("/videos")({
   head: () => ({
@@ -10,6 +10,16 @@ export const Route = createFileRoute("/videos")({
       { name: "description", content: "Watch how SS Packers & Movers handles your relocation." },
     ],
   }),
+  loader: async ({ context }) => {
+    try {
+      await Promise.all([
+        context.queryClient.ensureQueryData(settingsQueryOptions()),
+        context.queryClient.ensureQueryData(videosQueryOptions(true)),
+      ]);
+    } catch (error) {
+      console.error("Error prefetching data for videos route:", error);
+    }
+  },
   component: VideosPage,
 });
 

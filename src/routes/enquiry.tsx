@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { useServices, useSettings } from "@/hooks/use-cms";
+import { useServices, useSettings, servicesQueryOptions, settingsQueryOptions } from "@/hooks/use-cms";
 
 export const Route = createFileRoute("/enquiry")({
   head: () => ({
@@ -20,6 +20,16 @@ export const Route = createFileRoute("/enquiry")({
       { name: "description", content: "Tell us about your move and get a free, no-obligation quote from SS Packers & Movers." },
     ],
   }),
+  loader: async ({ context }) => {
+    try {
+      await Promise.all([
+        context.queryClient.ensureQueryData(settingsQueryOptions()),
+        context.queryClient.ensureQueryData(servicesQueryOptions(true)),
+      ]);
+    } catch (error) {
+      console.error("Error prefetching data for enquiry route:", error);
+    }
+  },
   component: EnquiryPage,
 });
 

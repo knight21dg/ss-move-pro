@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import { PageHero } from "./about";
-import { useServices, useSettings } from "@/hooks/use-cms";
+import { useServices, useSettings, servicesQueryOptions, settingsQueryOptions } from "@/hooks/use-cms";
 import { getIcon } from "@/lib/icons";
 
 export const Route = createFileRoute("/services")({
@@ -13,6 +13,16 @@ export const Route = createFileRoute("/services")({
       { name: "description", content: "Household shifting, office relocation, car transport, warehousing, loading & unloading and more — across India from Kakinada." },
     ],
   }),
+  loader: async ({ context }) => {
+    try {
+      await Promise.all([
+        context.queryClient.ensureQueryData(settingsQueryOptions()),
+        context.queryClient.ensureQueryData(servicesQueryOptions(true)),
+      ]);
+    } catch (error) {
+      console.error("Error prefetching data for services route:", error);
+    }
+  },
   component: ServicesPage,
 });
 

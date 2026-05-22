@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Award, CheckCircle2, Target, Users } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
-import { useSettings } from "@/hooks/use-cms";
+import { useSettings, settingsQueryOptions } from "@/hooks/use-cms";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -13,6 +13,13 @@ export const Route = createFileRoute("/about")({
       { property: "og:description", content: "Trusted relocation company from Kakinada." },
     ],
   }),
+  loader: async ({ context }) => {
+    try {
+      await context.queryClient.ensureQueryData(settingsQueryOptions());
+    } catch (error) {
+      console.error("Error prefetching data for about route:", error);
+    }
+  },
   component: AboutPage,
 });
 
