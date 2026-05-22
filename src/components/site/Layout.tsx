@@ -3,16 +3,21 @@ import { Footer } from "./Footer";
 import { FloatingActions } from "./FloatingActions";
 import { Toaster } from "@/components/ui/sonner";
 import { DynamicSeo } from "@/components/site/DynamicSeo";
+import { LightboxProvider } from "./Lightbox";
+import { PopupPoster } from "./PopupPoster";
 
 export function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col">
-      <DynamicSeo />
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
-      <FloatingActions />
-      <Toaster />
-    </div>
+    <LightboxProvider>
+      <div className="min-h-screen flex flex-col">
+        <DynamicSeo />
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        <FloatingActions />
+        <Toaster />
+      </div>
+      <PopupPoster />
+    </LightboxProvider>
   );
 }

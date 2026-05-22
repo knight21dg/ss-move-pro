@@ -1,21 +1,10 @@
 import { useQuery, queryOptions } from "@tanstack/react-query";
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  getDocs,
-  getDoc,
-  doc,
-} from "firebase/firestore";
+import { collection, query, where, orderBy, getDocs, getDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 // ─── DB helpers ────────────────────────────────────────────────────────────────
 
-async function fetchDocs<T extends { id: string }>(
-  ref: any,
-  filterActive = false,
-): Promise<T[]> {
+async function fetchDocs<T extends { id: string }>(ref: any, filterActive = false): Promise<T[]> {
   let q: any = query(ref, orderBy("sort_order", "asc"));
   if (filterActive) q = query(q, where("is_active", "==", true));
   const snap = await getDocs(q);
@@ -126,6 +115,11 @@ export interface HeroImages {
   enquiry: string;
   contact: string;
 }
+export interface PopupSettings {
+  image_url: string;
+  link_url: string;
+  is_active: boolean;
+}
 export interface SeoFields {
   title: string;
   description: string;
@@ -164,6 +158,7 @@ export type SiteSettings = {
   cta: CtaSettings;
   footer: FooterSettings;
   seo: SeoSettings;
+  popup: PopupSettings;
 };
 
 export type Enquiry = {
@@ -192,15 +187,25 @@ export type AppDoc = {
   social: SocialSettings;
   cta: CtaSettings;
   footer: FooterSettings;
-  seo_default: { site_title: string; site_description: string; site_keywords: string; og_image: string };
+  seo_default: {
+    site_title: string;
+    site_description: string;
+    site_keywords: string;
+    og_image: string;
+  };
   ga: { measurement_id: string };
+  popup: PopupSettings;
   updated_at: string;
 };
 
 // ─── slugify helper ────────────────────────────────────────────────────────────
 
 function slugify(s: string): string {
-  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -257,7 +262,14 @@ export function useTestimonials(activeOnly = true) {
 
 // ─── Settings queries ─────────────────────────────────────────────────────────
 
-function pickSeo(d?: { site_title?: string; site_description?: string; site_keywords?: string; og_image?: string } | null): SeoFields {
+function pickSeo(
+  d?: {
+    site_title?: string;
+    site_description?: string;
+    site_keywords?: string;
+    og_image?: string;
+  } | null,
+): SeoFields {
   return {
     title: d?.site_title ?? "",
     description: d?.site_description ?? "",
@@ -288,7 +300,13 @@ export function settingsQueryOptions() {
       };
 
       const heroImages: HeroImages = (s.hero_images ?? {
-        home: "", about: "", services: "", gallery: "", videos: "", enquiry: "", contact: "",
+        home: "",
+        about: "",
+        services: "",
+        gallery: "",
+        videos: "",
+        enquiry: "",
+        contact: "",
       }) as HeroImages;
 
       const homeWhyUs: HomeWhyUs = {
@@ -329,7 +347,14 @@ export function settingsQueryOptions() {
         description: d.data().description,
         keywords: d.data().keywords,
         og_image: d.data().og_image,
-      })) as { id: string; page_key: string; title: string; description: string; keywords: string; og_image: string }[];
+      })) as {
+        id: string;
+        page_key: string;
+        title: string;
+        description: string;
+        keywords: string;
+        og_image: string;
+      }[];
 
       const pages: Record<string, SeoFields> = {
         home: EMPTY_SETTINGS.seo.default,
@@ -341,7 +366,12 @@ export function settingsQueryOptions() {
         contact: EMPTY_SETTINGS.seo.default,
       };
       for (const p of pagesData) {
-        pages[p.page_key] = { title: p.title, description: p.description, keywords: p.keywords, og_image: p.og_image };
+        pages[p.page_key] = {
+          title: p.title,
+          description: p.description,
+          keywords: p.keywords,
+          og_image: p.og_image,
+        };
       }
 
       return {
@@ -367,7 +397,14 @@ export function useSettings() {
 }
 
 export const EMPTY_SETTINGS: SiteSettings = {
-  hero: { title: "", subtitle: "", cta: "", badge: "" },
+  hero: {
+    title:
+      "SS Packers & Movers Mini Transport – Safe, Fast and Trusted Shifting Services Across India",
+    subtitle:
+      "We provide professional packing and moving services for household shifting, office relocation, bike transportation, car transportation, mini transport, loading and unloading, and warehousing solutions. Our experienced team focuses on safe packing, timely delivery, and customer satisfaction.",
+    cta: "Get Free Quote",
+    badge: "Safe Packing. Secure Transport. Timely Delivery.",
+  },
   hero_images: {
     home: "",
     about: "",
@@ -380,10 +417,42 @@ export const EMPTY_SETTINGS: SiteSettings = {
   home_why_us: { eyebrow: "", title: "", items: [] },
   home_process: { eyebrow: "", title: "", items: [] },
   home_faqs: { eyebrow: "", title: "", items: [] },
-  about: { heading: "", body: "", years_experience: "", happy_customers: "", cities_covered: "" },
-  contact: { phone: "", whatsapp: "", email: "", address: "", whatsapp_enquiry_message: "" },
+  about: {
+    heading: "Welcome to SS Packers & Movers Mini Transport",
+    body: "We are committed to providing reliable and affordable moving services with professional handling and customer-focused support. Our team uses quality packing materials and modern transportation methods to ensure damage-free shifting for homes, offices and vehicles.",
+    years_experience: "",
+    happy_customers: "",
+    cities_covered: "",
+  },
+  contact: {
+    phone: "+91 9652146555",
+    whatsapp: "+91 7799946555",
+    email: "",
+    address: "",
+    whatsapp_enquiry_message: "",
+  },
   social: { facebook: "", instagram: "", youtube: "" },
-  cta: { banner_text: "", banner_subtitle: "", banner_link: "", banner_button: "", show_banner: false },
-  footer: { description: "", quick_links: "" },
-  seo: { default: { title: "", description: "", keywords: "", og_image: "" }, pages: {} },
+  cta: {
+    banner_text: "",
+    banner_subtitle: "",
+    banner_link: "",
+    banner_button: "",
+    show_banner: false,
+  },
+  footer: {
+    description: "",
+    quick_links: "Home, Services, About, Contact, Gallery, Videos, Enquiry",
+  },
+  seo: {
+    default: {
+      title: "SS Packers & Movers Mini Transport | Household, Bike, Car & Office Shifting Services",
+      description:
+        "SS Packers & Movers Mini Transport offers household shifting, office relocation, bike transport, car transport, mini transport and packing services with safe delivery and affordable prices.",
+      keywords:
+        "Packers and Movers near me, Best Packers and Movers in India, House shifting services, Office shifting services, Bike transport services, Car transport services, Mini transport services, Affordable movers and packers",
+      og_image: "",
+    },
+    pages: {},
+  },
+  popup: { image_url: "", link_url: "", is_active: false },
 };

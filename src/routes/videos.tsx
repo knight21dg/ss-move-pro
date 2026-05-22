@@ -44,21 +44,40 @@ function VideosPage() {
             {videos.map((v) => {
               const id = getYoutubeId(v.video_url);
               return (
-                <div key={v.id} className="rounded-2xl overflow-hidden border border-border bg-card">
+                <div
+                  key={v.id}
+                  className="rounded-2xl overflow-hidden border border-border bg-card"
+                >
                   <div className="aspect-video bg-black">
                     {id && (
-                      <iframe
-                        className="h-full w-full"
-                        src={`https://www.youtube.com/embed/${id}`}
-                        title={v.title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
+                      <a
+                        className="h-full w-full block"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          import("@/components/site/Lightbox").then((m) =>
+                            m.openLightbox({
+                              type: "video",
+                              src: `https://www.youtube.com/embed/${id}`,
+                              title: v.title,
+                            }),
+                          );
+                        }}
+                      >
+                        <img
+                          src={v.thumbnail_url || `https://img.youtube.com/vi/${id}/hqdefault.jpg`}
+                          alt={v.title}
+                          className="h-full w-full object-cover"
+                        />
+                      </a>
                     )}
                   </div>
                   <div className="p-5">
                     <div className="font-semibold">{v.title}</div>
-                    {v.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{v.description}</p>}
+                    {v.description && (
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                        {v.description}
+                      </p>
+                    )}
                   </div>
                 </div>
               );

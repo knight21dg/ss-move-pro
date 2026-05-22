@@ -1,14 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/Layout";
 import { PageHero } from "./about";
-import { useGallery, useSettings, galleryQueryOptions, settingsQueryOptions } from "@/hooks/use-cms";
+import {
+  useGallery,
+  useSettings,
+  galleryQueryOptions,
+  settingsQueryOptions,
+} from "@/hooks/use-cms";
 import { optimizeCloudinaryUrl } from "@/lib/cloudinary";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
     meta: [
       { title: "Gallery — SS Packers & Movers" },
-      { name: "description", content: "Photos from our packing, moving, warehousing and vehicle transport operations." },
+      {
+        name: "description",
+        content: "Photos from our packing, moving, warehousing and vehicle transport operations.",
+      },
     ],
   }),
   loader: async ({ context }) => {
@@ -44,7 +52,26 @@ function GalleryPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {items.map((it) => (
               <div key={it.id} className="relative group overflow-hidden rounded-2xl aspect-[4/3]">
-                <img src={optimizeCloudinaryUrl(it.image_url, 600)} alt={it.title ?? ""} loading="lazy" className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <a
+                  className="h-full w-full block"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    import("@/components/site/Lightbox").then((m) =>
+                      m.openLightbox({
+                        type: "image",
+                        src: optimizeCloudinaryUrl(it.image_url, 1200),
+                        title: it.title,
+                      }),
+                    );
+                  }}
+                >
+                  <img
+                    src={optimizeCloudinaryUrl(it.image_url, 600)}
+                    alt={it.title ?? ""}
+                    loading="lazy"
+                    className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                </a>
                 {(it.title || it.category) && (
                   <>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />

@@ -3,7 +3,12 @@ import { ArrowRight } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import { PageHero } from "./about";
-import { useServices, useSettings, servicesQueryOptions, settingsQueryOptions } from "@/hooks/use-cms";
+import {
+  useServices,
+  useSettings,
+  servicesQueryOptions,
+  settingsQueryOptions,
+} from "@/hooks/use-cms";
 import { getIcon } from "@/lib/icons";
 import { optimizeCloudinaryUrl } from "@/lib/cloudinary";
 
@@ -11,7 +16,11 @@ export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
       { title: "Services — SS Packers & Movers Kakinada" },
-      { name: "description", content: "Household shifting, office relocation, car transport, warehousing, loading & unloading and more — across India from Kakinada." },
+      {
+        name: "description",
+        content:
+          "Household shifting, office relocation, car transport, warehousing, loading & unloading and more — across India from Kakinada.",
+      },
     ],
   }),
   loader: async ({ context }) => {
@@ -36,8 +45,8 @@ function ServicesPage() {
     <SiteLayout>
       <PageHero
         eyebrow="Services"
-        title="Complete relocation solutions"
-        subtitle="From a single carton to a full office, we handle moves of every size with the same professionalism."
+        title="Complete relocation solutions — Household, Office, Vehicle & Mini Transport"
+        subtitle="From a single carton to a full office, we handle moves of every size with the same professionalism. Local and intercity shifting, secure vehicle transport and warehousing."
         backgroundImage={heroImage}
       />
       <section className="container mx-auto px-4 py-16">
@@ -48,10 +57,17 @@ function ServicesPage() {
             {services.map((s) => {
               const Icon = getIcon(s.icon);
               return (
-                <div key={s.id} className="group rounded-2xl bg-card border border-border p-7 hover:shadow-brand hover:-translate-y-1 transition-all">
+                <div
+                  key={s.id}
+                  className="group rounded-2xl bg-card border border-border p-7 hover:shadow-brand hover:-translate-y-1 transition-all"
+                >
                   {s.image_url ? (
                     <div className="aspect-video rounded-xl overflow-hidden mb-5 -mx-2 -mt-2">
-                      <img src={optimizeCloudinaryUrl(s.image_url, 600)} alt={s.title} className="h-full w-full object-cover" />
+                      <img
+                        src={optimizeCloudinaryUrl(s.image_url, 600)}
+                        alt={s.title}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                   ) : (
                     <div className="h-14 w-14 rounded-2xl bg-gradient-brand text-white flex items-center justify-center mb-5">
@@ -59,8 +75,16 @@ function ServicesPage() {
                     </div>
                   )}
                   <h3 className="font-bold text-xl mb-2">{s.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">{s.description}</p>
-                  <Link to="/enquiry" className="text-sm font-semibold text-primary inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5">
+                    {s.description}
+                  </p>
+                  <div className="text-xs text-muted-foreground">
+                    Locations: Kakinada, Rajahmundry, Hyderabad, Vijayawada, Visakhapatnam
+                  </div>
+                  <Link
+                    to="/enquiry"
+                    className="text-sm font-semibold text-primary inline-flex items-center gap-1 group-hover:gap-2 transition-all"
+                  >
                     Enquire <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
@@ -72,8 +96,12 @@ function ServicesPage() {
       <section className="container mx-auto px-4 pb-20">
         <div className="rounded-3xl bg-gradient-brand p-10 md:p-14 text-center text-white shadow-brand">
           <h2 className="text-3xl md:text-4xl font-extrabold">Not sure which service you need?</h2>
-          <p className="mt-3 text-white/90">Tell us your move details and we'll recommend the best plan.</p>
-          <Button asChild variant="hero" size="lg" className="mt-7 h-12 px-8"><Link to="/enquiry">Get Free Consultation</Link></Button>
+          <p className="mt-3 text-white/90">
+            Tell us your move details and we'll recommend the best plan.
+          </p>
+          <Button asChild variant="hero" size="lg" className="mt-7 h-12 px-8">
+            <Link to="/enquiry">Get Free Consultation</Link>
+          </Button>
         </div>
       </section>
     </SiteLayout>

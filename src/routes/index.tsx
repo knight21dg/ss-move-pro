@@ -1,5 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Award, Clock, MessageCircle, Phone, ShieldCheck, Star, Truck } from "lucide-react";
+import {
+  ArrowRight,
+  Award,
+  Clock,
+  MessageCircle,
+  Phone,
+  ShieldCheck,
+  Star,
+  Truck,
+} from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,13 +63,18 @@ function HomePage() {
   const phoneHref = phone ? `tel:${phone.replace(/\s/g, "")}` : "";
   const wa = contact?.whatsapp ? contact.whatsapp.replace(/\D/g, "") : "";
 
-  const stats = about?.happy_customers || about?.years_experience || about?.cities_covered
-    ? [
-        about?.happy_customers ? { value: about.happy_customers, label: "Happy Customers" } : null,
-        about?.years_experience ? { value: about.years_experience, label: "Years Experience" } : null,
-        about?.cities_covered ? { value: about.cities_covered, label: "Cities Served" } : null,
-      ].filter(Boolean) as { value: string; label: string }[]
-    : [];
+  const stats =
+    about?.happy_customers || about?.years_experience || about?.cities_covered
+      ? ([
+          about?.happy_customers
+            ? { value: about.happy_customers, label: "Happy Customers" }
+            : null,
+          about?.years_experience
+            ? { value: about.years_experience, label: "Years Experience" }
+            : null,
+          about?.cities_covered ? { value: about.cities_covered, label: "Cities Served" } : null,
+        ].filter(Boolean) as { value: string; label: string }[])
+      : [];
 
   const galleryItems = gallery.slice(0, 4).map((g) => g.image_url);
   const heroBackground = heroImages?.home;
@@ -105,17 +119,28 @@ function HomePage() {
           <div className="mt-8 flex flex-wrap gap-3">
             {(hero?.cta as string) !== "" && (
               <Button asChild size="lg" variant="hero" className="h-12 px-7 text-base">
-                <Link to="/enquiry">{(hero.cta as string)} <ArrowRight /></Link>
+                <Link to="/enquiry">
+                  {hero.cta as string} <ArrowRight />
+                </Link>
               </Button>
             )}
             {phone && (
               <Button asChild size="lg" variant="brand" className="h-12 px-7 text-base">
-                <a href={phoneHref}><Phone /> Call Now</a>
+                <a href={phoneHref}>
+                  <Phone /> Call Now
+                </a>
               </Button>
             )}
             {wa && (
-              <Button asChild size="lg" variant="outline" className="h-12 px-7 text-base bg-white/10 text-white border-white/30 hover:bg-white/20 hover:text-white">
-                <a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer"><MessageCircle /> WhatsApp</a>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-12 px-7 text-base bg-white/10 text-white border-white/30 hover:bg-white/20 hover:text-white"
+              >
+                <a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer">
+                  <MessageCircle /> WhatsApp
+                </a>
               </Button>
             )}
           </div>
@@ -127,7 +152,11 @@ function HomePage() {
         <section className="bg-secondary text-secondary-foreground">
           <div className="container mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-3 gap-6">
             {stats.map((st) => (
-              <div key={st.label} className="text-center" style={{ contentVisibility: "auto" } as React.CSSProperties}>
+              <div
+                key={st.label}
+                className="text-center"
+                style={{ contentVisibility: "auto" } as React.CSSProperties}
+              >
                 <div className="text-3xl md:text-4xl font-extrabold text-primary">{st.value}</div>
                 <div className="text-sm text-white/70 mt-1">{st.label}</div>
               </div>
@@ -136,25 +165,74 @@ function HomePage() {
         </section>
       )}
 
+      {/* TRUST & COVERAGE */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl md:text-3xl font-extrabold">
+            Trusted Packers & Movers — Insured & Verified
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            SS Packers & Movers Mini Transport provides insured handling, professional packing
+            materials and experienced teams for household, office and vehicle shifting. We
+            prioritise safety, timeliness and transparent pricing.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 mt-6">
+            <div className="rounded-lg border border-border bg-card p-4 text-sm">
+              Insured Transit
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4 text-sm">
+              Professional Packing
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4 text-sm">
+              Door-to-door Service
+            </div>
+            <div className="rounded-lg border border-border bg-card p-4 text-sm">
+              Transparent Quotes
+            </div>
+          </div>
+          <div className="mt-6">
+            <a href="tel:+919652146555" className="text-lg font-semibold text-primary">
+              Call Now: +91 9652146555
+            </a>
+            <div className="text-sm text-muted-foreground mt-1">
+              Available for immediate quotes and emergency mini transport.
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* WHY US */}
       {whyUsSection?.items?.length > 0 && (
         <section className="container mx-auto px-4 py-20 md:py-28">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">{whyUsSection.eyebrow}</div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-balance">{whyUsSection.title}</h2>
+            <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
+              {whyUsSection.eyebrow}
+            </div>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-balance">
+              {whyUsSection.title}
+            </h2>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12" style={{ contentVisibility: "auto", containIntrinsicSize: "0 400px" } as React.CSSProperties}>
+          <div
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
+            style={
+              { contentVisibility: "auto", containIntrinsicSize: "0 400px" } as React.CSSProperties
+            }
+          >
             {whyUsSection.items.map(({ title, description }, index) => {
               const Icon = iconList[index] ?? ShieldCheck;
               return (
-              <div key={title} className="group rounded-2xl border border-border bg-card p-7 hover:shadow-brand hover:-translate-y-1 transition-all">
-                <div className="h-12 w-12 rounded-xl bg-gradient-brand text-white flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                  <Icon className="h-6 w-6" />
+                <div
+                  key={title}
+                  className="group rounded-2xl border border-border bg-card p-7 hover:shadow-brand hover:-translate-y-1 transition-all"
+                >
+                  <div className="h-12 w-12 rounded-xl bg-gradient-brand text-white flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-bold text-lg mb-2">{title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
                 </div>
-                <h3 className="font-bold text-lg mb-2">{title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-              </div>
-            );})}
+              );
+            })}
           </div>
         </section>
       )}
@@ -164,16 +242,40 @@ function HomePage() {
         <section className="bg-muted/50 py-20 md:py-28">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
-              <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">Our Services</div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-balance">End-to-end relocation services</h2>
+              <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
+                Our Services
+              </div>
+              <h2 className="text-3xl md:text-5xl font-extrabold text-balance">
+                End-to-end relocation services
+              </h2>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12" style={{ contentVisibility: "auto", containIntrinsicSize: "0 800px" } as React.CSSProperties}>
+            <div
+              className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
+              style={
+                {
+                  contentVisibility: "auto",
+                  containIntrinsicSize: "0 800px",
+                } as React.CSSProperties
+              }
+            >
               {services.slice(0, 8).map((s) => {
                 const Icon = getIcon(s.icon);
                 return (
-                  <div key={s.id} className="rounded-2xl bg-card border border-border p-6 hover:border-primary hover:shadow-brand transition-all">
+                  <div
+                    key={s.id}
+                    className="rounded-2xl bg-card border border-border p-6 hover:border-primary hover:shadow-brand transition-all"
+                  >
                     <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-3">
-                      <Icon className="h-5 w-5" />
+                      {s.image_url ? (
+                        // use service uploaded image when available
+                        <img
+                          src={optimizeCloudinaryUrl(s.image_url, 44, 44)}
+                          alt={s.title}
+                          className="h-5 w-5 object-contain"
+                        />
+                      ) : (
+                        <Icon className="h-5 w-5" />
+                      )}
                     </div>
                     <h3 className="font-bold mb-2">{s.title}</h3>
                     <p className="text-sm text-muted-foreground line-clamp-2">{s.description}</p>
@@ -182,7 +284,11 @@ function HomePage() {
               })}
             </div>
             <div className="text-center mt-10">
-              <Button asChild variant="brand" size="lg"><Link to="/services">View All Services <ArrowRight /></Link></Button>
+              <Button asChild variant="brand" size="lg">
+                <Link to="/services">
+                  View All Services <ArrowRight />
+                </Link>
+              </Button>
             </div>
           </div>
         </section>
@@ -192,13 +298,24 @@ function HomePage() {
       {processSection?.items?.length > 0 && (
         <section className="container mx-auto px-4 py-20 md:py-28">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">{processSection?.eyebrow}</div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-balance">{processSection?.title}</h2>
+            <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
+              {processSection?.eyebrow}
+            </div>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-balance">
+              {processSection?.title}
+            </h2>
           </div>
-          <div className="grid md:grid-cols-4 gap-6 mt-12" style={{ contentVisibility: "auto", containIntrinsicSize: "0 400px" } as React.CSSProperties}>
+          <div
+            className="grid md:grid-cols-4 gap-6 mt-12"
+            style={
+              { contentVisibility: "auto", containIntrinsicSize: "0 400px" } as React.CSSProperties
+            }
+          >
             {processSection.items.map((p) => (
               <div key={p.step} className="relative rounded-2xl bg-card border border-border p-7">
-                <div className="text-5xl font-extrabold text-primary/20 absolute top-4 right-5">{p.step}</div>
+                <div className="text-5xl font-extrabold text-primary/20 absolute top-4 right-5">
+                  {p.step}
+                </div>
                 <h3 className="font-bold text-lg mb-2">{p.title}</h3>
                 <p className="text-sm text-muted-foreground">{p.description}</p>
               </div>
@@ -211,18 +328,51 @@ function HomePage() {
       {galleryItems.length > 0 && (
         <section className="container mx-auto px-4 pb-20 md:pb-28">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">Gallery</div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-balance">Inside our daily operations</h2>
+            <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
+              Gallery
+            </div>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-balance">
+              Inside our daily operations
+            </h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-12" style={{ contentVisibility: "auto", containIntrinsicSize: "0 400px" } as React.CSSProperties}>
+          <div
+            className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-12"
+            style={
+              { contentVisibility: "auto", containIntrinsicSize: "0 400px" } as React.CSSProperties
+            }
+          >
             {galleryItems.map((src, i) => (
               <div key={i} className="aspect-square overflow-hidden rounded-2xl">
-                <img src={optimizeCloudinaryUrl(src, 500, 500)} alt={`Gallery ${i + 1}`} loading="lazy" decoding="async" className="h-full w-full object-cover hover:scale-110 transition-transform duration-500" />
+                <a
+                  className="h-full w-full block"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    import("@/components/site/Lightbox").then((m) =>
+                      m.openLightbox({
+                        type: "image",
+                        src: optimizeCloudinaryUrl(src, 1200),
+                        title: `Gallery ${i + 1}`,
+                      }),
+                    );
+                  }}
+                >
+                  <img
+                    src={optimizeCloudinaryUrl(src, 500, 500)}
+                    alt={`Gallery ${i + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover hover:scale-110 transition-transform duration-500"
+                  />
+                </a>
               </div>
             ))}
           </div>
           <div className="text-center mt-10">
-            <Button asChild variant="outline" size="lg"><Link to="/gallery">View Gallery <ArrowRight /></Link></Button>
+            <Button asChild variant="outline" size="lg">
+              <Link to="/gallery">
+                View Gallery <ArrowRight />
+              </Link>
+            </Button>
           </div>
         </section>
       )}
@@ -232,21 +382,42 @@ function HomePage() {
         <section className="bg-muted/50 py-20 md:py-28">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
-              <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">Testimonials</div>
-              <h2 className="text-3xl md:text-5xl font-extrabold text-balance">What our customers say</h2>
+              <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
+                Testimonials
+              </div>
+              <h2 className="text-3xl md:text-5xl font-extrabold text-balance">
+                What our customers say
+              </h2>
             </div>
-            <div className="grid md:grid-cols-3 gap-6 mt-12" style={{ contentVisibility: "auto", containIntrinsicSize: "0 800px" } as React.CSSProperties}>
+            <div
+              className="grid md:grid-cols-3 gap-6 mt-12"
+              style={
+                {
+                  contentVisibility: "auto",
+                  containIntrinsicSize: "0 800px",
+                } as React.CSSProperties
+              }
+            >
               {testimonials.slice(0, 3).map((t) => (
                 <div key={t.id} className="rounded-2xl bg-card border border-border p-7">
                   <div className="flex gap-1 text-primary mb-4">
-                    {Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-current" />
+                    ))}
                   </div>
                   <p className="text-foreground/85 leading-relaxed mb-5">"{t.message}"</p>
                   <div className="flex items-center gap-3">
                     {t.avatar_url ? (
-                      <img src={optimizeCloudinaryUrl(t.avatar_url, 80, 80)} alt={t.name} className="h-10 w-10 rounded-full object-cover" loading="lazy" />
+                      <img
+                        src={optimizeCloudinaryUrl(t.avatar_url, 80, 80)}
+                        alt={t.name}
+                        className="h-10 w-10 rounded-full object-cover"
+                        loading="lazy"
+                      />
                     ) : (
-                      <div className="h-10 w-10 rounded-full bg-gradient-brand text-white flex items-center justify-center font-bold">{t.name[0]}</div>
+                      <div className="h-10 w-10 rounded-full bg-gradient-brand text-white flex items-center justify-center font-bold">
+                        {t.name[0]}
+                      </div>
                     )}
                     <div>
                       <div className="font-semibold text-sm">{t.name}</div>
@@ -264,15 +435,22 @@ function HomePage() {
       {faqSection.items.length > 0 && (
         <section className="container mx-auto px-4 py-20 md:py-28 max-w-4xl">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">{faqSection.eyebrow}</div>
+            <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
+              {faqSection.eyebrow}
+            </div>
             <h2 className="text-3xl md:text-5xl font-extrabold text-balance">{faqSection.title}</h2>
           </div>
           <div className="space-y-3 mt-12">
             {faqSection?.items?.map((f) => (
-              <details key={f.question} className="group rounded-xl border border-border bg-card p-5 [&_summary]:cursor-pointer">
+              <details
+                key={f.question}
+                className="group rounded-xl border border-border bg-card p-5 [&_summary]:cursor-pointer"
+              >
                 <summary className="flex items-center justify-between gap-4 font-semibold">
                   {f.question}
-                  <span className="h-7 w-7 rounded-full bg-muted flex items-center justify-center group-open:bg-primary group-open:text-primary-foreground transition-colors">+</span>
+                  <span className="h-7 w-7 rounded-full bg-muted flex items-center justify-center group-open:bg-primary group-open:text-primary-foreground transition-colors">
+                    +
+                  </span>
                 </summary>
                 <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{f.answer}</p>
               </details>
@@ -289,7 +467,9 @@ function HomePage() {
             <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-white/10" />
             <div className="relative">
               {cta.banner_text && (
-                <h2 className="text-3xl md:text-5xl font-extrabold text-white text-balance">{cta.banner_text}</h2>
+                <h2 className="text-3xl md:text-5xl font-extrabold text-white text-balance">
+                  {cta.banner_text}
+                </h2>
               )}
               {cta.banner_subtitle && (
                 <p className="mt-4 text-white/90 max-w-xl mx-auto">{cta.banner_subtitle}</p>
@@ -301,8 +481,15 @@ function HomePage() {
                   </Button>
                 )}
                 {phone && (
-                  <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base bg-transparent text-white border-white hover:bg-white hover:text-primary">
-                    <a href={phoneHref}><Phone /> Call Now</a>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="h-12 px-8 text-base bg-transparent text-white border-white hover:bg-white hover:text-primary"
+                  >
+                    <a href={phoneHref}>
+                      <Phone /> Call Now
+                    </a>
                   </Button>
                 )}
               </div>
@@ -314,12 +501,12 @@ function HomePage() {
   );
 }
 
-
-
 export function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div className="text-center max-w-3xl mx-auto">
-      <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">{eyebrow}</div>
+      <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
+        {eyebrow}
+      </div>
       <h2 className="text-3xl md:text-5xl font-extrabold text-balance">{title}</h2>
     </div>
   );

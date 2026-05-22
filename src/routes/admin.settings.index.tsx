@@ -1,5 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Image, LayoutList, Info, Phone, Share2, Search, Megaphone, FileText, BarChart3 } from "lucide-react";
+import {
+  Image,
+  LayoutList,
+  Info,
+  Phone,
+  Share2,
+  Search,
+  Megaphone,
+  FileText,
+  BarChart3,
+} from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 
 export const Route = createFileRoute("/admin/settings/")({ component: SettingsHub });
@@ -48,6 +58,12 @@ const cards = [
     icon: Megaphone,
   },
   {
+    to: "/admin/settings/popup",
+    label: "Popup Poster",
+    description: "Site-wide popup poster (image + link + active).",
+    icon: Megaphone,
+  },
+  {
     to: "/admin/settings/footer",
     label: "Footer",
     description: "Footer description and quick links.",
@@ -68,7 +84,11 @@ function SettingsHub() {
         {cards.map((c) => {
           const Icon = c.icon;
           return (
-            <Link key={c.to} to={c.to as any} className="rounded-xl border border-border bg-card p-6 hover:shadow-md hover:border-primary transition-all">
+            <Link
+              key={c.to}
+              to={c.to as any}
+              className="rounded-xl border border-border bg-card p-6 hover:shadow-md hover:border-primary transition-all"
+            >
               <div className="flex items-start justify-between mb-3">
                 <div className="h-11 w-11 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
                   <Icon className="h-5 w-5" />

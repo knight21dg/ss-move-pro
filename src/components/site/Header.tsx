@@ -1,9 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { LayoutDashboard, Menu, Phone, X } from "lucide-react";
+import { Menu, Phone, X } from "lucide-react";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/use-auth";
 import { useSettings } from "@/hooks/use-cms";
 
 const nav = [
@@ -18,7 +17,6 @@ const nav = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const { isAdmin } = useAuth();
   const { data: s } = useSettings();
   const phone = s?.contact?.phone;
   const phoneHref = phone ? `tel:${phone.replace(/\s/g, "")}` : "";
@@ -43,11 +41,6 @@ export function Header() {
           ))}
         </nav>
         <div className="hidden lg:flex items-center gap-3">
-          {isAdmin && (
-            <Button asChild variant="outline" size="sm">
-              <Link to="/admin"><LayoutDashboard className="h-4 w-4 mr-1" /> Admin</Link>
-            </Button>
-          )}
           {phone && (
             <a href={phoneHref} className="flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary">
               <Phone className="h-4 w-4" /> {phone}
@@ -74,9 +67,6 @@ export function Header() {
                 {n.label}
               </Link>
             ))}
-            {isAdmin && (
-              <Link to="/admin" onClick={() => setOpen(false)} className="px-3 py-3 rounded-md text-sm font-medium hover:bg-muted">Admin Panel</Link>
-            )}
             <Button asChild variant="brand" className="mt-2">
               <Link to="/enquiry" onClick={() => setOpen(false)}>Get Free Quote</Link>
             </Button>

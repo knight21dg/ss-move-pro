@@ -19,14 +19,33 @@ import { EMPTY_SETTINGS } from "@/hooks/use-cms";
 // ─ ALL home item types ─────────────────────────────────────────────────────────
 
 export type WhyUsItem = { id: string; title: string; description: string; sort_order: number };
-export type ProcessItem = { id: string; step: string; title: string; description: string; sort_order: number };
+export type ProcessItem = {
+  id: string;
+  step: string;
+  title: string;
+  description: string;
+  sort_order: number;
+};
 export type FaqItem = { id: string; question: string; answer: string; sort_order: number };
 
 // ─ Shapes inside the singleton doc ───────────────────────────────────────────
 
 type HeroSettings = { badge?: string; title: string; subtitle: string; cta: string };
-type HeroImagesSettings = { home: string; about: string; services: string; gallery: string; videos: string; enquiry: string; contact: string };
-type DefaultSeoSettings = { site_title: string; site_description: string; site_keywords: string; og_image: string };
+type HeroImagesSettings = {
+  home: string;
+  about: string;
+  services: string;
+  gallery: string;
+  videos: string;
+  enquiry: string;
+  contact: string;
+};
+type DefaultSeoSettings = {
+  site_title: string;
+  site_description: string;
+  site_keywords: string;
+  og_image: string;
+};
 
 // ─ Firestore singleton doc ────────────────────────────────────────────────────
 
@@ -60,7 +79,10 @@ export async function saveHomeSectionInDoc(
   await updateDoc(ALL_DOC, patch);
 }
 
-export async function saveSeoPage(page_key: string, fields: { title: string; description: string; keywords: string; og_image: string }): Promise<void> {
+export async function saveSeoPage(
+  page_key: string,
+  fields: { title: string; description: string; keywords: string; og_image: string },
+): Promise<void> {
   await setDoc(doc(db, "seo_page_settings", page_key), { ...fields, page_key }, { merge: true });
 }
 
@@ -73,11 +95,36 @@ export async function deleteSeoPage(page_key: string): Promise<void> {
 function fromDoc(d: AppDoc): SiteSettings {
   const s = d as any;
   return {
-    hero: { badge: s.hero?.badge ?? "", title: s.hero?.title ?? "", subtitle: s.hero?.subtitle ?? "", cta: s.hero?.cta ?? "" },
-    hero_images: s.hero_images ?? { home: "", about: "", services: "", gallery: "", videos: "", enquiry: "", contact: "" },
-    home_why_us: { eyebrow: s.home_why_us?.eyebrow ?? "", title: s.home_why_us?.title ?? "", items: (s.home_why_us?.items ?? []) as any },
-    home_process: { eyebrow: s.home_process?.eyebrow ?? "", title: s.home_process?.title ?? "", items: (s.home_process?.items ?? []) as any },
-    home_faqs: { eyebrow: s.home_faqs?.eyebrow ?? "", title: s.home_faqs?.title ?? "", items: (s.home_faqs?.items ?? []) as any },
+    hero: {
+      badge: s.hero?.badge ?? "",
+      title: s.hero?.title ?? "",
+      subtitle: s.hero?.subtitle ?? "",
+      cta: s.hero?.cta ?? "",
+    },
+    hero_images: s.hero_images ?? {
+      home: "",
+      about: "",
+      services: "",
+      gallery: "",
+      videos: "",
+      enquiry: "",
+      contact: "",
+    },
+    home_why_us: {
+      eyebrow: s.home_why_us?.eyebrow ?? "",
+      title: s.home_why_us?.title ?? "",
+      items: (s.home_why_us?.items ?? []) as any,
+    },
+    home_process: {
+      eyebrow: s.home_process?.eyebrow ?? "",
+      title: s.home_process?.title ?? "",
+      items: (s.home_process?.items ?? []) as any,
+    },
+    home_faqs: {
+      eyebrow: s.home_faqs?.eyebrow ?? "",
+      title: s.home_faqs?.title ?? "",
+      items: (s.home_faqs?.items ?? []) as any,
+    },
     about: s.about ?? EMPTY_SETTINGS.about,
     contact: s.contact ?? EMPTY_SETTINGS.contact,
     social: s.social ?? EMPTY_SETTINGS.social,
@@ -91,6 +138,11 @@ function fromDoc(d: AppDoc): SiteSettings {
         og_image: s.seo_default?.og_image ?? "",
       },
       pages: {},
+    },
+    popup: {
+      image_url: s.popup?.image_url ?? "",
+      link_url: s.popup?.link_url ?? "",
+      is_active: !!s.popup?.is_active,
     },
   };
 }
@@ -164,14 +216,27 @@ export function useSettingsForm() {
       const appDocPayload: AppDoc = {
         hero: heroPatch,
         hero_images: heroImagesPatch,
-        home_why_us: { eyebrow: form.home_why_us.eyebrow, title: form.home_why_us.title, items: form.home_why_us.items },
-        home_process: { eyebrow: form.home_process.eyebrow, title: form.home_process.title, items: form.home_process.items },
-        home_faqs: { eyebrow: form.home_faqs.eyebrow, title: form.home_faqs.title, items: form.home_faqs.items },
+        home_why_us: {
+          eyebrow: form.home_why_us.eyebrow,
+          title: form.home_why_us.title,
+          items: form.home_why_us.items,
+        },
+        home_process: {
+          eyebrow: form.home_process.eyebrow,
+          title: form.home_process.title,
+          items: form.home_process.items,
+        },
+        home_faqs: {
+          eyebrow: form.home_faqs.eyebrow,
+          title: form.home_faqs.title,
+          items: form.home_faqs.items,
+        },
         about: { ...form.about },
         contact: { ...form.contact },
         social: { ...form.social },
         cta: { ...form.cta },
         footer: { ...form.footer },
+        popup: { ...form.popup },
         seo_default: seoDefaultPatch,
         ga: { measurement_id: (fd?.ga as any)?.measurement_id ?? "" },
         updated_at: writeTimestamp(),
@@ -185,7 +250,9 @@ export function useSettingsForm() {
       const batchArr: Promise<any>[] = [];
 
       // delete pages not in form
-      const existingSnap = await getDocs(query(collection(db, "seo_page_settings"), orderBy("page_key", "asc")));
+      const existingSnap = await getDocs(
+        query(collection(db, "seo_page_settings"), orderBy("page_key", "asc")),
+      );
       const existingKeys = existingSnap.docs.map((d) => d.id);
       for (const k of existingKeys) {
         if (!pageKeys.includes(k) && isDefaultSeoPage(k)) continue;
@@ -194,7 +261,9 @@ export function useSettingsForm() {
 
       // upsert pages in form
       for (const [key, val] of Object.entries(pages)) {
-        batchArr.push(setDoc(doc(db, "seo_page_settings", key), { page_key: key, ...val }, { merge: true }));
+        batchArr.push(
+          setDoc(doc(db, "seo_page_settings", key), { page_key: key, ...val }, { merge: true }),
+        );
       }
       await Promise.all(batchArr);
 
@@ -214,7 +283,15 @@ export function useSettingsForm() {
 
 // ─── Private helpers ──────────────────────────────────────────────────────────
 
-const DEFAULT_SEO_PAGES = new Set(["home", "about", "services", "gallery", "videos", "enquiry", "contact"]);
+const DEFAULT_SEO_PAGES = new Set([
+  "home",
+  "about",
+  "services",
+  "gallery",
+  "videos",
+  "enquiry",
+  "contact",
+]);
 
 function isDefaultSeoPage(key: string): boolean {
   return DEFAULT_SEO_PAGES.has(key);
