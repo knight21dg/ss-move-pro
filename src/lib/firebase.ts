@@ -369,8 +369,13 @@ export function subscribeRealtime(qc: QueryClientLike): Unsubscribe {
   ] as const;
 
   for (const table of contentTables) {
+    let isInitial = true;
     const q = query(col(table), limit(1));
     const unsub = onSnapshot(q, () => {
+      if (isInitial) {
+        isInitial = false;
+        return;
+      }
       qc.invalidateQueries({ queryKey: [table], exact: false });
       qc.invalidateQueries({ queryKey: ["admin-stats"], exact: false });
     });
@@ -379,8 +384,13 @@ export function subscribeRealtime(qc: QueryClientLike): Unsubscribe {
 
   // ── settings singleton doc ───────────────────────────────────────────────────
   const settingsDocRef = singletonId();
+  let settingsInitial = true;
   unsubs.push(
     onSnapshot(settingsDocRef, () => {
+      if (settingsInitial) {
+        settingsInitial = false;
+        return;
+      }
       qc.invalidateQueries({ queryKey: ["settings"], exact: false });
     })
   );
@@ -394,18 +404,28 @@ export function subscribeRealtime(qc: QueryClientLike): Unsubscribe {
   ] as const;
 
   for (const key of homeSettingsCols) {
+    let colInitial = true;
     const q = query(collection(db, "settings", "all", key), limit(1));
     unsubs.push(
       onSnapshot(q, () => {
+        if (colInitial) {
+          colInitial = false;
+          return;
+        }
         qc.invalidateQueries({ queryKey: ["settings"], exact: false });
       })
     );
   }
 
   // ── seo_page_settings ────────────────────────────────────────────────────────
+  let seoInitial = true;
   const seoQ = query(col("seo_page_settings"), limit(1));
   unsubs.push(
     onSnapshot(seoQ, () => {
+      if (seoInitial) {
+        seoInitial = false;
+        return;
+      }
       qc.invalidateQueries({ queryKey: ["seo_page_settings"], exact: false });
     })
   );
