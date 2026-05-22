@@ -1,34 +1,57 @@
-import { useQuery, type QueryClient } from "@tanstack/react-query";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { useEffect, useState } from "react";
+import { getGaId } from "@/lib/firebase";
 
-export function GoogleAnalytics({ queryClient }: { queryClient: QueryClient }) {
-  const { data: row } = useQuery({
-    queryKey: ["ga_settings"],
-    queryFn: async () => {
-      const snap = await getDoc(doc(db, "ga_settings", "singleton"));
-      return (snap.data() as { ga_measurement_id?: string } | undefined) ?? null;
-    },
-    queryClient,
-  });
+export function GoogleAnalytics() {
+  const [gaMeasurementId, setGaMeasurementId] = useState<string | null>(null);
 
-  const gaMeasurementId = row?.ga_measurement_id ?? "";
+  useEffect(() => {
+    let active = true;
+    getGaId()
+      .then((id) => {
+        if (active && id) {
+          setGaMeasurementId(id);
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading GA ID:", err);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
-  if (!gaMeasurementId) return null;
+  useEffect(() => {
+    if (!gaMeasurementId) return;
 
-  return (
-    <>
-      <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}></script>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${gaMeasurementId}');
-          `,
-        }}
-      />
-    </>
-  );
+    // Check if script is already injected
+    if (document.getElementById("ga-gtag-script")) return;
+
+    // Inject gtag.js
+    const script = document.createElement("script");
+    script.id = "ga-gtag-script";
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`;
+    document.head.appendChild(script);
+
+    // Inject config script
+    const inlineScript = document.createElement("script");
+    inlineScript.id = "ga-init-script";
+    inlineScript.innerHTML = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '${gaMeasurementId}');
+    `;
+    document.head.appendChild(inlineScript);
+
+    return () => {
+      const s = document.getElementById("ga-gtag-script");
+      const is = document.getElementById("ga-init-script");
+      if (s) s.remove();
+      if (is) is.remove();
+    };
+  }, [gaMeasurementId]);
+
+  return null;
 }
+
