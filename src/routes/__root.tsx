@@ -11,11 +11,12 @@ import { GoogleAnalytics } from "../components/GoogleAnalytics.tsx";
 import { NotFoundComponent } from "../components/NotFoundComponent.tsx";
 
 function RootShell({ children }: { children: React.ReactNode }) {
+  const { queryClient } = Route.useRouteContext();
   return (
     <html lang="en">
       <head>
         <HeadContent />
-        <GoogleAnalytics />
+        <GoogleAnalytics queryClient={queryClient} />
       </head>
       <body>
         {children}
