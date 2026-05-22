@@ -384,6 +384,7 @@ export function settingsQueryOptions() {
         contact: contactData,
         social,
         cta,
+        popup: s.popup ?? { image_url: "", link_url: "", is_active: false },
         footer: footerData,
         seo: { default: seoDefault, pages },
       };
@@ -419,10 +420,85 @@ export const EMPTY_SETTINGS: SiteSettings = {
   home_faqs: { eyebrow: "", title: "", items: [] },
   about: {
     heading: "Welcome to SS Packers & Movers Mini Transport",
-    body: "We are committed to providing reliable and affordable moving services with professional handling and customer-focused support. Our team uses quality packing materials and modern transportation methods to ensure damage-free shifting for homes, offices and vehicles.",
-    years_experience: "",
-    happy_customers: "",
-    cities_covered: "",
+    body: `SS Packers & Movers Mini Transport is a customer-first relocation company with deep roots in South India and an expanding presence across major metros. For more than a decade we have helped thousands of families and businesses move with confidence — from single-room apartments and office floors to vehicles and specialty cargo. Our mission is simple: make moving painless, predictable, and affordable while protecting what matters most to you.
+
+Why people choose SS Packers & Movers
+
+We understand that moving is stressful. Our experienced team reduces that stress by combining proven packing techniques, trained personnel, and route-optimized transport. Every job follows an audited checklist so fragile items are wrapped, shocks are minimised and inventory is carefully tracked. We work with homeowners, real estate agents, startups, and local businesses and adapt services to any scale.
+
+Comprehensive service offering
+
+- Household shifting: end-to-end packing, furniture disassembly/reassembly, loading, transport, unloading and placement at the new location.
+- Office relocation: minimal downtime planning, asset tagging, server and IT-safe moving procedures, and dedicated crew to keep your operations running.
+- Bike & car transport: insured vehicle transit, specialist cradles and straps, door-to-door pickup and delivery.
+- Mini transport: same-day and express mini-truck services for urgent small-load moves and intra-city deliveries.
+- Packing-only / unpacking services: professional-grade packing using bubble, corrugated wraps, mattress covers and wooden crates for antiques and electronics.
+- Storage & short-term warehousing: secure, climate-aware storage options with inventory management for transition periods.
+
+Safety and insurance
+
+Your belongings are valuable, and we treat them as such. Our teams use high-strength packing materials, reinforced crates for delicate cargo and palletisation when needed. For peace of mind, we offer optional transit insurance that covers accidental damage during handling and transit. All our drivers and handlers are background-checked and trained in care-first handling.
+
+Transparent pricing and written estimates
+
+We believe in clarity. Every quote we provide includes a clear breakdown of line items — packing materials, labor, distance charges, vehicle charges and optional services — so there are no surprises on moving day. Our online enquiry form and phone estimates let you choose the services you need and receive an itemised estimate within hours.
+
+Local knowledge, efficient logistics
+
+Being locally-operated gives us an advantage: familiarity with local roads, apartment complex rules, parking permits and efficient route planning. Our logistics team coordinates multiple shipments, plans for peak-hour windows and uses GPS tracking so you can follow your move in real-time.
+
+Quality assurance and customer care
+
+Every job is followed by a quality checklist; our supervisors perform a post-move walkthrough and capture photographic evidence when requested. We maintain a responsive support line for updates and quick resolution of any issues. Our customer-first refunds and damage-resolution policies ensure a fair outcome when unexpected events occur.
+
+Proven track record
+
+With over 5000+ satisfied customers and 10+ years in service, SS Packers & Movers has established a reputation for reliability. We have successfully completed thousands of household and commercial relocations across 10+ cities — combining local expertise with a commitment to on-time delivery.
+
+Green & responsible moving
+
+We use recyclable packing materials where possible and encourage customers to reuse packing boxes and materials. Our fleet maintenance program reduces fuel inefficiencies and emissions, and we continue to explore eco-friendly packing alternatives.
+
+Tips for a better move (expert advice)
+
+1. Start early: begin decluttering and preparing inventory at least three weeks before the move.
+2. Label boxes clearly: label by room and a short contents list to make unpacking faster.
+3. Keep essentials separate: pack a personal essentials box (medicines, chargers, change of clothes) and carry it with you.
+4. Photograph electronics: take photos of cable configurations before disassembly to speed reassembly.
+5. Communicate restrictions: provide gate timings, lift availability and parking restrictions to your coordinator.
+
+Our service promise
+
+We promise punctual arrival, careful handling, accurate inventory management and transparent pricing. Our teams are trained to be courteous and efficient; we protect your floors, doors and finishes during handling and ensure items are placed where you want them at the destination.
+
+Coverage & availability
+
+We serve both local and inter-city routes across Andhra Pradesh, Telangana and major metros. Whether its a short intra-city move or a cross-state relocation, we match vehicle capacity and crew size to your needs to keep costs efficient.
+
+How to get started
+
+Contact us via phone, WhatsApp or the online enquiry form with your moving details — origin, destination, preferred date and a rough inventory. Well provide a quick estimate and, when necessary, a site visit to finalise an accurate quotation.
+
+Customer testimonials & trust signals
+
+Our customers consistently praise our punctuality, careful packing and transparent pricing. We maintain an accessible feedback loop and publicly display verified testimonials on our website for new customers to review.
+
+Security & compliance
+
+We adhere to local transport regulations and maintain necessary permits for inter-state transit. For commercial clients we can provide business invoices and GST-compliant documentation upon request.
+
+Why we focus on quality over volume
+
+Every move is unique — and weve found that a steady focus on processes, training and materials yields better customer outcomes than trying to move more jobs with fewer resources. We invest in people and training so each move meets our care-first standards.
+
+Call to action
+
+If youre planning a move, call us on +91 9652146555 or use the online enquiry form. Well provide a clear, no-obligation estimate and recommend the right vehicle and crew for your needs.
+
+— SS Packers & Movers Mini Transport`,
+    years_experience: "10+",
+    happy_customers: "5000+",
+    cities_covered: "10+",
   },
   contact: {
     phone: "+91 9652146555",

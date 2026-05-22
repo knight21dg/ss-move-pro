@@ -9,7 +9,11 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About SS Packers & Movers Kakinada" },
-      { name: "description", content: "Learn about SS Packers & Movers — Kakinada's trusted relocation company serving households and businesses across India." },
+      {
+        name: "description",
+        content:
+          "Learn about SS Packers & Movers — Kakinada's trusted relocation company serving households and businesses across India.",
+      },
       { property: "og:title", content: "About SS Packers & Movers Kakinada" },
       { property: "og:description", content: "Trusted relocation company from Kakinada." },
     ],
@@ -38,30 +42,86 @@ function AboutPage() {
         backgroundImage={heroImage}
       />
       {about && (
-      <section className="container mx-auto px-4 py-16 grid lg:grid-cols-2 gap-12 items-center">
-        <div className="space-y-5">
-          {about.heading && <h2 className="text-3xl md:text-4xl font-extrabold">{about.heading}</h2>}
-          {about.body && (
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-              {about.body}
-            </p>
-          )}
-          <Button asChild variant="brand" size="lg" className="mt-4"><Link to="/enquiry">Get Free Quote</Link></Button>
-        </div>
-        {about.happy_customers || about.years_experience || about.cities_covered ? (
-          <div className="grid grid-cols-3 gap-4">
-            {about.happy_customers ? <StatCard icon={Users} value={about.happy_customers} label="Customers" /> : null}
-            {about.years_experience ? <StatCard icon={Award} value={about.years_experience} label="Years" /> : null}
-            {about.cities_covered ? <StatCard icon={Target} value={about.cities_covered} label="Cities" /> : null}
+        <section className="container mx-auto px-4 py-16 grid lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-5">
+            {about.heading && (
+              <h2 className="text-3xl md:text-4xl font-extrabold">{about.heading}</h2>
+            )}
+            {about.body && (
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                {about.body}
+              </p>
+            )}
+            <Button asChild variant="brand" size="lg" className="mt-4">
+              <Link to="/enquiry">Get Free Quote</Link>
+            </Button>
           </div>
-        ) : null}
-      </section>
+          {about.happy_customers || about.years_experience || about.cities_covered ? (
+            <div className="grid grid-cols-3 gap-4">
+              {about.happy_customers ? (
+                <StatCard icon={Users} value={about.happy_customers} label="Customers" />
+              ) : null}
+              {about.years_experience ? (
+                <StatCard icon={Award} value={about.years_experience} label="Years" />
+              ) : null}
+              {about.cities_covered ? (
+                <StatCard icon={Target} value={about.cities_covered} label="Cities" />
+              ) : null}
+            </div>
+          ) : null}
+        </section>
       )}
+      {/* NEW: Commitments / Values section */}
+      <section className="bg-muted/50 py-12">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
+              Our Commitment
+            </div>
+            <h2 className="text-2xl md:text-3xl font-extrabold">What we promise every customer</h2>
+            <p className="mt-3 text-muted-foreground">
+              We combine trained teams, transparent quotes and insured transit to give you
+              confidence on moving day.
+            </p>
+          </div>
+          <div className="grid gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="rounded-2xl bg-card border border-border p-6 text-center">
+              <CheckCircle2 className="mx-auto h-8 w-8 text-primary mb-3" />
+              <div className="font-semibold">Care-first Packing</div>
+              <div className="text-sm text-muted-foreground mt-2">
+                Quality materials and careful handling for fragile items.
+              </div>
+            </div>
+            <div className="rounded-2xl bg-card border border-border p-6 text-center">
+              <Users className="mx-auto h-8 w-8 text-primary mb-3" />
+              <div className="font-semibold">Trained Crew</div>
+              <div className="text-sm text-muted-foreground mt-2">
+                Background-checked teams trained in efficient loading and placement.
+              </div>
+            </div>
+            <div className="rounded-2xl bg-card border border-border p-6 text-center">
+              <Target className="mx-auto h-8 w-8 text-primary mb-3" />
+              <div className="font-semibold">Transparent Pricing</div>
+              <div className="text-sm text-muted-foreground mt-2">
+                Itemised estimates and no-hidden-fees policy for every move.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </SiteLayout>
   );
 }
 
-function StatCard({ icon: Icon, value, label }: { icon: React.ElementType; value: string; label: string }) {
+function StatCard({
+  icon: Icon,
+  value,
+  label,
+}: {
+  icon: React.ElementType;
+  value: string;
+  label: string;
+}) {
   return (
     <div className="rounded-2xl border border-border bg-card p-6">
       <Icon className="h-7 w-7 text-primary mb-3" />
@@ -71,11 +131,23 @@ function StatCard({ icon: Icon, value, label }: { icon: React.ElementType; value
   );
 }
 
-export function PageHero({ eyebrow, title, subtitle, backgroundImage }: { eyebrow?: string; title: string; subtitle?: string; backgroundImage?: string }) {
+export function PageHero({
+  eyebrow,
+  title,
+  subtitle,
+  backgroundImage,
+}: {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  backgroundImage?: string;
+}) {
   const hasImage = Boolean(backgroundImage);
   const optimizedImage = backgroundImage ? optimizeCloudinaryUrl(backgroundImage, 1200) : undefined;
   return (
-    <section className={hasImage ? "relative overflow-hidden text-white" : "bg-gradient-dark text-white"}>
+    <section
+      className={hasImage ? "relative overflow-hidden text-white" : "bg-gradient-dark text-white"}
+    >
       {hasImage && (
         <div className="absolute inset-0">
           <img src={optimizedImage} alt={title} className="h-full w-full object-cover" />
@@ -83,7 +155,9 @@ export function PageHero({ eyebrow, title, subtitle, backgroundImage }: { eyebro
         </div>
       )}
       <div className="relative container mx-auto px-4 py-20 md:py-28 text-center max-w-3xl">
-        <div className="text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">{eyebrow}</div>
+        <div className="text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
+          {eyebrow}
+        </div>
         <h1 className="text-4xl md:text-6xl font-extrabold text-balance">{title}</h1>
         {subtitle && <p className="mt-5 text-white/80 text-lg">{subtitle}</p>}
       </div>

@@ -30,7 +30,20 @@ export const Route = createFileRoute("/sitemap.xml")({
           seoPaths = ["/kakinada", "/rajahmundry", "/hyderabad", "/vijayawada", "/visakhapatnam"];
         }
 
-        const paths = [...new Set([...staticPaths, ...seoPaths])];
+        // include service detail pages (if available) to help search engines discover service pages
+        let servicePaths: string[] = [];
+        try {
+          const svcSnap = await getDocs(collection(db, "services"));
+          servicePaths = svcSnap.docs
+            .map((d) => (d.data() as any).slug)
+            .filter(Boolean)
+            .map((slug: string) => `/services/${slug}`);
+        } catch (e) {
+          // ignore if services aren't readable from server
+          servicePaths = [];
+        }
+
+        const paths = [...new Set([...staticPaths, ...seoPaths, ...servicePaths])];
         const urls = paths
           .map((p) => `  <url><loc>${BASE_URL}${p}</loc><changefreq>weekly</changefreq></url>`)
           .join("\n");

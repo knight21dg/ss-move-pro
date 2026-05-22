@@ -4,39 +4,29 @@ import { PageHero } from "./about";
 import { useEffect } from "react";
 import { useSettings } from "@/hooks/use-cms";
 
-export const Route = createFileRoute("/visakhapatnam")({ component: VisakhapatnamPage as any });
-
-function insertLd(obj: any) {
-  if (typeof document === "undefined") return;
-  const id = "ld-json-city";
-  const existing = document.getElementById(id);
-  if (existing) existing.remove();
-  const s = document.createElement("script");
-  s.type = "application/ld+json";
-  s.id = id;
-  s.text = JSON.stringify(obj);
-  document.head.appendChild(s);
-}
+export const Route = createFileRoute("/visakhapatnam" as any)({
+  component: VisakhapatnamPage as any,
+});
 
 function VisakhapatnamPage() {
   const { data: s } = useSettings();
   const phone = s?.contact?.phone ?? "";
-  useEffect(() => {
-    insertLd({
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      name: "SS Packers & Movers Mini Transport - Visakhapatnam",
-      telephone: phone,
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Visakhapatnam",
-        addressRegion: "Andhra Pradesh",
-      },
-    });
-  }, [phone]);
+
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: "SS Packers & Movers Mini Transport - Visakhapatnam",
+    telephone: phone,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Visakhapatnam",
+      addressRegion: "Andhra Pradesh",
+    },
+  };
 
   return (
     <SiteLayout>
+      <script type="application/ld+json">{JSON.stringify(ld)}</script>
       <PageHero
         eyebrow="Service Area"
         title="Packers & Movers in Visakhapatnam"
