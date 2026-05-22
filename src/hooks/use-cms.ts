@@ -82,6 +82,7 @@ export interface AboutSettings {
   years_experience: string;
   happy_customers: string;
   cities_covered: string;
+  branches: string;
 }
 export interface ContactSettings {
   phone: string;
@@ -499,6 +500,7 @@ If youre planning a move, call us on +91 9652146555 or use the online enquiry f
     years_experience: "10+",
     happy_customers: "5000+",
     cities_covered: "10+",
+    branches: "3",
   },
   contact: {
     phone: "+91 9652146555",
