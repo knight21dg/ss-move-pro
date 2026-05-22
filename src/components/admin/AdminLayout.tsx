@@ -51,10 +51,19 @@ export function AdminLayout({ children, title }: { children: React.ReactNode; ti
   if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="max-w-md text-center space-y-4">
+        <div className="max-w-md w-full text-center space-y-4">
           <h1 className="text-2xl font-bold">Admin access required</h1>
           <p className="text-sm text-muted-foreground">Your account ({user.email}) does not have admin privileges.</p>
-          <Button variant="outline" onClick={async () => { await logout(); navigate({ to: "/signin" }); }}>Sign out</Button>
+          <div className="bg-muted p-4 rounded-xl border border-border text-left space-y-2">
+            <p className="text-xs font-semibold text-foreground uppercase tracking-wider">How to promote this account:</p>
+            <p className="text-xs text-muted-foreground">Go to your Firebase Firestore console and create a document in the <code className="bg-background px-1.5 py-0.5 rounded font-mono text-[11px] border border-border">user_roles</code> collection:</p>
+            <div className="space-y-1.5 text-xs">
+              <div><strong>Document ID (UID):</strong> <code className="bg-background px-1.5 py-0.5 rounded font-mono text-[11px] border border-border select-all">{user.uid}</code></div>
+              <div><strong>Field:</strong> <code className="bg-background px-1.5 py-0.5 rounded font-mono text-[11px] border border-border">role</code> (string)</div>
+              <div><strong>Value:</strong> <code className="bg-background px-1.5 py-0.5 rounded font-mono text-[11px] border border-border">admin</code></div>
+            </div>
+          </div>
+          <Button variant="outline" className="w-full" onClick={async () => { await logout(); navigate({ to: "/signin" }); }}>Sign out</Button>
         </div>
       </div>
     );
