@@ -1,27 +1,40 @@
-const CLOUD_NAME = "dp9pbu8wr";
-
 export async function uploadToCloudinary(
   file: File,
   folder = "uploads"
 ): Promise<string> {
-  const uploadPreset = "unsigned_preset";
+  // 1. Get signature from server API route
+  const signRes = await fetch("/api/sign-cloudinary", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ folder })
+  });
 
+  if (!signRes.ok) {
+    const errText = await signRes.text().catch(() => signRes.statusText);
+    throw new Error(`Failed to generate upload signature: ${errText}`);
+  }
+
+  const { signature, timestamp, apiKey, cloudName } = await signRes.json();
+
+  // 2. Perform signed upload to Cloudinary using auto endpoint
   const form = new FormData();
   form.append("file", file);
-  form.append("upload_preset", uploadPreset);
+  form.append("api_key", apiKey);
+  form.append("timestamp", timestamp.toString());
+  form.append("signature", signature);
   form.append("folder", folder);
 
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+  const uploadRes = await fetch(
+    `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
     { method: "POST", body: form }
   );
 
-  if (!res.ok) {
-    const errText = await res.text().catch(() => res.statusText);
-    throw new Error(`Cloudinary upload failed (${res.status}): ${errText}`);
+  if (!uploadRes.ok) {
+    const errText = await uploadRes.text().catch(() => uploadRes.statusText);
+    throw new Error(`Cloudinary upload failed (${uploadRes.status}): ${errText}`);
   }
 
-  const data = await res.json();
+  const data = await uploadRes.json();
   return data.secure_url as string;
 }
 

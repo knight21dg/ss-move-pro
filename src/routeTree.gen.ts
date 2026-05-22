@@ -19,6 +19,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as ApiSignCloudinaryRouteImport } from './routes/api.sign-cloudinary'
 import { Route as AdminVideosRouteImport } from './routes/admin.videos'
 import { Route as AdminTestimonialsRouteImport } from './routes/admin.testimonials'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
@@ -84,6 +85,11 @@ const IndexRoute = IndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSignCloudinaryRoute = ApiSignCloudinaryRouteImport.update({
+  id: '/api/sign-cloudinary',
+  path: '/api/sign-cloudinary',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminVideosRoute = AdminVideosRouteImport.update({
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/videos': typeof AdminVideosRoute
+  '/api/sign-cloudinary': typeof ApiSignCloudinaryRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/settings/about': typeof AdminSettingsAboutRoute
   '/admin/settings/analytics': typeof AdminSettingsAnalyticsRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/admin/services': typeof AdminServicesRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/videos': typeof AdminVideosRoute
+  '/api/sign-cloudinary': typeof ApiSignCloudinaryRoute
   '/admin': typeof AdminIndexRoute
   '/admin/settings/about': typeof AdminSettingsAboutRoute
   '/admin/settings/analytics': typeof AdminSettingsAnalyticsRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRouteWithChildren
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/videos': typeof AdminVideosRoute
+  '/api/sign-cloudinary': typeof ApiSignCloudinaryRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/settings/about': typeof AdminSettingsAboutRoute
   '/admin/settings/analytics': typeof AdminSettingsAnalyticsRoute
@@ -269,6 +278,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/testimonials'
     | '/admin/videos'
+    | '/api/sign-cloudinary'
     | '/admin/'
     | '/admin/settings/about'
     | '/admin/settings/analytics'
@@ -296,6 +306,7 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/testimonials'
     | '/admin/videos'
+    | '/api/sign-cloudinary'
     | '/admin'
     | '/admin/settings/about'
     | '/admin/settings/analytics'
@@ -324,6 +335,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/testimonials'
     | '/admin/videos'
+    | '/api/sign-cloudinary'
     | '/admin/'
     | '/admin/settings/about'
     | '/admin/settings/analytics'
@@ -353,6 +365,7 @@ export interface RootRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRouteWithChildren
   AdminTestimonialsRoute: typeof AdminTestimonialsRoute
   AdminVideosRoute: typeof AdminVideosRoute
+  ApiSignCloudinaryRoute: typeof ApiSignCloudinaryRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -426,6 +439,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/sign-cloudinary': {
+      id: '/api/sign-cloudinary'
+      path: '/api/sign-cloudinary'
+      fullPath: '/api/sign-cloudinary'
+      preLoaderRoute: typeof ApiSignCloudinaryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/videos': {
@@ -589,6 +609,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminSettingsRoute: AdminSettingsRouteWithChildren,
   AdminTestimonialsRoute: AdminTestimonialsRoute,
   AdminVideosRoute: AdminVideosRoute,
+  ApiSignCloudinaryRoute: ApiSignCloudinaryRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
