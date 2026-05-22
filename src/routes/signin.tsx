@@ -53,8 +53,8 @@ function LoginPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsub = onAuthChange(() => {
-      if (!recoveryMode) navigate({ to: "/admin" });
+    const unsub = onAuthChange((user) => {
+      if (user && !recoveryMode) navigate({ to: "/admin" });
     });
     return () => { unsub(); };
   }, [navigate, recoveryMode]);
