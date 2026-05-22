@@ -5,29 +5,52 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { doc, setDoc, getDoc, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/settings/analytics")({ component: AnalyticsSettings });
 
+// GA measurement ID is stored inside the settings/all document under ga.measurement_id
+const SETTINGS_DOC = doc(db, "settings", "all");
+
 function AnalyticsSettings() {
   const qc = useQueryClient();
+
   const { data: gaId = "", isLoading } = useQuery({
-    queryKey: ["ga_settings"],
+    queryKey: ["ga_measurement_id"],
     queryFn: async () => {
-      const snap = await getDoc(doc(db, "ga_settings", "singleton"));
-      return (snap.data() as { ga_measurement_id?: string } | undefined)?.ga_measurement_id ?? "";
+      const snap = await getDoc(SETTINGS_DOC);
+      if (!snap.exists()) return "";
+      const d = snap.data() as any;
+      return (d?.ga?.measurement_id ?? "") as string;
     },
   });
 
+  // Local editable value, synced once from the query result
+  const [localId, setLocalId] = useState("");
+  const synced = useRef(false);
+  useEffect(() => {
+    if (synced.current) return;
+    if (gaId !== "") {
+      synced.current = true;
+      setLocalId(gaId);
+    }
+  }, [gaId]);
+
   const save = useMutation({
     mutationFn: async (newId: string) => {
-      await setDoc(doc(db, "ga_settings", "singleton"), { ga_measurement_id: newId }, { merge: true });
+      await setDoc(
+        SETTINGS_DOC,
+        { ga: { measurement_id: newId }, updated_at: new Date().toISOString() },
+        { merge: true }
+      );
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["ga_settings"] });
+      qc.invalidateQueries({ queryKey: ["ga_measurement_id"] });
+      qc.invalidateQueries({ queryKey: ["settings"] });
       toast.success("Saved");
     },
     onError: (e: unknown) => toast.error(e instanceof Error ? e.message : "Failed"),
@@ -48,12 +71,19 @@ function AnalyticsSettings() {
           <CardContent className="space-y-4">
             <div>
               <Label>GA Measurement ID (e.g. G-XXXXXXXXXX)</Label>
-              <Input placeholder="G-" value={gaId} onChange={(e) => qc.setQueryData(["ga_settings"], { ga_measurement_id: e.target.value })} />
+              <Input
+                placeholder="G-"
+                value={localId}
+                onChange={(e) => setLocalId(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                This ID is injected into every page via the GoogleAnalytics component.
+              </p>
             </div>
           </CardContent>
         </Card>
         <div className="sticky bottom-4 bg-background border border-border rounded-xl p-3 flex justify-end shadow-lg">
-          <Button variant="brand" size="lg" onClick={() => save.mutate(gaId)} disabled={save.isPending}>
+          <Button variant="brand" size="lg" onClick={() => save.mutate(localId)} disabled={save.isPending}>
             <Save className="h-4 w-4 mr-2" /> {save.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>
