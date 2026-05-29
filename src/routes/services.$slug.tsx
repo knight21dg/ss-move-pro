@@ -60,20 +60,20 @@ function ServicePage({ loaderData }: any) {
         subtitle={svc.description}
         backgroundImage={svc.image_url}
       />
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-4 py-12 md:py-16 max-w-4xl">
         {svc.image_url && (
           <img
             src={optimizeCloudinaryUrl(svc.image_url, 800)}
             alt={svc.title}
-            className="rounded-xl mb-6"
+            className="rounded-xl mb-6 w-full max-w-2xl"
           />
         )}
         <div
           className="prose max-w-none text-muted-foreground"
           dangerouslySetInnerHTML={{ __html: svc.description }}
         />
-        <div className="mt-6">
-          <Link to="/enquiry" search={{ service: svc.title }} className="text-primary font-semibold">
+        <div className="mt-8">
+          <Link to="/enquiry" search={{ service: svc.title }} className="text-primary font-semibold inline-flex items-center gap-1 hover:gap-2 transition-all">
             Enquire about this service
           </Link>
         </div>

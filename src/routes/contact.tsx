@@ -50,7 +50,7 @@ function ContactPage() {
       {/* CONTACT INFO CARDS */}
       {infoCards.length > 0 && (
         <section className="container mx-auto px-4 py-16 md:py-20">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="flex flex-wrap justify-center gap-5">
             {infoCards.map(({ icon: Icon, title, value, href }) => (
               <div key={title} className="rounded-2xl border border-border bg-card p-6 md:p-7 flex gap-4 items-start hover:shadow-md transition-shadow">
                 <div className="h-12 w-12 rounded-xl bg-gradient-brand text-white flex items-center justify-center shrink-0">
