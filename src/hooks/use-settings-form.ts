@@ -126,10 +126,10 @@ function fromDoc(d: AppDoc): SiteSettings {
       items: (s.home_faqs?.items ?? []) as any,
     },
     about: { ...EMPTY_SETTINGS.about, ...(s.about ?? {}) } as AboutSettings,
-    contact: s.contact ?? EMPTY_SETTINGS.contact,
-    social: s.social ?? EMPTY_SETTINGS.social,
-    cta: s.cta ?? EMPTY_SETTINGS.cta,
-    footer: s.footer ?? EMPTY_SETTINGS.footer,
+    contact: s.contact ? { ...EMPTY_SETTINGS.contact, ...s.contact } : EMPTY_SETTINGS.contact,
+    social: s.social ? { ...EMPTY_SETTINGS.social, ...s.social } : EMPTY_SETTINGS.social,
+    cta: s.cta ? { ...EMPTY_SETTINGS.cta, ...s.cta } : EMPTY_SETTINGS.cta,
+    footer: s.footer ? { ...EMPTY_SETTINGS.footer, ...s.footer } : EMPTY_SETTINGS.footer,
     seo: {
       default: {
         title: s.seo_default?.site_title ?? "",
