@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { optimizeCloudinaryUrl } from "@/lib/cloudinary";
 import type { Service } from "@/hooks/use-cms";
 
-export const Route = createFileRoute("/services/$slug" as any)({
+export const Route = createFileRoute("/services/$slug")({
   loader: async ({ params }) => {
     const slug = params.slug as string;
     const q = query(collection(db, "services"), where("slug", "==", slug));

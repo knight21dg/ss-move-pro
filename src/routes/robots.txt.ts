@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 const BASE_URL = import.meta.env.VITE_SITE_URL || "";
 
-export const Route = createFileRoute("/robots.txt" as any)({
+export const Route = createFileRoute("/robots/txt")({
   server: {
     handlers: {
       GET: async () => {

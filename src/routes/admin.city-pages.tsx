@@ -21,7 +21,7 @@ import { db } from "@/lib/firebase";
 import { useCities } from "@/hooks/use-cms";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin/city-pages" as any)({ component: AdminCityPages });
+export const Route = createFileRoute("/admin/city-pages")({ component: AdminCityPages });
 
 type CityForm = {
   id?: string;

@@ -9,16 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VisakhapatnamRouteImport } from './routes/visakhapatnam'
+import { Route as VijayawadaRouteImport } from './routes/vijayawada'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as RajahmundryRouteImport } from './routes/rajahmundry'
+import { Route as KakinadaRouteImport } from './routes/kakinada'
+import { Route as HyderabadRouteImport } from './routes/hyderabad'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as EnquiryRouteImport } from './routes/enquiry'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as RobotsTxtRouteImport } from './routes/robots.txt'
 import { Route as ApiSignCloudinaryRouteImport } from './routes/api.sign-cloudinary'
 import { Route as AdminVideosRouteImport } from './routes/admin.videos'
 import { Route as AdminTestimonialsRouteImport } from './routes/admin.testimonials'
@@ -26,9 +33,12 @@ import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
 import { Route as AdminEnquiriesRouteImport } from './routes/admin.enquiries'
+import { Route as AdminCityPagesRouteImport } from './routes/admin.city-pages'
 import { Route as AdminSettingsIndexRouteImport } from './routes/admin.settings.index'
+import { Route as AdminSettingsTrustRouteImport } from './routes/admin.settings.trust'
 import { Route as AdminSettingsSocialRouteImport } from './routes/admin.settings.social'
 import { Route as AdminSettingsSeoRouteImport } from './routes/admin.settings.seo'
+import { Route as AdminSettingsPopupRouteImport } from './routes/admin.settings.popup'
 import { Route as AdminSettingsHomeRouteImport } from './routes/admin.settings.home'
 import { Route as AdminSettingsHeroRouteImport } from './routes/admin.settings.hero'
 import { Route as AdminSettingsFooterRouteImport } from './routes/admin.settings.footer'
@@ -37,6 +47,16 @@ import { Route as AdminSettingsContactRouteImport } from './routes/admin.setting
 import { Route as AdminSettingsAnalyticsRouteImport } from './routes/admin.settings.analytics'
 import { Route as AdminSettingsAboutRouteImport } from './routes/admin.settings.about'
 
+const VisakhapatnamRoute = VisakhapatnamRouteImport.update({
+  id: '/visakhapatnam',
+  path: '/visakhapatnam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VijayawadaRoute = VijayawadaRouteImport.update({
+  id: '/vijayawada',
+  path: '/vijayawada',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VideosRoute = VideosRouteImport.update({
   id: '/videos',
   path: '/videos',
@@ -55,6 +75,21 @@ const SigninRoute = SigninRouteImport.update({
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RajahmundryRoute = RajahmundryRouteImport.update({
+  id: '/rajahmundry',
+  path: '/rajahmundry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KakinadaRoute = KakinadaRouteImport.update({
+  id: '/kakinada',
+  path: '/kakinada',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HyderabadRoute = HyderabadRouteImport.update({
+  id: '/hyderabad',
+  path: '/hyderabad',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -85,6 +120,16 @@ const IndexRoute = IndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesSlugRoute = ServicesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const RobotsTxtRoute = RobotsTxtRouteImport.update({
+  id: '/robots/txt',
+  path: '/robots/txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSignCloudinaryRoute = ApiSignCloudinaryRouteImport.update({
@@ -122,9 +167,19 @@ const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
   path: '/admin/enquiries',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCityPagesRoute = AdminCityPagesRouteImport.update({
+  id: '/admin/city-pages',
+  path: '/admin/city-pages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminSettingsIndexRoute = AdminSettingsIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminSettingsTrustRoute = AdminSettingsTrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
 const AdminSettingsSocialRoute = AdminSettingsSocialRouteImport.update({
@@ -135,6 +190,11 @@ const AdminSettingsSocialRoute = AdminSettingsSocialRouteImport.update({
 const AdminSettingsSeoRoute = AdminSettingsSeoRouteImport.update({
   id: '/seo',
   path: '/seo',
+  getParentRoute: () => AdminSettingsRoute,
+} as any)
+const AdminSettingsPopupRoute = AdminSettingsPopupRouteImport.update({
+  id: '/popup',
+  path: '/popup',
   getParentRoute: () => AdminSettingsRoute,
 } as any)
 const AdminSettingsHomeRoute = AdminSettingsHomeRouteImport.update({
@@ -179,10 +239,16 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/enquiry': typeof EnquiryRoute
   '/gallery': typeof GalleryRoute
-  '/services': typeof ServicesRoute
+  '/hyderabad': typeof HyderabadRoute
+  '/kakinada': typeof KakinadaRoute
+  '/rajahmundry': typeof RajahmundryRoute
+  '/services': typeof ServicesRouteWithChildren
   '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
+  '/vijayawada': typeof VijayawadaRoute
+  '/visakhapatnam': typeof VisakhapatnamRoute
+  '/admin/city-pages': typeof AdminCityPagesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/services': typeof AdminServicesRoute
@@ -190,6 +256,8 @@ export interface FileRoutesByFullPath {
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/videos': typeof AdminVideosRoute
   '/api/sign-cloudinary': typeof ApiSignCloudinaryRoute
+  '/robots/txt': typeof RobotsTxtRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/settings/about': typeof AdminSettingsAboutRoute
   '/admin/settings/analytics': typeof AdminSettingsAnalyticsRoute
@@ -198,8 +266,10 @@ export interface FileRoutesByFullPath {
   '/admin/settings/footer': typeof AdminSettingsFooterRoute
   '/admin/settings/hero': typeof AdminSettingsHeroRoute
   '/admin/settings/home': typeof AdminSettingsHomeRoute
+  '/admin/settings/popup': typeof AdminSettingsPopupRoute
   '/admin/settings/seo': typeof AdminSettingsSeoRoute
   '/admin/settings/social': typeof AdminSettingsSocialRoute
+  '/admin/settings/trust': typeof AdminSettingsTrustRoute
   '/admin/settings/': typeof AdminSettingsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -208,16 +278,24 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/enquiry': typeof EnquiryRoute
   '/gallery': typeof GalleryRoute
-  '/services': typeof ServicesRoute
+  '/hyderabad': typeof HyderabadRoute
+  '/kakinada': typeof KakinadaRoute
+  '/rajahmundry': typeof RajahmundryRoute
+  '/services': typeof ServicesRouteWithChildren
   '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
+  '/vijayawada': typeof VijayawadaRoute
+  '/visakhapatnam': typeof VisakhapatnamRoute
+  '/admin/city-pages': typeof AdminCityPagesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/services': typeof AdminServicesRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/videos': typeof AdminVideosRoute
   '/api/sign-cloudinary': typeof ApiSignCloudinaryRoute
+  '/robots/txt': typeof RobotsTxtRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/admin': typeof AdminIndexRoute
   '/admin/settings/about': typeof AdminSettingsAboutRoute
   '/admin/settings/analytics': typeof AdminSettingsAnalyticsRoute
@@ -226,8 +304,10 @@ export interface FileRoutesByTo {
   '/admin/settings/footer': typeof AdminSettingsFooterRoute
   '/admin/settings/hero': typeof AdminSettingsHeroRoute
   '/admin/settings/home': typeof AdminSettingsHomeRoute
+  '/admin/settings/popup': typeof AdminSettingsPopupRoute
   '/admin/settings/seo': typeof AdminSettingsSeoRoute
   '/admin/settings/social': typeof AdminSettingsSocialRoute
+  '/admin/settings/trust': typeof AdminSettingsTrustRoute
   '/admin/settings': typeof AdminSettingsIndexRoute
 }
 export interface FileRoutesById {
@@ -237,10 +317,16 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/enquiry': typeof EnquiryRoute
   '/gallery': typeof GalleryRoute
-  '/services': typeof ServicesRoute
+  '/hyderabad': typeof HyderabadRoute
+  '/kakinada': typeof KakinadaRoute
+  '/rajahmundry': typeof RajahmundryRoute
+  '/services': typeof ServicesRouteWithChildren
   '/signin': typeof SigninRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
+  '/vijayawada': typeof VijayawadaRoute
+  '/visakhapatnam': typeof VisakhapatnamRoute
+  '/admin/city-pages': typeof AdminCityPagesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/services': typeof AdminServicesRoute
@@ -248,6 +334,8 @@ export interface FileRoutesById {
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/admin/videos': typeof AdminVideosRoute
   '/api/sign-cloudinary': typeof ApiSignCloudinaryRoute
+  '/robots/txt': typeof RobotsTxtRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/settings/about': typeof AdminSettingsAboutRoute
   '/admin/settings/analytics': typeof AdminSettingsAnalyticsRoute
@@ -256,8 +344,10 @@ export interface FileRoutesById {
   '/admin/settings/footer': typeof AdminSettingsFooterRoute
   '/admin/settings/hero': typeof AdminSettingsHeroRoute
   '/admin/settings/home': typeof AdminSettingsHomeRoute
+  '/admin/settings/popup': typeof AdminSettingsPopupRoute
   '/admin/settings/seo': typeof AdminSettingsSeoRoute
   '/admin/settings/social': typeof AdminSettingsSocialRoute
+  '/admin/settings/trust': typeof AdminSettingsTrustRoute
   '/admin/settings/': typeof AdminSettingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -268,10 +358,16 @@ export interface FileRouteTypes {
     | '/contact'
     | '/enquiry'
     | '/gallery'
+    | '/hyderabad'
+    | '/kakinada'
+    | '/rajahmundry'
     | '/services'
     | '/signin'
     | '/sitemap.xml'
     | '/videos'
+    | '/vijayawada'
+    | '/visakhapatnam'
+    | '/admin/city-pages'
     | '/admin/enquiries'
     | '/admin/gallery'
     | '/admin/services'
@@ -279,6 +375,8 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/admin/videos'
     | '/api/sign-cloudinary'
+    | '/robots/txt'
+    | '/services/$slug'
     | '/admin/'
     | '/admin/settings/about'
     | '/admin/settings/analytics'
@@ -287,8 +385,10 @@ export interface FileRouteTypes {
     | '/admin/settings/footer'
     | '/admin/settings/hero'
     | '/admin/settings/home'
+    | '/admin/settings/popup'
     | '/admin/settings/seo'
     | '/admin/settings/social'
+    | '/admin/settings/trust'
     | '/admin/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -297,16 +397,24 @@ export interface FileRouteTypes {
     | '/contact'
     | '/enquiry'
     | '/gallery'
+    | '/hyderabad'
+    | '/kakinada'
+    | '/rajahmundry'
     | '/services'
     | '/signin'
     | '/sitemap.xml'
     | '/videos'
+    | '/vijayawada'
+    | '/visakhapatnam'
+    | '/admin/city-pages'
     | '/admin/enquiries'
     | '/admin/gallery'
     | '/admin/services'
     | '/admin/testimonials'
     | '/admin/videos'
     | '/api/sign-cloudinary'
+    | '/robots/txt'
+    | '/services/$slug'
     | '/admin'
     | '/admin/settings/about'
     | '/admin/settings/analytics'
@@ -315,8 +423,10 @@ export interface FileRouteTypes {
     | '/admin/settings/footer'
     | '/admin/settings/hero'
     | '/admin/settings/home'
+    | '/admin/settings/popup'
     | '/admin/settings/seo'
     | '/admin/settings/social'
+    | '/admin/settings/trust'
     | '/admin/settings'
   id:
     | '__root__'
@@ -325,10 +435,16 @@ export interface FileRouteTypes {
     | '/contact'
     | '/enquiry'
     | '/gallery'
+    | '/hyderabad'
+    | '/kakinada'
+    | '/rajahmundry'
     | '/services'
     | '/signin'
     | '/sitemap.xml'
     | '/videos'
+    | '/vijayawada'
+    | '/visakhapatnam'
+    | '/admin/city-pages'
     | '/admin/enquiries'
     | '/admin/gallery'
     | '/admin/services'
@@ -336,6 +452,8 @@ export interface FileRouteTypes {
     | '/admin/testimonials'
     | '/admin/videos'
     | '/api/sign-cloudinary'
+    | '/robots/txt'
+    | '/services/$slug'
     | '/admin/'
     | '/admin/settings/about'
     | '/admin/settings/analytics'
@@ -344,8 +462,10 @@ export interface FileRouteTypes {
     | '/admin/settings/footer'
     | '/admin/settings/hero'
     | '/admin/settings/home'
+    | '/admin/settings/popup'
     | '/admin/settings/seo'
     | '/admin/settings/social'
+    | '/admin/settings/trust'
     | '/admin/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -355,10 +475,16 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   EnquiryRoute: typeof EnquiryRoute
   GalleryRoute: typeof GalleryRoute
-  ServicesRoute: typeof ServicesRoute
+  HyderabadRoute: typeof HyderabadRoute
+  KakinadaRoute: typeof KakinadaRoute
+  RajahmundryRoute: typeof RajahmundryRoute
+  ServicesRoute: typeof ServicesRouteWithChildren
   SigninRoute: typeof SigninRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VideosRoute: typeof VideosRoute
+  VijayawadaRoute: typeof VijayawadaRoute
+  VisakhapatnamRoute: typeof VisakhapatnamRoute
+  AdminCityPagesRoute: typeof AdminCityPagesRoute
   AdminEnquiriesRoute: typeof AdminEnquiriesRoute
   AdminGalleryRoute: typeof AdminGalleryRoute
   AdminServicesRoute: typeof AdminServicesRoute
@@ -366,11 +492,26 @@ export interface RootRouteChildren {
   AdminTestimonialsRoute: typeof AdminTestimonialsRoute
   AdminVideosRoute: typeof AdminVideosRoute
   ApiSignCloudinaryRoute: typeof ApiSignCloudinaryRoute
+  RobotsTxtRoute: typeof RobotsTxtRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/visakhapatnam': {
+      id: '/visakhapatnam'
+      path: '/visakhapatnam'
+      fullPath: '/visakhapatnam'
+      preLoaderRoute: typeof VisakhapatnamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vijayawada': {
+      id: '/vijayawada'
+      path: '/vijayawada'
+      fullPath: '/vijayawada'
+      preLoaderRoute: typeof VijayawadaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/videos': {
       id: '/videos'
       path: '/videos'
@@ -397,6 +538,27 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rajahmundry': {
+      id: '/rajahmundry'
+      path: '/rajahmundry'
+      fullPath: '/rajahmundry'
+      preLoaderRoute: typeof RajahmundryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kakinada': {
+      id: '/kakinada'
+      path: '/kakinada'
+      fullPath: '/kakinada'
+      preLoaderRoute: typeof KakinadaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hyderabad': {
+      id: '/hyderabad'
+      path: '/hyderabad'
+      fullPath: '/hyderabad'
+      preLoaderRoute: typeof HyderabadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -439,6 +601,20 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/$slug': {
+      id: '/services/$slug'
+      path: '/$slug'
+      fullPath: '/services/$slug'
+      preLoaderRoute: typeof ServicesSlugRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/robots/txt': {
+      id: '/robots/txt'
+      path: '/robots/txt'
+      fullPath: '/robots/txt'
+      preLoaderRoute: typeof RobotsTxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/sign-cloudinary': {
@@ -490,11 +666,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEnquiriesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/city-pages': {
+      id: '/admin/city-pages'
+      path: '/admin/city-pages'
+      fullPath: '/admin/city-pages'
+      preLoaderRoute: typeof AdminCityPagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/settings/': {
       id: '/admin/settings/'
       path: '/'
       fullPath: '/admin/settings/'
       preLoaderRoute: typeof AdminSettingsIndexRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/admin/settings/trust': {
+      id: '/admin/settings/trust'
+      path: '/trust'
+      fullPath: '/admin/settings/trust'
+      preLoaderRoute: typeof AdminSettingsTrustRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
     '/admin/settings/social': {
@@ -509,6 +699,13 @@ declare module '@tanstack/react-router' {
       path: '/seo'
       fullPath: '/admin/settings/seo'
       preLoaderRoute: typeof AdminSettingsSeoRouteImport
+      parentRoute: typeof AdminSettingsRoute
+    }
+    '/admin/settings/popup': {
+      id: '/admin/settings/popup'
+      path: '/popup'
+      fullPath: '/admin/settings/popup'
+      preLoaderRoute: typeof AdminSettingsPopupRouteImport
       parentRoute: typeof AdminSettingsRoute
     }
     '/admin/settings/home': {
@@ -563,6 +760,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ServicesRouteChildren {
+  ServicesSlugRoute: typeof ServicesSlugRoute
+}
+
+const ServicesRouteChildren: ServicesRouteChildren = {
+  ServicesSlugRoute: ServicesSlugRoute,
+}
+
+const ServicesRouteWithChildren = ServicesRoute._addFileChildren(
+  ServicesRouteChildren,
+)
+
 interface AdminSettingsRouteChildren {
   AdminSettingsAboutRoute: typeof AdminSettingsAboutRoute
   AdminSettingsAnalyticsRoute: typeof AdminSettingsAnalyticsRoute
@@ -571,8 +780,10 @@ interface AdminSettingsRouteChildren {
   AdminSettingsFooterRoute: typeof AdminSettingsFooterRoute
   AdminSettingsHeroRoute: typeof AdminSettingsHeroRoute
   AdminSettingsHomeRoute: typeof AdminSettingsHomeRoute
+  AdminSettingsPopupRoute: typeof AdminSettingsPopupRoute
   AdminSettingsSeoRoute: typeof AdminSettingsSeoRoute
   AdminSettingsSocialRoute: typeof AdminSettingsSocialRoute
+  AdminSettingsTrustRoute: typeof AdminSettingsTrustRoute
   AdminSettingsIndexRoute: typeof AdminSettingsIndexRoute
 }
 
@@ -584,8 +795,10 @@ const AdminSettingsRouteChildren: AdminSettingsRouteChildren = {
   AdminSettingsFooterRoute: AdminSettingsFooterRoute,
   AdminSettingsHeroRoute: AdminSettingsHeroRoute,
   AdminSettingsHomeRoute: AdminSettingsHomeRoute,
+  AdminSettingsPopupRoute: AdminSettingsPopupRoute,
   AdminSettingsSeoRoute: AdminSettingsSeoRoute,
   AdminSettingsSocialRoute: AdminSettingsSocialRoute,
+  AdminSettingsTrustRoute: AdminSettingsTrustRoute,
   AdminSettingsIndexRoute: AdminSettingsIndexRoute,
 }
 
@@ -599,10 +812,16 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   EnquiryRoute: EnquiryRoute,
   GalleryRoute: GalleryRoute,
-  ServicesRoute: ServicesRoute,
+  HyderabadRoute: HyderabadRoute,
+  KakinadaRoute: KakinadaRoute,
+  RajahmundryRoute: RajahmundryRoute,
+  ServicesRoute: ServicesRouteWithChildren,
   SigninRoute: SigninRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VideosRoute: VideosRoute,
+  VijayawadaRoute: VijayawadaRoute,
+  VisakhapatnamRoute: VisakhapatnamRoute,
+  AdminCityPagesRoute: AdminCityPagesRoute,
   AdminEnquiriesRoute: AdminEnquiriesRoute,
   AdminGalleryRoute: AdminGalleryRoute,
   AdminServicesRoute: AdminServicesRoute,
@@ -610,6 +829,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminTestimonialsRoute: AdminTestimonialsRoute,
   AdminVideosRoute: AdminVideosRoute,
   ApiSignCloudinaryRoute: ApiSignCloudinaryRoute,
+  RobotsTxtRoute: RobotsTxtRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
