@@ -328,16 +328,11 @@ export function seoPageDocRef(key: string): DocumentReference<Omit<SeoPage, "id"
   return doc(db, SEO_PAGES_KEY, key);
 }
 
-// GA Settings
-const GA_KEY = "ga_settings";
-
+// GA Settings — reads from the unified settings/all document
 export async function getGaId(): Promise<string> {
-  const snap = await getDoc(doc(db, GA_KEY, "singleton"));
-  return (snap.data() as { ga_measurement_id?: string } | undefined)?.ga_measurement_id ?? "";
-}
-
-export async function saveGaId(id: string): Promise<void> {
-  await setDoc(doc(db, GA_KEY, "singleton"), { ga_measurement_id: id }, { merge: true });
+  const snap = await getDoc(doc(db, "settings", "all"));
+  const data = snap.data() as { ga?: { measurement_id?: string } } | undefined;
+  return data?.ga?.measurement_id ?? "";
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════

@@ -64,7 +64,7 @@ function HomePage() {
   const wa = contact?.whatsapp ? contact.whatsapp.replace(/\D/g, "") : "";
 
   const stats =
-    about?.happy_customers || about?.years_experience || about?.cities_covered
+    about?.happy_customers || about?.years_experience || about?.successful_shifts || about?.service_locations
       ? ([
           about?.happy_customers
             ? { value: about.happy_customers, label: "Happy Customers" }
@@ -72,7 +72,12 @@ function HomePage() {
           about?.years_experience
             ? { value: about.years_experience, label: "Years Experience" }
             : null,
-          about?.cities_covered ? { value: about.cities_covered, label: "Cities Served" } : null,
+          about?.successful_shifts
+            ? { value: about.successful_shifts, label: "Successful Shifts" }
+            : null,
+          about?.service_locations
+            ? { value: about.service_locations, label: "Service Locations" }
+            : null,
         ].filter(Boolean) as { value: string; label: string }[])
       : [];
 
@@ -119,7 +124,7 @@ function HomePage() {
           <div className="mt-8 flex flex-wrap gap-3">
             {(hero?.cta as string) !== "" && (
               <Button asChild size="lg" variant="hero" className="h-12 px-7 text-base">
-                <Link to="/enquiry">
+                <Link to="/enquiry" search={{ service: undefined }}>
                   {hero.cta as string} <ArrowRight />
                 </Link>
               </Button>
@@ -150,7 +155,7 @@ function HomePage() {
       {/* STATS */}
       {stats.length > 0 && (
         <section className="bg-secondary text-secondary-foreground">
-          <div className="container mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="container mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((st) => (
               <div
                 key={st.label}
@@ -166,40 +171,37 @@ function HomePage() {
       )}
 
       {/* TRUST & COVERAGE */}
-      <section className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl md:text-3xl font-extrabold">
-            Trusted Packers & Movers — Insured & Verified
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            SS Packers & Movers Mini Transport provides insured handling, professional packing
-            materials and experienced teams for household, office and vehicle shifting. We
-            prioritise safety, timeliness and transparent pricing.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 mt-6">
-            <div className="rounded-lg border border-border bg-card p-4 text-sm">
-              Insured Transit
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4 text-sm">
-              Professional Packing
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4 text-sm">
-              Door-to-door Service
-            </div>
-            <div className="rounded-lg border border-border bg-card p-4 text-sm">
-              Transparent Quotes
-            </div>
+      {s.trust?.is_active && (
+        <section className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-center">
+            {s.trust?.coverage_title && (
+              <h2 className="text-2xl md:text-3xl font-extrabold">{s.trust.coverage_title}</h2>
+            )}
+            {s.trust?.coverage_description && (
+              <p className="mt-3 text-muted-foreground">{s.trust.coverage_description}</p>
+            )}
+            {s.trust?.coverage_items && (
+              <div className="flex flex-wrap justify-center gap-4 mt-6">
+                {s.trust.coverage_items.split(",").map((item) => (
+                  <div key={item.trim()} className="rounded-lg border border-border bg-card p-4 text-sm">
+                    {item.trim()}
+                  </div>
+                ))}
+              </div>
+            )}
+            {about?.happy_customers && about?.service_locations && (
+              <div className="mt-6 space-y-1">
+                <div className="text-lg font-semibold text-primary">
+                  {about.happy_customers} Happy Customers • {about.service_locations} Locations
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Available for immediate quotes and emergency mini transport.
+                </div>
+              </div>
+            )}
           </div>
-          <div className="mt-6">
-            <a href="tel:+919652146555" className="text-lg font-semibold text-primary">
-              Call Now: +91 9652146555
-            </a>
-            <div className="text-sm text-muted-foreground mt-1">
-              Available for immediate quotes and emergency mini transport.
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* WHY US */}
       {whyUsSection?.items?.length > 0 && (
@@ -243,10 +245,10 @@ function HomePage() {
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
               <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
-                Our Services
+                {s.section_titles?.services_eyebrow || "Our Services"}
               </div>
               <h2 className="text-3xl md:text-5xl font-extrabold text-balance">
-                End-to-end relocation services
+                {s.section_titles?.services_title || "End-to-end relocation services"}
               </h2>
             </div>
             <div
@@ -329,10 +331,10 @@ function HomePage() {
         <section className="container mx-auto px-4 pb-20 md:pb-28">
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
-              Gallery
+              {s.section_titles?.gallery_eyebrow || "Gallery"}
             </div>
             <h2 className="text-3xl md:text-5xl font-extrabold text-balance">
-              Inside our daily operations
+              {s.section_titles?.gallery_title || "Inside our daily operations"}
             </h2>
           </div>
           <div
@@ -383,10 +385,10 @@ function HomePage() {
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
               <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">
-                Testimonials
+                {s.section_titles?.testimonials_eyebrow || "Testimonials"}
               </div>
               <h2 className="text-3xl md:text-5xl font-extrabold text-balance">
-                What our customers say
+                {s.section_titles?.testimonials_title || "What our customers say"}
               </h2>
             </div>
             <div

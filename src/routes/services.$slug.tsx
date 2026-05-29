@@ -73,7 +73,7 @@ function ServicePage({ loaderData }: any) {
           dangerouslySetInnerHTML={{ __html: svc.description }}
         />
         <div className="mt-6">
-          <Link to="/enquiry" className="text-primary font-semibold">
+          <Link to="/enquiry" search={{ service: svc.title }} className="text-primary font-semibold">
             Enquire about this service
           </Link>
         </div>

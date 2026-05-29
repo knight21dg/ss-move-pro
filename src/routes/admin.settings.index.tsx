@@ -9,6 +9,8 @@ import {
   Megaphone,
   FileText,
   BarChart3,
+  ShieldCheck,
+  MapPin,
 } from "lucide-react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 
@@ -74,6 +76,18 @@ const cards = [
     label: "Analytics",
     description: "Google Analytics measurement ID.",
     icon: BarChart3,
+  },
+  {
+    to: "/admin/settings/trust",
+    label: "Trust Ribbon",
+    description: "Stats ribbon: customers, experience, shifts & locations.",
+    icon: ShieldCheck,
+  },
+  {
+    to: "/admin/city-pages",
+    label: "City Pages",
+    description: "Manage city-specific service pages and SEO metadata.",
+    icon: MapPin,
   },
 ];
 

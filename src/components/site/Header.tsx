@@ -47,7 +47,7 @@ export function Header() {
             </a>
           )}
           <Button asChild variant="brand" size="lg">
-            <Link to="/enquiry">Get Free Quote</Link>
+            <Link to="/enquiry" search={{ service: undefined }}>Get Free Quote</Link>
           </Button>
         </div>
         <button className="lg:hidden p-2" onClick={() => setOpen(!open)} aria-label="Menu">
@@ -68,7 +68,7 @@ export function Header() {
               </Link>
             ))}
             <Button asChild variant="brand" className="mt-2">
-              <Link to="/enquiry" onClick={() => setOpen(false)}>Get Free Quote</Link>
+              <Link to="/enquiry" search={{ service: undefined }} onClick={() => setOpen(false)}>Get Free Quote</Link>
             </Button>
           </div>
         </div>

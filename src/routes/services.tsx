@@ -83,6 +83,7 @@ function ServicesPage() {
                   </div>
                   <Link
                     to="/enquiry"
+                    search={{ service: s.title }}
                     className="text-sm font-semibold text-primary inline-flex items-center gap-1 group-hover:gap-2 transition-all"
                   >
                     Enquire <ArrowRight className="h-4 w-4" />
@@ -100,7 +101,7 @@ function ServicesPage() {
             Tell us your move details and we'll recommend the best plan.
           </p>
           <Button asChild variant="hero" size="lg" className="mt-7 h-12 px-8">
-            <Link to="/enquiry">Get Free Consultation</Link>
+            <Link to="/enquiry" search={{ service: undefined }}>Get Free Consultation</Link>
           </Button>
         </div>
       </section>

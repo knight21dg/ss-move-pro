@@ -56,6 +56,21 @@ export type Testimonial = {
   is_active: boolean;
 };
 
+export type CityPage = {
+  id: string;
+  name: string;
+  slug: string;
+  state: string;
+  hero_title: string;
+  hero_subtitle: string;
+  body: string;
+  meta_title: string;
+  meta_description: string;
+  hero_image: string;
+  sort_order: number;
+  is_active: boolean;
+};
+
 export type WhyUsItem = {
   id: string;
   title: string;
@@ -76,19 +91,40 @@ export type FaqItem = {
   sort_order: number;
 };
 
+export type TeamMember = {
+  id: string;
+  name: string;
+  role: string;
+  image_url: string;
+  bio: string;
+  vehicles: string;
+  sort_order: number;
+};
+
 export interface AboutSettings {
   heading: string;
   body: string;
+  hero_subtitle: string;
   years_experience: string;
   happy_customers: string;
+  successful_shifts: string;
   cities_covered: string;
+  service_locations: string;
   branches: string;
+  commitment_eyebrow: string;
+  commitment_title: string;
+  commitment_description: string;
+  team_eyebrow: string;
+  team_title: string;
+  team_show: boolean;
+  team_members: TeamMember[];
 }
 export interface ContactSettings {
   phone: string;
   whatsapp: string;
   email: string;
   address: string;
+  gstin: string;
   whatsapp_enquiry_message: string;
 }
 export interface SocialSettings {
@@ -106,6 +142,27 @@ export interface CtaSettings {
 export interface FooterSettings {
   description: string;
   quick_links: string;
+  services: string;
+}
+
+export interface TrustSettings {
+  happy_customers: string;
+  years_experience: string;
+  successful_shifts: string;
+  service_locations: string;
+  is_active: boolean;
+  coverage_title: string;
+  coverage_description: string;
+  coverage_items: string;
+}
+
+export interface SectionTitles {
+  services_eyebrow: string;
+  services_title: string;
+  gallery_eyebrow: string;
+  gallery_title: string;
+  testimonials_eyebrow: string;
+  testimonials_title: string;
 }
 export interface HeroImages {
   home: string;
@@ -160,6 +217,8 @@ export type SiteSettings = {
   footer: FooterSettings;
   seo: SeoSettings;
   popup: PopupSettings;
+  trust: TrustSettings;
+  section_titles: SectionTitles;
 };
 
 export type Enquiry = {
@@ -173,6 +232,7 @@ export type Enquiry = {
   moving_date: string | null;
   status: string;
   admin_notes: string | null;
+  image_urls: string[];
   created_at: string;
 };
 
@@ -196,6 +256,8 @@ export type AppDoc = {
   };
   ga: { measurement_id: string };
   popup: PopupSettings;
+  trust: TrustSettings;
+  section_titles: SectionTitles;
   updated_at: string;
 };
 
@@ -259,6 +321,18 @@ export function testimonialsQueryOptions(activeOnly = true) {
 
 export function useTestimonials(activeOnly = true) {
   return useQuery(testimonialsQueryOptions(activeOnly));
+}
+
+export function citiesQueryOptions(activeOnly = true) {
+  return queryOptions({
+    queryKey: ["city_pages", activeOnly],
+    queryFn: () => fetchDocs<CityPage>(collection(db, "city_pages"), activeOnly),
+    staleTime: 600_000,
+  });
+}
+
+export function useCities(activeOnly = true) {
+  return useQuery(citiesQueryOptions(activeOnly));
 }
 
 // ─── Settings queries ─────────────────────────────────────────────────────────
@@ -388,6 +462,8 @@ export function settingsQueryOptions() {
         popup: s.popup ?? { image_url: "", link_url: "", is_active: false },
         footer: footerData,
         seo: { default: seoDefault, pages },
+        trust: (s.trust ?? EMPTY_SETTINGS.trust) as TrustSettings,
+        section_titles: (s.section_titles ?? EMPTY_SETTINGS.section_titles) as SectionTitles,
       };
     },
     staleTime: 600_000,
@@ -474,11 +550,11 @@ We promise punctual arrival, careful handling, accurate inventory management and
 
 Coverage & availability
 
-We serve both local and inter-city routes across Andhra Pradesh, Telangana and major metros. Whether its a short intra-city move or a cross-state relocation, we match vehicle capacity and crew size to your needs to keep costs efficient.
+We serve both local and inter-city routes across Andhra Pradesh, Telangana and major metros. Whether it's a short intra-city move or a cross-state relocation, we match vehicle capacity and crew size to your needs to keep costs efficient.
 
 How to get started
 
-Contact us via phone, WhatsApp or the online enquiry form with your moving details — origin, destination, preferred date and a rough inventory. Well provide a quick estimate and, when necessary, a site visit to finalise an accurate quotation.
+Contact us via phone, WhatsApp or the online enquiry form with your moving details — origin, destination, preferred date and a rough inventory. We'll provide a quick estimate and, when necessary, a site visit to finalise an accurate quotation.
 
 Customer testimonials & trust signals
 
@@ -490,23 +566,36 @@ We adhere to local transport regulations and maintain necessary permits for inte
 
 Why we focus on quality over volume
 
-Every move is unique — and weve found that a steady focus on processes, training and materials yields better customer outcomes than trying to move more jobs with fewer resources. We invest in people and training so each move meets our care-first standards.
+Every move is unique — and we've found that a steady focus on processes, training and materials yields better customer outcomes than trying to move more jobs with fewer resources. We invest in people and training so each move meets our care-first standards.
 
 Call to action
 
-If youre planning a move, call us on +91 9652146555 or use the online enquiry form. Well provide a clear, no-obligation estimate and recommend the right vehicle and crew for your needs.
+If you're planning a move, call us on +91 9652146555 or use the online enquiry form. We'll provide a clear, no-obligation estimate and recommend the right vehicle and crew for your needs.
 
 — SS Packers & Movers Mini Transport`,
+    hero_subtitle:
+      "Kakinada's most trusted relocation company — serving households, businesses, and vehicles with care since 2014.",
     years_experience: "10+",
     happy_customers: "5000+",
+    successful_shifts: "50000+",
     cities_covered: "10+",
+    service_locations: "100+",
     branches: "3",
+    commitment_eyebrow: "Our Commitment",
+    commitment_title: "What we promise every customer",
+    commitment_description:
+      "We combine trained teams, transparent quotes and insured transit to give you confidence on moving day.",
+    team_eyebrow: "Our Team",
+    team_title: "Meet the people behind your move",
+    team_show: false,
+    team_members: [],
   },
   contact: {
     phone: "+91 9652146555",
     whatsapp: "+91 7799946555",
     email: "",
     address: "",
+    gstin: "37ADRFS6309Z1LB",
     whatsapp_enquiry_message: "",
   },
   social: { facebook: "", instagram: "", youtube: "" },
@@ -520,6 +609,7 @@ If youre planning a move, call us on +91 9652146555 or use the online enquiry f
   footer: {
     description: "",
     quick_links: "Home, Services, About, Contact, Gallery, Videos, Enquiry",
+    services: "",
   },
   seo: {
     default: {
@@ -533,4 +623,23 @@ If youre planning a move, call us on +91 9652146555 or use the online enquiry f
     pages: {},
   },
   popup: { image_url: "", link_url: "", is_active: false },
+  trust: {
+    happy_customers: "5000+",
+    years_experience: "10+",
+    successful_shifts: "50000+",
+    service_locations: "100+",
+    is_active: true,
+    coverage_title: "Trusted Packers & Movers — Insured & Verified",
+    coverage_description:
+      "SS Packers & Movers Mini Transport provides insured handling, professional packing materials and experienced teams for household, office and vehicle shifting. We prioritise safety, timeliness and transparent pricing.",
+    coverage_items: "Insured Transit, Professional Packing, Door-to-door Service, Transparent Quotes",
+  },
+  section_titles: {
+    services_eyebrow: "Our Services",
+    services_title: "End-to-end relocation services",
+    gallery_eyebrow: "Gallery",
+    gallery_title: "Inside our daily operations",
+    testimonials_eyebrow: "Testimonials",
+    testimonials_title: "What our customers say",
+  },
 };

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useRouterState } from "@tanstack/react-router";
-import { useSettings, type SeoFields, useServices } from "@/hooks/use-cms";
+import { useSettings, type SeoFields, useServices, useCities } from "@/hooks/use-cms";
 
 const PAGE_KEYS = ["home", "about", "services", "gallery", "videos", "enquiry", "contact"] as const;
 
@@ -10,10 +10,7 @@ function setMeta(tag: { name?: string; property?: string; content: string }) {
   if (typeof document === "undefined") return;
   const selector = tag.name ? `meta[name="${tag.name}"]` : `meta[property="${tag.property}"]`;
   const existing = document.head.querySelector(selector) as HTMLMetaElement | null;
-  if (existing) {
-    existing.setAttribute("content", tag.content);
-    return;
-  }
+  if (existing) { existing.setAttribute("content", tag.content); return; }
   const meta = document.createElement("meta");
   if (tag.name) meta.setAttribute("name", tag.name);
   if (tag.property) meta.setAttribute("property", tag.property);
@@ -25,13 +22,9 @@ function setLink(rel: string, href: string) {
   if (typeof document === "undefined") return;
   const selector = `link[rel="${rel}"]`;
   const existing = document.head.querySelector(selector) as HTMLLinkElement | null;
-  if (existing) {
-    existing.href = href;
-    return;
-  }
+  if (existing) { existing.href = href; return; }
   const link = document.createElement("link");
-  link.rel = rel;
-  link.href = href;
+  link.rel = rel; link.href = href;
   document.head.appendChild(link);
 }
 
@@ -41,8 +34,7 @@ function setLdJson(id: string, obj: any | null) {
   if (existing) existing.remove();
   if (!obj) return;
   const s = document.createElement("script");
-  s.type = "application/ld+json";
-  s.id = id;
+  s.type = "application/ld+json"; s.id = id;
   s.text = JSON.stringify(obj);
   document.head.appendChild(s);
 }
@@ -54,15 +46,30 @@ function buildSeo(defaults: SeoFields, page?: Partial<SeoFields>) {
 export function DynamicSeo() {
   const { data: s } = useSettings();
   const { data: services = [] } = useServices(false);
+  const { data: cities = [] } = useCities(true);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const seo = s?.seo ?? null;
 
   const tags = useMemo(() => {
     if (!seo || pathname.startsWith("/admin")) return null;
+
     const key = srcIncludes(PAGE_KEYS, pathname.slice(1)) ? pathname.slice(1) : null;
-    const pageSeo = key ? (seo.pages?.[key] ?? undefined) : undefined;
-    return buildSeo(seo.default ?? ({} as SeoFields), pageSeo);
-  }, [pathname, seo]);
+    if (key) {
+      const pageSeo = seo.pages?.[key] ?? undefined;
+      return buildSeo(seo.default ?? ({} as SeoFields), pageSeo);
+    }
+
+    const citySlug = pathname.slice(1);
+    const city = cities.find((c) => c.slug === citySlug);
+    if (city) {
+      return buildSeo(seo.default ?? ({} as SeoFields), {
+        title: city.meta_title || city.name,
+        description: city.meta_description || city.hero_subtitle,
+      });
+    }
+
+    return null;
+  }, [pathname, seo, cities]);
 
   useEffect(() => {
     if (!tags) return;
@@ -76,28 +83,34 @@ export function DynamicSeo() {
     setMeta({ name: "twitter:description", content: tags.description });
     setMeta({ name: "twitter:image", content: tags.og_image });
 
-    // canonical
     try {
       const canonical = `${window.location.origin}${pathname}`;
       setLink("canonical", canonical);
     } catch (e) {}
 
-    // robots
     setMeta({ name: "robots", content: "index,follow" });
 
-    // LocalBusiness structured data
+    const citySlug = pathname.slice(1);
+    const city = cities.find((c) => c.slug === citySlug);
+
     const localBusiness: any = {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
-      name: (s?.seo?.default?.title as string) || tags.title,
+      name: city ? `SS Packers & Movers - ${city.name}` : (s?.seo?.default?.title as string) || tags.title,
       description: tags.description,
       telephone: s?.contact?.phone || undefined,
       image: tags.og_image || undefined,
       url: typeof window !== "undefined" ? window.location.origin : undefined,
+      ...(city ? {
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: city.name,
+          addressRegion: city.state,
+        },
+      } : {}),
     };
     setLdJson("ld-json-localbusiness", localBusiness);
 
-    // FAQ structured data on home
     if (pathname === "/" && s?.home_faqs?.items?.length) {
       const faqs = s.home_faqs.items.map((f: any) => ({
         "@type": "Question",
@@ -113,16 +126,12 @@ export function DynamicSeo() {
       setLdJson("ld-json-faq", null);
     }
 
-    // Services structured data on services page
     if (pathname.startsWith("/services") && services.length) {
       const svc = {
         "@context": "https://schema.org",
         "@type": "Service",
         name: s?.seo?.default?.title ?? undefined,
-        serviceType: services
-          .map((sv: any) => sv.title)
-          .slice(0, 10)
-          .join(", "),
+        serviceType: services.map((sv: any) => sv.title).slice(0, 10).join(", "),
       };
       setLdJson("ld-json-services", svc);
     } else {

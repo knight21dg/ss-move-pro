@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { toast } from "sonner";
-import type { SiteSettings, AppDoc } from "@/hooks/use-cms";
+import type { SiteSettings, AppDoc, TrustSettings, SectionTitles } from "@/hooks/use-cms";
 import { EMPTY_SETTINGS } from "@/hooks/use-cms";
 
 // ─ ALL home item types ─────────────────────────────────────────────────────────
@@ -144,6 +144,8 @@ function fromDoc(d: AppDoc): SiteSettings {
       link_url: s.popup?.link_url ?? "",
       is_active: !!s.popup?.is_active,
     },
+    trust: (s.trust ?? EMPTY_SETTINGS.trust) as TrustSettings,
+    section_titles: (s.section_titles ?? EMPTY_SETTINGS.section_titles) as SectionTitles,
   };
 }
 
@@ -237,6 +239,8 @@ export function useSettingsForm() {
         cta: { ...form.cta },
         footer: { ...form.footer },
         popup: { ...form.popup },
+        trust: { ...form.trust },
+        section_titles: { ...form.section_titles },
         seo_default: seoDefaultPatch,
         ga: { measurement_id: (fd?.ga as any)?.measurement_id ?? "" },
         updated_at: writeTimestamp(),

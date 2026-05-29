@@ -1,9 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Mail, MapPin, Phone, Youtube } from "lucide-react";
 import logo from "@/assets/logo.png";
-import { useSettings } from "@/hooks/use-cms";
+import { useSettings, useCities } from "@/hooks/use-cms";
 
-/** Map footer quick-link labels → public routes */
 const QUICK_LINK_MAP: Record<string, string> = {
   home: "/",
   services: "/services",
@@ -38,6 +37,7 @@ const SOCIAL_LINKS = [
 
 export function Footer() {
   const { data: s } = useSettings();
+  const { data: cities = [] } = useCities(true);
   const contact = s?.contact;
   const social = s?.social;
   const footer = s?.footer;
@@ -86,6 +86,22 @@ export function Footer() {
             {contact?.phone && <li className="flex gap-3"><Phone className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact.phone}</span></li>}
             {contact?.email && <li className="flex gap-3"><Mail className="h-4 w-4 mt-0.5 text-primary shrink-0" /><span>{contact.email}</span></li>}
           </ul>
+          {cities.length > 0 && (
+            <div className="mt-4">
+              <h5 className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Service Areas</h5>
+              <div className="flex flex-wrap gap-2">
+                {cities.map((c) => (
+                  <Link
+                    key={c.id}
+                    to={`/${c.slug}` as any}
+                    className="text-xs text-white/60 hover:text-primary transition-colors"
+                  >
+                    {c.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="flex gap-3 mt-5">
             {SOCIAL_LINKS.map(({ Icon, key, label }) => {
               const href = social?.[key];
