@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { toast } from "sonner";
-import type { SiteSettings, AppDoc, TrustSettings, SectionTitles } from "@/hooks/use-cms";
+import type { SiteSettings, AppDoc, TrustSettings, SectionTitles, AboutSettings } from "@/hooks/use-cms";
 import { EMPTY_SETTINGS } from "@/hooks/use-cms";
 
 // ─ ALL home item types ─────────────────────────────────────────────────────────
@@ -125,7 +125,7 @@ function fromDoc(d: AppDoc): SiteSettings {
       title: s.home_faqs?.title ?? "",
       items: (s.home_faqs?.items ?? []) as any,
     },
-    about: s.about ?? EMPTY_SETTINGS.about,
+    about: { ...EMPTY_SETTINGS.about, ...(s.about ?? {}) } as AboutSettings,
     contact: s.contact ?? EMPTY_SETTINGS.contact,
     social: s.social ?? EMPTY_SETTINGS.social,
     cta: s.cta ?? EMPTY_SETTINGS.cta,
