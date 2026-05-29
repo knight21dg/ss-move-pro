@@ -49,17 +49,17 @@ function ServicesPage() {
         subtitle="From a single carton to a full office, we handle moves of every size with the same professionalism. Local and intercity shifting, secure vehicle transport and warehousing."
         backgroundImage={heroImage}
       />
-      <section className="container mx-auto px-4 py-16">
+      <section className="container mx-auto px-4 py-16 md:py-20">
         {services.length === 0 ? (
           <p className="text-center text-muted-foreground">No services available yet.</p>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {services.map((s) => {
               const Icon = getIcon(s.icon);
               return (
                 <div
                   key={s.id}
-                  className="group rounded-2xl bg-card border border-border p-7 hover:shadow-brand hover:-translate-y-1 transition-all"
+                  className="group rounded-2xl bg-card border border-border p-5 md:p-7 hover:shadow-brand hover:-translate-y-1 transition-all"
                 >
                   {s.image_url ? (
                     <div className="aspect-video rounded-xl overflow-hidden mb-5 -mx-2 -mt-2">
