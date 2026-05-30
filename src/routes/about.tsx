@@ -2,35 +2,28 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, Target, Users, Truck, Phone, Award, MapPin } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
-import { useSettings, settingsQueryOptions, getSeoForPage } from "@/hooks/use-cms";
+import { useSettings, settingsQueryOptions } from "@/hooks/use-cms";
 import { optimizeCloudinaryUrl } from "@/lib/cloudinary";
 
 export const Route = createFileRoute("/about")({
+  head: () => ({
+    meta: [
+      { title: "About SS Packers & Movers Kakinada" },
+      {
+        name: "description",
+        content:
+          "Learn about SS Packers & Movers — Kakinada's trusted relocation company serving households and businesses across India.",
+      },
+      { property: "og:title", content: "About SS Packers & Movers Kakinada" },
+      { property: "og:description", content: "Trusted relocation company from Kakinada." },
+    ],
+  }),
   loader: async ({ context }) => {
     try {
-      const settings = await context.queryClient.ensureQueryData(settingsQueryOptions());
-      return { seo: getSeoForPage(settings, "about") };
+      await context.queryClient.ensureQueryData(settingsQueryOptions());
     } catch (error) {
       console.error("Error prefetching data for about route:", error);
-      return { seo: null };
     }
-  },
-  head: ({ loaderData }: any) => {
-    const seo = loaderData?.seo;
-    const title = seo?.title || "About SS Packers & Movers Kakinada";
-    const desc = seo?.description || "Learn about SS Packers & Movers — Kakinada's trusted relocation company.";
-    return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-        ...(seo?.og_image ? [
-          { property: "og:image", content: seo.og_image },
-          { name: "twitter:image", content: seo.og_image },
-        ] : []),
-      ],
-    };
   },
   component: AboutPage,
 });

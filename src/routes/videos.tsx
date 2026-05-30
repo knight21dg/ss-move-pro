@@ -6,38 +6,24 @@ import {
   useVideos,
   videosQueryOptions,
   settingsQueryOptions,
-  getSeoForPage,
 } from "@/hooks/use-cms";
 
 export const Route = createFileRoute("/videos")({
+  head: () => ({
+    meta: [
+      { title: "Videos — SS Packers & Movers" },
+      { name: "description", content: "Watch how SS Packers & Movers handles your relocation." },
+    ],
+  }),
   loader: async ({ context }) => {
     try {
-      const [settings] = await Promise.all([
+      await Promise.all([
         context.queryClient.ensureQueryData(settingsQueryOptions()),
         context.queryClient.ensureQueryData(videosQueryOptions(true)),
       ]);
-      return { seo: getSeoForPage(settings, "videos") };
     } catch (error) {
       console.error("Error prefetching data for videos route:", error);
-      return { seo: null };
     }
-  },
-  head: ({ loaderData }: any) => {
-    const seo = loaderData?.seo;
-    const title = seo?.title || "Videos — SS Packers & Movers";
-    const desc = seo?.description || "Watch how SS Packers & Movers handles your relocation.";
-    return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-        ...(seo?.og_image ? [
-          { property: "og:image", content: seo.og_image },
-          { name: "twitter:image", content: seo.og_image },
-        ] : []),
-      ],
-    };
   },
   component: VideosPage,
 });

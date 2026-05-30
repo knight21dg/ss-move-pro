@@ -16,7 +16,6 @@ import {
   useSettings,
   servicesQueryOptions,
   settingsQueryOptions,
-  getSeoForPage,
 } from "@/hooks/use-cms";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 
@@ -24,34 +23,21 @@ export const Route = createFileRoute("/enquiry")({
   validateSearch: (search: Record<string, unknown>) => ({
     service: typeof search.service === "string" ? search.service : undefined,
   }),
+  head: () => ({
+    meta: [
+      { title: "Get a Free Quote — SS Packers & Movers Kakinada" },
+      { name: "description", content: "Tell us about your move and get a free, no-obligation quote from SS Packers & Movers." },
+    ],
+  }),
   loader: async ({ context }) => {
     try {
-      const [settings] = await Promise.all([
+      await Promise.all([
         context.queryClient.ensureQueryData(settingsQueryOptions()),
         context.queryClient.ensureQueryData(servicesQueryOptions(true)),
       ]);
-      return { seo: getSeoForPage(settings, "enquiry") };
     } catch (error) {
       console.error("Error prefetching data for enquiry route:", error);
-      return { seo: null };
     }
-  },
-  head: ({ loaderData }: any) => {
-    const seo = loaderData?.seo;
-    const title = seo?.title || "Get a Free Quote — SS Packers & Movers Kakinada";
-    const desc = seo?.description || "Tell us about your move and get a free, no-obligation quote from SS Packers & Movers.";
-    return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-        ...(seo?.og_image ? [
-          { property: "og:image", content: seo.og_image },
-          { name: "twitter:image", content: seo.og_image },
-        ] : []),
-      ],
-    };
   },
   component: EnquiryPage,
 });

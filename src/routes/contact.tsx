@@ -3,34 +3,21 @@ import { ArrowRight, Mail, MapPin, MessageCircle, Phone, Clock } from "lucide-re
 import { SiteLayout } from "@/components/site/Layout";
 import { PageHero } from "./about";
 import { Button } from "@/components/ui/button";
-import { useSettings, settingsQueryOptions, getSeoForPage } from "@/hooks/use-cms";
+import { useSettings, settingsQueryOptions } from "@/hooks/use-cms";
 
 export const Route = createFileRoute("/contact")({
+  head: () => ({
+    meta: [
+      { title: "Contact SS Packers & Movers Kakinada" },
+      { name: "description", content: "Reach SS Packers & Movers in Kakinada — phone, WhatsApp, email and address." },
+    ],
+  }),
   loader: async ({ context }) => {
     try {
-      const settings = await context.queryClient.ensureQueryData(settingsQueryOptions());
-      return { seo: getSeoForPage(settings, "contact") };
+      await context.queryClient.ensureQueryData(settingsQueryOptions());
     } catch (error) {
       console.error("Error prefetching data for contact route:", error);
-      return { seo: null };
     }
-  },
-  head: ({ loaderData }: any) => {
-    const seo = loaderData?.seo;
-    const title = seo?.title || "Contact SS Packers & Movers Kakinada";
-    const desc = seo?.description || "Reach SS Packers & Movers in Kakinada — phone, WhatsApp, email and address.";
-    return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-        ...(seo?.og_image ? [
-          { property: "og:image", content: seo.og_image },
-          { name: "twitter:image", content: seo.og_image },
-        ] : []),
-      ],
-    };
   },
   component: ContactPage,
 });

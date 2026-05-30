@@ -9,40 +9,30 @@ import {
   useCities,
   servicesQueryOptions,
   settingsQueryOptions,
-  getSeoForPage,
 } from "@/hooks/use-cms";
 import { getIcon } from "@/lib/icons";
 import { optimizeCloudinaryUrl } from "@/lib/cloudinary";
 
 export const Route = createFileRoute("/services")({
+  head: () => ({
+    meta: [
+      { title: "Services — SS Packers & Movers Kakinada" },
+      {
+        name: "description",
+        content:
+          "Household shifting, office relocation, car transport, warehousing, loading & unloading and more — across India from Kakinada.",
+      },
+    ],
+  }),
   loader: async ({ context }) => {
     try {
-      const [settings] = await Promise.all([
+      await Promise.all([
         context.queryClient.ensureQueryData(settingsQueryOptions()),
         context.queryClient.ensureQueryData(servicesQueryOptions(true)),
       ]);
-      return { seo: getSeoForPage(settings, "services") };
     } catch (error) {
       console.error("Error prefetching data for services route:", error);
-      return { seo: null };
     }
-  },
-  head: ({ loaderData }: any) => {
-    const seo = loaderData?.seo;
-    const title = seo?.title || "Services — SS Packers & Movers Kakinada";
-    const desc = seo?.description || "Household shifting, office relocation, car transport, warehousing, loading & unloading and more — across India from Kakinada.";
-    return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-        ...(seo?.og_image ? [
-          { property: "og:image", content: seo.og_image },
-          { name: "twitter:image", content: seo.og_image },
-        ] : []),
-      ],
-    };
   },
   component: ServicesPage,
 });
