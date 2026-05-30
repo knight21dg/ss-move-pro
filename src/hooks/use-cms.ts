@@ -150,6 +150,8 @@ export interface FooterSettings {
   description: string;
   quick_links: string;
   services: string;
+  show_developed_by: boolean;
+  developed_by_text: string;
 }
 
 export interface TrustSettings {
@@ -624,6 +626,8 @@ If you're planning a move, call us on +91 9652146555 or use the online enquiry f
     description: "",
     quick_links: "Home, Services, About, Contact, Gallery, Videos, Enquiry",
     services: "",
+    show_developed_by: true,
+    developed_by_text: "Designed & Developed by Knight21 Digital Solutions",
   },
   seo: {
     default: {

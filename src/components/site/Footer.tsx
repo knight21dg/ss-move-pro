@@ -125,6 +125,9 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-5 text-xs text-white/60 flex flex-col sm:flex-row justify-between gap-2">
           <p>© {new Date().getFullYear()} SS Packers &amp; Movers, Kakinada. All rights reserved.</p>
+          {footer?.show_developed_by && footer?.developed_by_text && (
+            <p>{footer.developed_by_text}</p>
+          )}
         </div>
       </div>
     </footer>
