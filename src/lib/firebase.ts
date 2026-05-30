@@ -39,6 +39,8 @@ import {
   sendPasswordResetEmail,
   sendEmailVerification,
   updatePassword,
+  setPersistence,
+  browserLocalPersistence,
   type Auth,
   type User as AuthUser,
 } from "firebase/auth";
@@ -63,6 +65,13 @@ function getFirebaseApp(): FirebaseApp {
 export const firebaseApp = getFirebaseApp();
 export const db: Firestore = getFirestore(firebaseApp);
 export const auth: Auth = getAuth(firebaseApp);
+
+if (typeof window !== "undefined") {
+  setPersistence(auth, browserLocalPersistence).catch((e) =>
+    console.error("Failed to set auth persistence:", e)
+  );
+}
+
 export const serverTimestamp = () => _serverTimestamp() as unknown as Date;
 
 // ─── Auth convenience wrappers ─────────────────────────────────────────────────
