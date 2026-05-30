@@ -626,8 +626,8 @@ If you're planning a move, call us on +91 9652146555 or use the online enquiry f
     description: "",
     quick_links: "Home, Services, About, Contact, Gallery, Videos, Enquiry",
     services: "",
-    show_developed_by: true,
-    developed_by_text: "Designed & Developed by Knight21 Digital Solutions",
+    show_developed_by: false,
+    developed_by_text: "",
   },
   seo: {
     default: {
