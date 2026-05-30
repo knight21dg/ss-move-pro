@@ -6,32 +6,43 @@ import { PageHero } from "./about";
 import {
   useServices,
   useSettings,
+  useCities,
   servicesQueryOptions,
   settingsQueryOptions,
+  getSeoForPage,
 } from "@/hooks/use-cms";
 import { getIcon } from "@/lib/icons";
 import { optimizeCloudinaryUrl } from "@/lib/cloudinary";
 
 export const Route = createFileRoute("/services")({
-  head: () => ({
-    meta: [
-      { title: "Services — SS Packers & Movers Kakinada" },
-      {
-        name: "description",
-        content:
-          "Household shifting, office relocation, car transport, warehousing, loading & unloading and more — across India from Kakinada.",
-      },
-    ],
-  }),
   loader: async ({ context }) => {
     try {
-      await Promise.all([
+      const [settings] = await Promise.all([
         context.queryClient.ensureQueryData(settingsQueryOptions()),
         context.queryClient.ensureQueryData(servicesQueryOptions(true)),
       ]);
+      return { seo: getSeoForPage(settings, "services") };
     } catch (error) {
       console.error("Error prefetching data for services route:", error);
+      return { seo: null };
     }
+  },
+  head: ({ loaderData }: any) => {
+    const seo = loaderData?.seo;
+    const title = seo?.title || "Services — SS Packers & Movers Kakinada";
+    const desc = seo?.description || "Household shifting, office relocation, car transport, warehousing, loading & unloading and more — across India from Kakinada.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        ...(seo?.og_image ? [
+          { property: "og:image", content: seo.og_image },
+          { name: "twitter:image", content: seo.og_image },
+        ] : []),
+      ],
+    };
   },
   component: ServicesPage,
 });
@@ -39,7 +50,9 @@ export const Route = createFileRoute("/services")({
 function ServicesPage() {
   const { data: services = [] } = useServices();
   const { data: s } = useSettings();
+  const { data: cities = [] } = useCities(true);
   const heroImage = s?.hero_images?.services;
+  const locationNames = cities.map((c) => c.name).join(", ");
 
   return (
     <SiteLayout>
@@ -78,9 +91,11 @@ function ServicesPage() {
                   <p className="text-sm text-muted-foreground leading-relaxed mb-5">
                     {s.description}
                   </p>
-                  <div className="text-xs text-muted-foreground">
-                    Locations: Kakinada, Rajahmundry, Hyderabad, Vijayawada, Visakhapatnam
-                  </div>
+                  {locationNames && (
+                    <div className="text-xs text-muted-foreground">
+                      Locations: {locationNames}
+                    </div>
+                  )}
                   <Link
                     to="/enquiry"
                     search={{ service: s.title }}

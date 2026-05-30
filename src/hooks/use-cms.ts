@@ -657,3 +657,9 @@ If you're planning a move, call us on +91 9652146555 or use the online enquiry f
     testimonials_title: "What our customers say",
   },
 };
+
+export function getSeoForPage(settings: SiteSettings | undefined, pageKey: string): SeoFields {
+  const defaults = settings?.seo?.default ?? EMPTY_SETTINGS.seo.default;
+  const page = settings?.seo?.pages?.[pageKey];
+  return { ...defaults, ...(page ?? {}) };
+}

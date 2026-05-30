@@ -21,6 +21,7 @@ import {
   servicesQueryOptions,
   testimonialsQueryOptions,
   galleryQueryOptions,
+  getSeoForPage,
 } from "@/hooks/use-cms";
 import type { WhyUsItem, ProcessItem, FaqItem } from "@/hooks/use-cms";
 import { getIcon } from "@/lib/icons";
@@ -31,15 +32,35 @@ const iconList = [ShieldCheck, Clock, Award, Truck];
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
     try {
-      await Promise.all([
+      const [settings] = await Promise.all([
         context.queryClient.ensureQueryData(settingsQueryOptions()),
         context.queryClient.ensureQueryData(servicesQueryOptions(true)),
         context.queryClient.ensureQueryData(testimonialsQueryOptions(true)),
         context.queryClient.ensureQueryData(galleryQueryOptions(true)),
       ]);
+      return { seo: getSeoForPage(settings, "home") };
     } catch (error) {
       console.error("Error prefetching data for home route:", error);
+      return { seo: null };
     }
+  },
+  head: ({ loaderData }: any) => {
+    const seo = loaderData?.seo;
+    const title = seo?.title || "SS Packers & Movers Kakinada | Trusted Relocation & Transport";
+    const desc = seo?.description || "Professional packers & movers in Kakinada — household shifting, office relocation, car transport, warehouse storage. Get a free quote today.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { name: "keywords", content: seo?.keywords || "" },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        ...(seo?.og_image ? [
+          { property: "og:image", content: seo.og_image },
+          { name: "twitter:image", content: seo.og_image },
+        ] : []),
+      ],
+    };
   },
   component: HomePage,
 });
