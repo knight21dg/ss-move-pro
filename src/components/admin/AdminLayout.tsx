@@ -1,5 +1,6 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import type { FC } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -24,49 +25,23 @@ import {
   ChevronRight,
   Menu,
   X,
+  MessageCircle,
+  Palette,
+  Sliders,
+  Globe,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 
-const mainNav: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
-  { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/admin/services", label: "Services", icon: Package },
-  { to: "/admin/gallery", label: "Gallery", icon: ImageIcon },
-  { to: "/admin/videos", label: "Videos", icon: Video },
-  { to: "/admin/testimonials", label: "Testimonials", icon: MessageSquare },
-  { to: "/admin/enquiries", label: "Enquiries", icon: Inbox },
-];
-
-const settingsNav: { to: string; label: string; icon: typeof Settings }[] = [
-  { to: "/admin/settings", label: "Overview", icon: Settings },
-  { to: "/admin/settings/hero", label: "Hero", icon: ImageIcon },
-  { to: "/admin/settings/home", label: "Home Sections", icon: LayoutList },
-  { to: "/admin/settings/about", label: "About", icon: Info },
-  { to: "/admin/settings/contact", label: "Contact", icon: Phone },
-  { to: "/admin/settings/social", label: "Social Links", icon: Share2 },
-  { to: "/admin/settings/seo", label: "SEO", icon: Search },
-  { to: "/admin/settings/cta", label: "CTA Banner", icon: Megaphone },
-  { to: "/admin/settings/popup", label: "Popup Poster", icon: Megaphone },
-  { to: "/admin/settings/footer", label: "Footer", icon: FileText },
-  { to: "/admin/settings/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/admin/settings/trust", label: "Trust Ribbon", icon: ShieldCheck },
-  { to: "/admin/city-pages", label: "City Pages", icon: MapPin },
-];
-
-function NavLink({
-  to,
-  label,
-  icon: Icon,
-  exact,
-  onClick,
-}: {
+interface NavItem {
   to: string;
   label: string;
-  icon: typeof LayoutDashboard;
+  icon: FC<{ className?: string }>;
   exact?: boolean;
-  onClick?: () => void;
-}) {
+}
+
+function NavLink({ to, label, icon: Icon, exact, onClick }: NavItem & { onClick?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const active = exact ? pathname === to : pathname.startsWith(to);
   return (
@@ -85,6 +60,37 @@ function NavLink({
   );
 }
 
+function NavGroup({
+  icon: Icon,
+  label,
+  children,
+  defaultOpen,
+}: {
+  icon: FC<{ className?: string }>;
+  label: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen ?? true);
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground/70 hover:bg-muted hover:text-foreground transition-colors"
+      >
+        {open ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
+        <Icon className="h-4 w-4 shrink-0" />
+        <span className="truncate font-semibold">{label}</span>
+      </button>
+      {open && (
+        <div className="ml-2 mt-1 space-y-1 pl-4 border-l border-border">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function AdminLayout({
   children,
   title,
@@ -95,7 +101,6 @@ export function AdminLayout({
   const { user, isAdmin, loading, logout } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [settingsOpen, setSettingsOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -176,6 +181,8 @@ export function AdminLayout({
     navigate({ to: "/signin" });
   }
 
+  const closeMobile = () => setMobileOpen(false);
+
   const sidebarContent = (
     <>
       <div className="p-5 border-b border-border">
@@ -190,30 +197,40 @@ export function AdminLayout({
       </div>
 
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-        <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-3 py-1">
-          Content
-        </div>
-        {mainNav.map((it) => (
-          <NavLink key={it.to} {...it} onClick={() => setMobileOpen(false)} />
-        ))}
+        <NavLink to="/admin" label="Dashboard" icon={LayoutDashboard} exact onClick={closeMobile} />
 
-        <div className="pt-3">
-          <button
-            onClick={() => setSettingsOpen(!settingsOpen)}
-            className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium text-foreground/70 hover:bg-muted hover:text-foreground transition-colors"
-          >
-            {settingsOpen ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
-            <Settings className="h-4 w-4 shrink-0" />
-            <span className="truncate">Settings</span>
-          </button>
-          {settingsOpen && (
-            <div className="ml-2 mt-1 space-y-1 pl-4 border-l border-border">
-              {settingsNav.map((it) => (
-                <NavLink key={it.to} {...it} onClick={() => setMobileOpen(false)} />
-              ))}
-            </div>
-          )}
-        </div>
+        <NavGroup icon={Package} label="Content">
+          <NavLink to="/admin/services" label="Services" icon={Package} onClick={closeMobile} />
+          <NavLink to="/admin/gallery" label="Gallery" icon={ImageIcon} onClick={closeMobile} />
+          <NavLink to="/admin/videos" label="Videos" icon={Video} onClick={closeMobile} />
+          <NavLink to="/admin/testimonials" label="Testimonials" icon={MessageSquare} onClick={closeMobile} />
+        </NavGroup>
+
+        <NavGroup icon={Inbox} label="Communications">
+          <NavLink to="/admin/enquiries" label="Enquiries" icon={Inbox} onClick={closeMobile} />
+        </NavGroup>
+
+        <NavGroup icon={Palette} label="Appearance">
+          <NavLink to="/admin/settings/hero" label="Hero" icon={ImageIcon} onClick={closeMobile} />
+          <NavLink to="/admin/settings/home" label="Home Sections" icon={LayoutList} onClick={closeMobile} />
+          <NavLink to="/admin/settings/about" label="About" icon={Info} onClick={closeMobile} />
+          <NavLink to="/admin/settings/contact" label="Contact" icon={Phone} onClick={closeMobile} />
+          <NavLink to="/admin/settings/social" label="Social Links" icon={Share2} onClick={closeMobile} />
+          <NavLink to="/admin/settings/footer" label="Footer" icon={FileText} onClick={closeMobile} />
+          <NavLink to="/admin/settings/cta" label="CTA Banner" icon={Megaphone} onClick={closeMobile} />
+          <NavLink to="/admin/settings/popup" label="Popup Poster" icon={MessageCircle} onClick={closeMobile} />
+        </NavGroup>
+
+        <NavGroup icon={Sliders} label="Configuration">
+          <NavLink to="/admin/settings" label="Overview" icon={Settings} exact onClick={closeMobile} />
+          <NavLink to="/admin/settings/seo" label="SEO" icon={Search} onClick={closeMobile} />
+          <NavLink to="/admin/settings/trust" label="Trust Ribbon" icon={ShieldCheck} onClick={closeMobile} />
+          <NavLink to="/admin/settings/analytics" label="Analytics" icon={BarChart3} onClick={closeMobile} />
+        </NavGroup>
+
+        <NavGroup icon={Globe} label="Pages">
+          <NavLink to="/admin/city-pages" label="City Pages" icon={MapPin} onClick={closeMobile} />
+        </NavGroup>
       </nav>
 
       <div className="p-3 border-t border-border space-y-2">
