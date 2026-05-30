@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, Target, Users, Truck, Phone } from "lucide-react";
+import { CheckCircle2, Target, Users, Truck, Phone, Award, MapPin } from "lucide-react";
 import { SiteLayout } from "@/components/site/Layout";
 import { Button } from "@/components/ui/button";
 import { useSettings, settingsQueryOptions } from "@/hooks/use-cms";
@@ -60,6 +60,48 @@ function AboutPage() {
                 <Button asChild variant="outline" size="lg" style={s?.cta?.call_bg_color ? { backgroundColor: s.cta.call_bg_color, borderColor: s.cta.call_bg_color } : undefined}>
                   <a href={phoneHref}><Phone /> Call Now</a>
                 </Button>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* STATS CARDS */}
+      {about && (about.happy_customers || about.years_experience || about.successful_shifts || about.service_locations) && (
+        <section className="bg-muted/50 py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <div className="inline-block text-xs font-bold tracking-[0.2em] text-primary uppercase mb-3">By The Numbers</div>
+              <h2 className="text-3xl md:text-4xl font-extrabold">SS Packers & Movers in numbers</h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {about.happy_customers && (
+                <div className="rounded-2xl border border-border bg-card p-6 text-center">
+                  <Users className="mx-auto h-8 w-8 text-primary mb-3" />
+                  <div className="text-3xl font-extrabold">{about.happy_customers}</div>
+                  <div className="text-sm text-muted-foreground mt-1">Happy Customers</div>
+                </div>
+              )}
+              {about.years_experience && (
+                <div className="rounded-2xl border border-border bg-card p-6 text-center">
+                  <Award className="mx-auto h-8 w-8 text-primary mb-3" />
+                  <div className="text-3xl font-extrabold">{about.years_experience}</div>
+                  <div className="text-sm text-muted-foreground mt-1">Years Experience</div>
+                </div>
+              )}
+              {about.successful_shifts && (
+                <div className="rounded-2xl border border-border bg-card p-6 text-center">
+                  <Truck className="mx-auto h-8 w-8 text-primary mb-3" />
+                  <div className="text-3xl font-extrabold">{about.successful_shifts}</div>
+                  <div className="text-sm text-muted-foreground mt-1">Successful Shifts</div>
+                </div>
+              )}
+              {about.service_locations && (
+                <div className="rounded-2xl border border-border bg-card p-6 text-center">
+                  <MapPin className="mx-auto h-8 w-8 text-primary mb-3" />
+                  <div className="text-3xl font-extrabold">{about.service_locations}</div>
+                  <div className="text-sm text-muted-foreground mt-1">Service Locations</div>
+                </div>
               )}
             </div>
           </div>
