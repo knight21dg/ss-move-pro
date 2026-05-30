@@ -36,11 +36,11 @@ export function CityPage({ slug }: { slug: string }) {
           </p>
         )}
         <div className="mt-10 flex flex-wrap gap-4">
-          <Button asChild variant="brand" size="lg">
+          <Button asChild variant="brand" size="lg" style={s?.cta?.cta_bg_color ? { backgroundColor: s.cta.cta_bg_color } : undefined}>
             <Link to="/enquiry" search={{ service: undefined }}>Get Free Quote</Link>
           </Button>
           {phone && (
-            <Button asChild variant="outline" size="lg">
+            <Button asChild variant="outline" size="lg" style={s?.cta?.call_bg_color ? { backgroundColor: s.cta.call_bg_color, borderColor: s.cta.call_bg_color } : undefined}>
               <a href={phoneHref}><Phone /> Call Now</a>
             </Button>
           )}

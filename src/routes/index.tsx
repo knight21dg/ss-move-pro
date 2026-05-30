@@ -63,24 +63,6 @@ function HomePage() {
   const phoneHref = phone ? `tel:${phone.replace(/\s/g, "")}` : "";
   const wa = contact?.whatsapp ? contact.whatsapp.replace(/\D/g, "") : "";
 
-  const stats =
-    about?.happy_customers || about?.years_experience || about?.successful_shifts || about?.service_locations
-      ? ([
-          about?.happy_customers
-            ? { value: about.happy_customers, label: "Happy Customers" }
-            : null,
-          about?.years_experience
-            ? { value: about.years_experience, label: "Years Experience" }
-            : null,
-          about?.successful_shifts
-            ? { value: about.successful_shifts, label: "Successful Shifts" }
-            : null,
-          about?.service_locations
-            ? { value: about.service_locations, label: "Service Locations" }
-            : null,
-        ].filter(Boolean) as { value: string; label: string }[])
-      : [];
-
   const galleryItems = gallery.slice(0, 4).map((g) => g.image_url);
   const heroBackground = heroImages?.home;
 
@@ -122,15 +104,15 @@ function HomePage() {
             </p>
           )}
           <div className="mt-8 flex flex-wrap gap-3">
-            {(hero?.cta as string) !== "" && (
-              <Button asChild size="lg" variant="hero" className="h-12 px-7 text-base">
+             {(hero?.cta as string) !== "" && (
+              <Button asChild size="lg" variant="hero" className="h-12 px-7 text-base" style={cta.cta_bg_color ? { backgroundColor: cta.cta_bg_color, color: cta.cta_bg_color === "#ffffff" ? undefined : "#fff" } : undefined}>
                 <Link to="/enquiry" search={{ service: undefined }}>
                   {hero.cta as string} <ArrowRight />
                 </Link>
               </Button>
             )}
             {phone && (
-              <Button asChild size="lg" variant="brand" className="h-12 px-7 text-base">
+              <Button asChild size="lg" variant="brand" className="h-12 px-7 text-base" style={cta.call_bg_color ? { backgroundColor: cta.call_bg_color } : undefined}>
                 <a href={phoneHref}>
                   <Phone /> Call Now
                 </a>
@@ -142,6 +124,7 @@ function HomePage() {
                 size="lg"
                 variant="outline"
                 className="h-12 px-7 text-base bg-white/10 text-white border-white/30 hover:bg-white/20 hover:text-white"
+                style={cta.whatsapp_bg_color ? { backgroundColor: cta.whatsapp_bg_color, borderColor: cta.whatsapp_bg_color } : undefined}
               >
                 <a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer">
                   <MessageCircle /> WhatsApp
@@ -151,24 +134,6 @@ function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* STATS */}
-      {stats.length > 0 && (
-        <section className="bg-secondary text-secondary-foreground">
-          <div className="container mx-auto px-4 py-10 grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((st) => (
-              <div
-                key={st.label}
-                className="text-center"
-                style={{ contentVisibility: "auto" } as React.CSSProperties}
-              >
-                <div className="text-3xl md:text-4xl font-extrabold text-primary">{st.value}</div>
-                <div className="text-sm text-white/70 mt-1">{st.label}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* TRUST & COVERAGE */}
       {s.trust?.is_active && (
@@ -478,7 +443,7 @@ function HomePage() {
               )}
               <div className="mt-8 flex flex-wrap gap-3 justify-center">
                 {cta.banner_button && cta.banner_link && (
-                  <Button asChild size="lg" variant="hero" className="h-12 px-8 text-base">
+                  <Button asChild size="lg" variant="hero" className="h-12 px-8 text-base" style={cta.cta_bg_color ? { backgroundColor: cta.cta_bg_color, color: cta.cta_bg_color === "#ffffff" ? undefined : "#fff" } : undefined}>
                     <Link to={cta.banner_link}>{cta.banner_button}</Link>
                   </Button>
                 )}
@@ -488,6 +453,7 @@ function HomePage() {
                     size="lg"
                     variant="outline"
                     className="h-12 px-8 text-base bg-transparent text-white border-white hover:bg-white hover:text-primary"
+                    style={cta.call_bg_color ? { backgroundColor: cta.call_bg_color, borderColor: cta.call_bg_color } : undefined}
                   >
                     <a href={phoneHref}>
                       <Phone /> Call Now
