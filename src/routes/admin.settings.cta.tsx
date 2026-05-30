@@ -82,7 +82,7 @@ function CtaSettings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>Get Free Quote Button Color</Label>
+              <Label>Get Free Quote — Background</Label>
               <div className="flex gap-2 items-center">
                 <Input
                   type="color"
@@ -102,7 +102,27 @@ function CtaSettings() {
               </div>
             </div>
             <div>
-              <Label>Call Now Button Color</Label>
+              <Label>Get Free Quote — Text Color</Label>
+              <div className="flex gap-2 items-center">
+                <Input
+                  type="color"
+                  className="w-14 h-10 p-1"
+                  value={form.cta.cta_text_color || "#000000"}
+                  onChange={(e) =>
+                    setForm({ ...form, cta: { ...form.cta, cta_text_color: e.target.value } })
+                  }
+                />
+                <Input
+                  placeholder="Leave empty for default"
+                  value={form.cta.cta_text_color}
+                  onChange={(e) =>
+                    setForm({ ...form, cta: { ...form.cta, cta_text_color: e.target.value } })
+                  }
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Call Now — Background</Label>
               <div className="flex gap-2 items-center">
                 <Input
                   type="color"
@@ -122,7 +142,27 @@ function CtaSettings() {
               </div>
             </div>
             <div>
-              <Label>WhatsApp Button Color</Label>
+              <Label>Call Now — Text Color</Label>
+              <div className="flex gap-2 items-center">
+                <Input
+                  type="color"
+                  className="w-14 h-10 p-1"
+                  value={form.cta.call_text_color || "#ffffff"}
+                  onChange={(e) =>
+                    setForm({ ...form, cta: { ...form.cta, call_text_color: e.target.value } })
+                  }
+                />
+                <Input
+                  placeholder="Leave empty for default"
+                  value={form.cta.call_text_color}
+                  onChange={(e) =>
+                    setForm({ ...form, cta: { ...form.cta, call_text_color: e.target.value } })
+                  }
+                />
+              </div>
+            </div>
+            <div>
+              <Label>WhatsApp — Background</Label>
               <div className="flex gap-2 items-center">
                 <Input
                   type="color"
@@ -137,6 +177,26 @@ function CtaSettings() {
                   value={form.cta.whatsapp_bg_color}
                   onChange={(e) =>
                     setForm({ ...form, cta: { ...form.cta, whatsapp_bg_color: e.target.value } })
+                  }
+                />
+              </div>
+            </div>
+            <div>
+              <Label>WhatsApp — Text Color</Label>
+              <div className="flex gap-2 items-center">
+                <Input
+                  type="color"
+                  className="w-14 h-10 p-1"
+                  value={form.cta.whatsapp_text_color || "#ffffff"}
+                  onChange={(e) =>
+                    setForm({ ...form, cta: { ...form.cta, whatsapp_text_color: e.target.value } })
+                  }
+                />
+                <Input
+                  placeholder="Leave empty for default"
+                  value={form.cta.whatsapp_text_color}
+                  onChange={(e) =>
+                    setForm({ ...form, cta: { ...form.cta, whatsapp_text_color: e.target.value } })
                   }
                 />
               </div>

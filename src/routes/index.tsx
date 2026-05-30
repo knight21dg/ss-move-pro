@@ -105,14 +105,14 @@ function HomePage() {
           )}
           <div className="mt-8 flex flex-wrap gap-3">
              {(hero?.cta as string) !== "" && (
-              <Button asChild size="lg" variant="hero" className="h-12 px-7 text-base" style={cta.cta_bg_color ? { backgroundColor: cta.cta_bg_color, color: cta.cta_bg_color === "#ffffff" ? undefined : "#fff" } : undefined}>
+              <Button asChild size="lg" variant="hero" className="h-12 px-7 text-base" style={{ ...(cta.cta_bg_color ? { backgroundColor: cta.cta_bg_color } : {}), ...(cta.cta_text_color ? { color: cta.cta_text_color } : {}) }}>
                 <Link to="/enquiry" search={{ service: undefined }}>
                   {hero.cta as string} <ArrowRight />
                 </Link>
               </Button>
             )}
             {phone && (
-              <Button asChild size="lg" variant="brand" className="h-12 px-7 text-base" style={cta.call_bg_color ? { backgroundColor: cta.call_bg_color } : undefined}>
+              <Button asChild size="lg" variant="brand" className="h-12 px-7 text-base" style={{ ...(cta.call_bg_color ? { background: cta.call_bg_color } : {}), ...(cta.call_text_color ? { color: cta.call_text_color } : {}) }}>
                 <a href={phoneHref}>
                   <Phone /> Call Now
                 </a>
@@ -124,7 +124,7 @@ function HomePage() {
                 size="lg"
                 variant="outline"
                 className="h-12 px-7 text-base bg-white/10 text-white border-white/30 hover:bg-white/20 hover:text-white"
-                style={cta.whatsapp_bg_color ? { backgroundColor: cta.whatsapp_bg_color, borderColor: cta.whatsapp_bg_color } : undefined}
+                style={{ ...(cta.whatsapp_bg_color ? { backgroundColor: cta.whatsapp_bg_color, borderColor: cta.whatsapp_bg_color } : {}), ...(cta.whatsapp_text_color ? { color: cta.whatsapp_text_color } : {}) }}
               >
                 <a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer">
                   <MessageCircle /> WhatsApp
@@ -443,7 +443,7 @@ function HomePage() {
               )}
               <div className="mt-8 flex flex-wrap gap-3 justify-center">
                 {cta.banner_button && cta.banner_link && (
-                  <Button asChild size="lg" variant="hero" className="h-12 px-8 text-base" style={cta.cta_bg_color ? { backgroundColor: cta.cta_bg_color, color: cta.cta_bg_color === "#ffffff" ? undefined : "#fff" } : undefined}>
+                  <Button asChild size="lg" variant="hero" className="h-12 px-8 text-base" style={{ ...(cta.cta_bg_color ? { backgroundColor: cta.cta_bg_color } : {}), ...(cta.cta_text_color ? { color: cta.cta_text_color } : {}) }}>
                     <Link to={cta.banner_link}>{cta.banner_button}</Link>
                   </Button>
                 )}
@@ -453,7 +453,7 @@ function HomePage() {
                     size="lg"
                     variant="outline"
                     className="h-12 px-8 text-base bg-transparent text-white border-white hover:bg-white hover:text-primary"
-                    style={cta.call_bg_color ? { backgroundColor: cta.call_bg_color, borderColor: cta.call_bg_color } : undefined}
+                    style={{ ...(cta.call_bg_color ? { backgroundColor: cta.call_bg_color, borderColor: cta.call_bg_color } : {}), ...(cta.call_text_color ? { color: cta.call_text_color } : {}) }}
                   >
                     <a href={phoneHref}>
                       <Phone /> Call Now

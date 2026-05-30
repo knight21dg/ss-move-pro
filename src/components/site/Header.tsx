@@ -46,7 +46,7 @@ export function Header() {
               <Phone className="h-4 w-4" /> {phone}
             </a>
           )}
-          <Button asChild variant="brand" size="lg" style={s?.cta?.cta_bg_color ? { backgroundColor: s.cta.cta_bg_color } : undefined}>
+          <Button asChild variant="brand" size="lg" style={{ ...(s?.cta?.cta_bg_color ? { background: s.cta.cta_bg_color } : {}), ...(s?.cta?.cta_text_color ? { color: s.cta.cta_text_color } : {}) }}>
             <Link to="/enquiry" search={{ service: undefined }}>Get Free Quote</Link>
           </Button>
         </div>
@@ -67,7 +67,7 @@ export function Header() {
                 {n.label}
               </Link>
             ))}
-            <Button asChild variant="brand" className="mt-2" style={s?.cta?.cta_bg_color ? { backgroundColor: s.cta.cta_bg_color } : undefined}>
+            <Button asChild variant="brand" className="mt-2" style={{ ...(s?.cta?.cta_bg_color ? { background: s.cta.cta_bg_color } : {}), ...(s?.cta?.cta_text_color ? { color: s.cta.cta_text_color } : {}) }}>
               <Link to="/enquiry" search={{ service: undefined }} onClick={() => setOpen(false)}>Get Free Quote</Link>
             </Button>
           </div>

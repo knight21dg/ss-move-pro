@@ -53,11 +53,11 @@ function AboutPage() {
               {about.body}
             </div>
             <div className="mt-10 flex flex-wrap gap-4">
-              <Button asChild variant="brand" size="lg" style={s?.cta?.cta_bg_color ? { backgroundColor: s.cta.cta_bg_color } : undefined}>
+              <Button asChild variant="brand" size="lg" style={{ ...(s?.cta?.cta_bg_color ? { background: s.cta.cta_bg_color } : {}), ...(s?.cta?.cta_text_color ? { color: s.cta.cta_text_color } : {}) }}>
                 <Link to="/enquiry" search={{ service: undefined }}>Get Free Quote</Link>
               </Button>
               {phone && (
-                <Button asChild variant="outline" size="lg" style={s?.cta?.call_bg_color ? { backgroundColor: s.cta.call_bg_color, borderColor: s.cta.call_bg_color } : undefined}>
+                <Button asChild variant="outline" size="lg" style={{ ...(s?.cta?.call_bg_color ? { backgroundColor: s.cta.call_bg_color, borderColor: s.cta.call_bg_color } : {}), ...(s?.cta?.call_text_color ? { color: s.cta.call_text_color } : {}) }}>
                   <a href={phoneHref}><Phone /> Call Now</a>
                 </Button>
               )}

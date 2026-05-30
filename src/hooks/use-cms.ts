@@ -139,8 +139,11 @@ export interface CtaSettings {
   banner_button: string;
   show_banner: boolean;
   cta_bg_color: string;
+  cta_text_color: string;
   call_bg_color: string;
+  call_text_color: string;
   whatsapp_bg_color: string;
+  whatsapp_text_color: string;
 }
 export interface FooterSettings {
   description: string;
@@ -609,8 +612,11 @@ If you're planning a move, call us on +91 9652146555 or use the online enquiry f
     banner_button: "",
     show_banner: false,
     cta_bg_color: "",
+    cta_text_color: "",
     call_bg_color: "",
+    call_text_color: "",
     whatsapp_bg_color: "",
+    whatsapp_text_color: "",
   },
   footer: {
     description: "",

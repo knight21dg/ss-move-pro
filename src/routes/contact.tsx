@@ -80,12 +80,12 @@ function ContactPage() {
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               {phone && (
-                <Button asChild variant="brand" size="lg" className="h-13 px-7 text-base" style={s?.cta?.call_bg_color ? { backgroundColor: s.cta.call_bg_color } : undefined}>
+                <Button asChild variant="brand" size="lg" className="h-13 px-7 text-base" style={{ ...(s?.cta?.call_bg_color ? { background: s.cta.call_bg_color } : {}), ...(s?.cta?.call_text_color ? { color: s.cta.call_text_color } : {}) }}>
                   <a href={phoneHref}><Phone className="h-5 w-5" /> Call {phone}</a>
                 </Button>
               )}
               {wa && (
-                <Button asChild variant="outline" size="lg" className="h-13 px-7 text-base" style={s?.cta?.whatsapp_bg_color ? { backgroundColor: s.cta.whatsapp_bg_color, borderColor: s.cta.whatsapp_bg_color, color: "#fff" } : undefined}>
+                <Button asChild variant="outline" size="lg" className="h-13 px-7 text-base" style={{ ...(s?.cta?.whatsapp_bg_color ? { backgroundColor: s.cta.whatsapp_bg_color, borderColor: s.cta.whatsapp_bg_color } : {}), ...(s?.cta?.whatsapp_text_color ? { color: s.cta.whatsapp_text_color } : {}) }}>
                   <a href={`https://wa.me/${wa}`} target="_blank" rel="noreferrer">
                     <MessageCircle className="h-5 w-5" /> WhatsApp
                   </a>
@@ -128,11 +128,11 @@ function ContactPage() {
             Get a free, no-obligation quote for your move. Our team typically responds within 30 minutes.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Button asChild size="lg" variant="hero" className="h-12 px-8 text-base" style={s?.cta?.cta_bg_color ? { backgroundColor: s.cta.cta_bg_color, color: s.cta.cta_bg_color === "#ffffff" ? undefined : "#fff" } : undefined}>
+            <Button asChild size="lg" variant="hero" className="h-12 px-8 text-base" style={{ ...(s?.cta?.cta_bg_color ? { backgroundColor: s.cta.cta_bg_color } : {}), ...(s?.cta?.cta_text_color ? { color: s.cta.cta_text_color } : {}) }}>
               <Link to="/enquiry" search={{ service: undefined }}>Get Free Quote <ArrowRight /></Link>
             </Button>
             {phone && (
-              <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base bg-transparent text-white border-white hover:bg-white hover:text-primary" style={s?.cta?.call_bg_color ? { backgroundColor: s.cta.call_bg_color, borderColor: s.cta.call_bg_color } : undefined}>
+              <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base bg-transparent text-white border-white hover:bg-white hover:text-primary" style={{ ...(s?.cta?.call_bg_color ? { backgroundColor: s.cta.call_bg_color, borderColor: s.cta.call_bg_color } : {}), ...(s?.cta?.call_text_color ? { color: s.cta.call_text_color } : {}) }}>
                 <a href={phoneHref}><Phone /> Call Now</a>
               </Button>
             )}
