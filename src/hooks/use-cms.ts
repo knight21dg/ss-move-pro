@@ -122,6 +122,7 @@ export interface AboutSettings {
 export interface ContactSettings {
   phone: string;
   whatsapp: string;
+  alternate_phone: string;
   email: string;
   address: string;
   gstin: string;
@@ -599,6 +600,7 @@ If you're planning a move, call us on +91 9652146555 or use the online enquiry f
   contact: {
     phone: "+91 9652146555",
     whatsapp: "+91 7799946555",
+    alternate_phone: "",
     email: "",
     address: "",
     gstin: "37ADRFS6309Z1LB",

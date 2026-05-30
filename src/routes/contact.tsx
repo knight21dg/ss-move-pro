@@ -32,9 +32,11 @@ function ContactPage() {
   const email = c?.email;
   const address = c?.address;
 
+  const altPhone = c?.alternate_phone;
   const infoCards: { icon: typeof Phone; title: string; value: string; href?: string }[] = [
     ...(address ? [{ icon: MapPin, title: "Office Address", value: address }] : []),
     ...(phone ? [{ icon: Phone, title: "Phone", value: phone, href: phoneHref }] : []),
+    ...(altPhone ? [{ icon: Phone, title: "Alternate Phone", value: altPhone, href: `tel:${altPhone.replace(/\s/g, "")}` }] : []),
     ...(email ? [{ icon: Mail, title: "Email", value: email, href: `mailto:${email}` }] : []),
     ...(c?.gstin ? [{ icon: MapPin, title: "GSTIN", value: c.gstin }] : []),
   ];
